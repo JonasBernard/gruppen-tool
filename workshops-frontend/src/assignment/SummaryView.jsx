@@ -31,7 +31,7 @@ export default function SummaryView(props) {
                                         <td className="py-3.5 px-4 text-sm font-normal text-center text-gray-500 dark:text-gray-400">Anzahl {i + 1}. Wünsche</td>
                                     ))}
                                     <td className="py-3.5 px-4 text-sm font-normal text-center text-gray-500 dark:text-gray-400">Kapazität</td>
-                                    <td className="py-3.5 px-4 text-sm font-normal text-center text-gray-500 dark:text-gray-400">Auslastung</td>
+                                    <td className="py-3.5 px-4 text-sm font-normal text-center text-gray-500 dark:text-gray-400">Beliebtheit</td>
                                 </tr>
                             </thead>
                             <Table.Body>
