@@ -3,10 +3,10 @@ export default function WelcomePage(props) {
 
   return (
     <>
-      <h1 className="mt-10 text-2xl font-semibold text-gray-800 lg:text-3xl dark:text-white">
+      <h1 className="mt-10 text-2xl text-center font-semibold text-gray-800 lg:text-3xl dark:text-white">
         Herzlich Wilkommen
       </h1>
-      <h3 className="text-md">
+      <h3 className="text-md text-center">
         Das ist mein selbst entworfenes Gruppen-Tool, mit dem du Teilnehmer in
         Gruppen einteilen kannst.
       </h3>
