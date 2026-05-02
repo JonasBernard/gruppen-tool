@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import Button from "./components/Button";
 import { Sun, Moon } from "lucide-react";
+import AboutModal from "./AboutModal";
  
 const saveTheme = (theme) => {
     localStorage.theme = theme
@@ -47,14 +47,9 @@ export default function NavBar(props) {
                 <span><h2 className="text-lg font-bold">Gruppen-Tool</h2></span>
             </div>
 
-            <span className="text-xs">Made with ♥ by <a href="https://jonas-bernard.dev">Jonas Bernard</a></span>
+            <AboutModal></AboutModal>
 
             <div className="flex gap-4">
-                <Button>
-                <a href="https://www.buymeacoffee.com/JonasBernard" target="_blank" rel="noreferrer">
-                    <img src="/bmc-full-logo.svg" alt="Buy me a coffe" width={120} />
-                </a>
-                </Button>
                 <div className="relative inline-block">
                     <button
                         onClick={toggleTheme}
