@@ -69,7 +69,7 @@ export default function ParticipantsList(props) {
                         Füge die Teilnehmer und ihre Wünsche hinzu.
                     
                         Workshops, die es in der Workshopliste nicht gibt, werden
-                        <span className="mx-1 px-2 py-1 rounded-xl bg-yellow-500 text-black">
+                        <span className="mx-1 px-2 py-1 rounded-xl bg-yellow-500 text-black text-nowrap">
                             in gelb
                         </span>
                         markiert.
@@ -92,7 +92,7 @@ export default function ParticipantsList(props) {
                 <div className="flex flex-col mt-4">
                     <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
                         <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
-                            <div className="overflow-hidden border border-gray-200 dark:border-gray-700 md:rounded-lg md:rounded-bl-none">
+                            <div className="overflow-hidden border border-gray-200 dark:border-gray-700 md:rounded-lg">
 
                                 <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                                     <thead className="bg-gray-50 dark:bg-gray-800">
@@ -186,7 +186,7 @@ export default function ParticipantsList(props) {
                                                 <h2 className="font-medium text-gray-800 dark:text-white text-center">{k.name}</h2>
                                             </td>
                                             {[...Array(wishCount)].map((x, i) => {
-                                                return <td key={i} className={"px-2 py-2 text-sm whitespace-nowrap"}>
+                                                return <td key={i} className={"px-2 py-2 text-sm text-center whitespace-nowrap"}>
                                                     <span className={((workshopNames.includes(k.wishes[i]) || k.wishes[i] === "" || k.wishes[i] === null || k.wishes[i] === undefined) ? "" : "px-4 py-1 rounded-xl bg-yellow-500 text-black")}>
                                                         {k.wishes[i]}
                                                     </span>

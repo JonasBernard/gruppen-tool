@@ -32,14 +32,14 @@ export default function Workshoplist(props) {
             <section className="container px-4 mx-auto">
                 {/* <h2 className="text-lg font-medium text-gray-800 dark:text-white">Workshops</h2> */}
 
-                <p className="mt-1 text-sm text-gray-500 dark:text-gray-300">
+                <p className="mt-1 text-sm text-center text-gray-500 dark:text-gray-300">
                     Füge die Workshops hinzu, die es gibt.
                 </p>
 
                 <div className="flex flex-col mt-6">
                     <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
                         <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
-                            <div className="overflow-hidden border border-gray-200 dark:border-gray-700 md:rounded-lg md:rounded-bl-none">
+                            <div className="overflow-hidden border border-gray-200 dark:border-gray-700 md:rounded-lg">
 
                                 <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                                     <thead className="bg-gray-50 dark:bg-gray-800">
@@ -70,7 +70,7 @@ export default function Workshoplist(props) {
                                                 onKeyDown={(e) => ((e.key === 'Tab' && !e.shiftKey) || e.key === 'Enter' ) && (e.preventDefault() || addWorkshop())} 
                                             />
                                         </td>
-                                        <td className="p-2 text-sm whitespace-nowrap">
+                                        <td className="p-2 text-sm text-center whitespace-nowrap">
                                             <Button onClick={() => addWorkshop()}>
                                                 Hinzufügen
                                             </Button>
@@ -79,14 +79,14 @@ export default function Workshoplist(props) {
 
                                     {workshops.map(w => (
                                         <tr key={w.id}>
-                                            <td className="px-2 py-2 text-sm font-medium whitespace-nowrap">
+                                            <td className="px-2 py-2 text-sm font-medium text-center whitespace-nowrap">
                                                 <h2 className="font-medium text-gray-800 dark:text-white ">{w.name}</h2>
                                             </td>
-                                            <td className={"px-2 py-2 text-sm whitespace-nowrap"}>
+                                            <td className={"px-2 py-2 text-sm text-center whitespace-nowrap"}>
                                                 {w.capacity}
                                             </td>
 
-                                            <td className="px-2 py-2 text-sm whitespace-nowrap">
+                                            <td className="px-2 py-2 text-sm text-center whitespace-nowrap">
                                                 <Button
                                                     bgColor="bg-red-500 dark:bg-rose-600 dark:text-stone-100 p-2"
                                                     onClick={() => removeWorkshop(w.id)}>
@@ -97,10 +97,10 @@ export default function Workshoplist(props) {
                                     ))}
 
                                     {workshops.length > 0 && <tr className="text-gray-500 dark:text-gray-400 text-sm">
-                                        <td className="p-1">
+                                        <td className="p-1 text-center">
                                             <span>Anzahl Workshops: {workshops.length}</span>
                                         </td>
-                                        <td className="p-1">
+                                        <td className="p-1 text-center">
                                             <span>Gesamte Kapazität: {workshops.reduce((a,b) => a + Number(b.capacity), 0)}</span>
                                         </td>
                                         <td></td>
