@@ -3,16 +3,17 @@ import "./App.css";
 import ParticipantsList from "./participants/ParticipantsList";
 import Workshoplist from "./workshops/WorkshopList";
 import ResultView from "./assignment/ResultView";
-import Button from "./components/Button";
 import NavBar from "./Navbar";
 import Card from "./components/Card";
 import WelcomePage from "./Welcomepage";
-import SettingsTab from "./assignment/SettingsTab";
-import Badge from "./components/Badge";
+import SettingsView from "./assignment/SettingsView";
 import { usePostHog } from "posthog-js/react";
 import SummaryView from "./assignment/SummaryView";
+import { Alert, Banner, BannerCollapseButton } from "flowbite-react";
+import { HiX, HiAnnotation, HiExclamation, HiExclamationCircle, HiInformationCircle } from "react-icons/hi";
 
 const APIBASE = process.env.REACT_APP_API_BASEURL || "http://localhost:5000";
+const APIBASE_V2 = process.env.REACT_APP_API_BASEURL_V2 || "http://localhost:5010";
 
 function saveData(participants, workshops, settings) {
   localStorage.dataV2 = JSON.stringify({
@@ -26,7 +27,7 @@ function loadData() {
   if (localStorage.dataV2) {
     let data = JSON.parse(localStorage.dataV2);
     if (data.participants.length > 0 || data.workshops.length > 0)
-      return [true, data.participants, data.workshops, data.settings]
+      return [true, data.participants, data.workshops, data.settings];
   }
   if (localStorage.dataV1) {
     let data = JSON.parse(localStorage.dataV1);
@@ -65,7 +66,7 @@ function App() {
       
       setParticipants(k); setWorkshops(w); setTab(2);
       s && setSettings(s);
-
+      
       setInfoMessage("Es wurden Daten aus deiner letzten Sitzung wiederhergestellt.");
     }
   }, []);
@@ -81,8 +82,9 @@ function App() {
 
     const participantsOrig = participants;
     const workshopsOrig = workshops;
+    const settingsOrig = settings;
 
-    if (participantsOrig.map(k=>k.name).length > [...new Set(participantsOrig.map(k=>k.name))].length) {
+    if (participantsOrig.length > [...new Set(participantsOrig.map(k=>k.name))].length) {
       let doubleNames = participantsOrig.reduce((acc, k) => {
         if (acc[k.name]) {
           acc[k.name] += 1;
@@ -94,7 +96,23 @@ function App() {
       doubleNames = Object.entries(doubleNames).filter(tuple => tuple[1] > 1)
       .map((k) => `${k[0]} (${k[1]}x)`)
       .join(", ");
-      setWarningMessage("Es gibt mehrere Teilnehmer mit dem gleichem Namen. Das kann zu Problemen führen: " + doubleNames + ".");
+      setErrorMessage("Es gibt mehrere Teilnehmer mit dem gleichem Namen. Das muss behoben werden, bevor eine Einteilung möglich ist: " + doubleNames + ".");
+      return;
+    }
+
+    if (workshopsOrig.length > [...new Set(workshopsOrig.map(k=>k.name))].length) {
+      let doubleNames = workshopsOrig.reduce((acc, k) => {
+        if (acc[k.name]) {
+          acc[k.name] += 1;
+        } else {
+          acc[k.name] = 1;
+        }
+        return acc;
+      }, {});
+      doubleNames = Object.entries(doubleNames).filter(tuple => tuple[1] > 1)
+      .map((k) => `${k[0]} (${k[1]}x)`)
+      .join(", ");
+      setWarningMessage("Es gibt mehrere Workshops mit dem gleichem Namen. Das sollte behoben werden: " + doubleNames + ".");
     }
 
     if (participantsOrig.filter(k => k.name === "").length > 0) {
@@ -143,12 +161,22 @@ function App() {
       return;
     }
 
+    if (workshopsOrig.filter(w => w.name === "none").length > 0) {
+      setErrorMessage("Kein Workshop darf 'none' heißen. Bitte ändere die Namen der Workshops bevor du die Einteilung berechnen lässt.");
+      return;
+    }
+
     saveData(participantsOrig, workshopsOrig);
 
-    const path = settings.useWeighted ? "/weighted" : "/unweighted";
+    let useV2 = settings.selectedAlgorithm === "scip";
+
+    let path = "/";
+    if (!useV2) {
+      path = settings.useWeighted ? "/weighted" : "/unweighted";
+    }
 
     setIsLoading(true);
-    fetch(APIBASE + path, {
+    fetch((useV2 ? APIBASE_V2 : APIBASE) + path, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -157,46 +185,72 @@ function App() {
         settings: settings,
       }),
     })
-      .then((response) => response.json())
-      .then((data) => {
-        posthog.capture('assignment_computed', {
-          requestPath: APIBASE + path,
-          requestBody: JSON.stringify({
-            participants: participantsOrig,
-            workshops: workshopsOrig,
-            settings: settings,
-          }),
-          response: JSON.stringify(data),
+    .then((response) => {
+      if (!response.ok) {
+        return response.json().then((data) => {
+          setErrorMessage("Ein Fehler ist aufgetreten: " + data.message);
+          throw new Error(data.message);
         });
-        return data;
-      })
-      .catch((err) => {
-        setIsLoading(false);
-        console.error(err);
-        setErrorMessage("Failed to parse JSON: " + err.message);
-      })
-      .then((actualData) => {
-        setIsLoading(false);
-        const result = {
-          ...actualData,
+      }
+      return response.json();
+    })
+    .then((data) => {
+      posthog.capture('assignment_computed', {
+        requestPath: (useV2 ? APIBASE_V2 : APIBASE) + path,
+        requestBody: JSON.stringify({
           participants: participantsOrig,
           workshops: workshopsOrig,
-        }
-        setRequestResult(result);
-      })
-      .catch((err) => {
-        setErrorMessage(err.message);
+          settings: settingsOrig,
+        }),
+        response: JSON.stringify(data),
       });
+      return data;
+    })
+    .catch((err) => {
+      setIsLoading(false);
+      console.error(err);
+      setErrorMessage("Ein Fehler ist aufgetreten: " + err.message);
+    })
+    .then((actualData) => {
+      setIsLoading(false);
+      const result = {
+        ...actualData,
+        participants: participantsOrig,
+        workshops: workshopsOrig,
+      }
+      setRequestResult(result);
+    })
+    .catch((err) => {
+      setErrorMessage(err.message);
+    });
   };
 
   return (
     <div className="App dark:bg-slate-700 dark:text-stone-100 h-screen">
       <div className="dark:bg-slate-700 dark:text-stone-100 h-100">
+        
+        <Banner className="lg:hidden">
+          <div className="flex w-full justify-between border-b border-gray-200 bg-gray-50 p-4 dark:border-gray-600 dark:bg-gray-700">
+            <div className="mx-auto flex items-center">
+              <p className="flex items-center text-sm font-normal text-gray-500 dark:text-gray-400">
+                <HiAnnotation className="shrink-0 mr-4 h-4 w-4" />
+                <span className="[&_p]:inline">
+                  Diese Seite ist nicht für mobile Geräte und kleine Bildschirme geeignet. Besuche uns wieder auf einem Laptop oder Desktop.
+                </span>
+              </p>
+            </div>
+            <BannerCollapseButton color="gray" className="border-0 bg-transparent text-gray-500 dark:text-gray-400">
+              <HiX className="h-4 w-4" />
+            </BannerCollapseButton>
+          </div>
+        </Banner>
+
         <NavBar></NavBar>
+
         <div className="flex flex-col items-center">
 
           <div className="m-4 absolute z-10">
-            <Badge message={infoMessage} setMessage={setInfoMessage} className="bg-indigo-400"></Badge>
+            {infoMessage && (<Alert color="indigo" icon={HiInformationCircle} className="text-indigo-900" onDismiss={() => setInfoMessage("")}>{infoMessage}</Alert>)}
           </div>
 
           <Card extraStyle="container">
@@ -207,7 +261,7 @@ function App() {
                       "inline-flex items-center h-10 px-4 -mb-px text-sm text-center bg-transparent border-b-2 sm:text-base "
                       + (
                         currentTab === 0
-                        ? "text-blue-600 border-blue-500 dark:border-blue-400 dark:text-blue-300 "
+                        ? "text-indigo-600 border-indigo-500 dark:border-indigo-400 dark:text-indigo-300 "
                         : "text-gray-700 border-transparent dark:text-white focus:outline-none hover:border-gray-400 ")
                       + "whitespace-nowrap focus:outline-none"}>
                       Workshops
@@ -216,7 +270,7 @@ function App() {
                       "inline-flex items-center h-10 px-4 -mb-px text-sm text-center bg-transparent border-b-2 sm:text-base "
                       + (
                         currentTab === 1
-                        ? "text-blue-600 border-blue-500 dark:border-blue-400 dark:text-blue-300 "
+                        ? "text-indigo-600 border-indigo-500 dark:border-indigo-400 dark:text-indigo-300 "
                         : "text-gray-700 border-transparent dark:text-white focus:outline-none hover:border-gray-400 ")
                       + "whitespace-nowrap focus:outline-none"}>
                       Teilnehmer
@@ -225,7 +279,7 @@ function App() {
                       "inline-flex items-center h-10 px-4 -mb-px text-sm text-center bg-transparent border-b-2 sm:text-base "
                       + (
                         currentTab === 2
-                        ? "text-blue-600 border-blue-500 dark:border-blue-400 dark:text-blue-300 "
+                        ? "text-indigo-600 border-indigo-500 dark:border-indigo-400 dark:text-indigo-300 "
                         : "text-gray-700 border-transparent dark:text-white focus:outline-none hover:border-gray-400 ")
                       + "whitespace-nowrap focus:outline-none"}>
                       Einteilen
@@ -237,7 +291,7 @@ function App() {
                       "inline-flex items-center h-10 px-4 -mb-px text-sm text-center bg-transparent border-b-2 sm:text-base "
                       + (
                         currentTab === 3
-                        ? "text-blue-600 border-blue-500 dark:border-blue-400 dark:text-blue-300 "
+                        ? "text-indigo-600 border-indigo-500 dark:border-indigo-400 dark:text-indigo-300 "
                         : "text-gray-700 border-transparent dark:text-white focus:outline-none hover:border-gray-400 ")
                       + "whitespace-nowrap focus:outline-none"}>
                       So funktioniert's
@@ -259,20 +313,15 @@ function App() {
               />
             </div>}
 
-            {currentTab === 2 && <div className="pt-3 flex flex-col">
+            {currentTab === 2 && <div className="py-6 px-4 flex flex-col gap-5">
               <SummaryView participants={participants} workshops={workshops} settings={settings} />
-              <SettingsTab initialSettings={settings} setSettings={setSettings}></SettingsTab>
-              <div className="mt-12">
-                <Button disabled={isLoading} disabledWithloading={isLoading} onClick={sendData}>
-                  {!isLoading ? "Gruppen jetzt einteilen" : "Gruppen werden eingeteilt..."}
-                </Button>
-              </div>
-              <div className="m-4">
-                <Badge message={errorMessage} setMessage={setErrorMessage} className="bg-rose-600 text-stone-100"></Badge>
-              </div>
-               <div className="m-4">
-                <Badge message={warningMessage} setMessage={setWarningMessage} className="bg-yellow-400"></Badge>
-              </div>
+              <SettingsView initialSettings={settings} setSettings={setSettings} sendData={sendData} isLoading={isLoading}></SettingsView>              
+              {warningMessage && (
+                  <Alert color="warning" icon={HiExclamation} className="text-yellow-900 dark:bg-gray-700 dark:text-yellow-300" dismissable={false}>{warningMessage}</Alert>
+              )}
+              {errorMessage && (
+                  <Alert color="failure" icon={HiExclamationCircle} className="text-red-900 dark:bg-red-900 dark:text-red-100" dismissable={false}>{errorMessage}</Alert>
+              )}
               <ResultView result={result} />
             </div>}
 

@@ -1,4 +1,6 @@
 export default function Badge(props) {
+  const dismissable = props.dismissable !== undefined ? props.dismissable : true;
+
   return (
     <>
       {props.message && (
@@ -17,12 +19,13 @@ export default function Badge(props) {
           ) : (
             props.message
           )}
-          <button
-            type="button"
-            onClick={() => props.setMessage("")}
-            className="text-gray-900 bg-transparent hover:bg-opacity-25
-                hover:bg-gray-200 hover:text-gray-900
-                dark:hover:bg-gray-600 dark:hover:bg-opacity-25
+          {dismissable && (
+            <button
+              type="button"
+              onClick={() => props.setMessage("")}
+              className="text-gray-900 bg-transparent hover:bg-opacity-25
+                  hover:bg-gray-200 hover:text-gray-900
+                  dark:hover:bg-gray-600 dark:hover:bg-opacity-25
                 rounded-lg text-sm w-8 h-8 ms-auto
                 inline-flex justify-center items-center"
           >
@@ -42,7 +45,7 @@ export default function Badge(props) {
               />
             </svg>
             <span className="sr-only">Nachricht schließen</span>
-          </button>
+          </button>)}
         </div>
       )}
     </>

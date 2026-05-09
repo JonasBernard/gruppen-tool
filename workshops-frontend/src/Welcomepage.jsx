@@ -88,12 +88,12 @@ export default function WelcomePage(props) {
               Deine angegebenen Daten (Workshops und Teilnehmer) werden in
               deinem Browser gespeichert und erneut in die Tabellen gefüllt, wenn du diese Seite
               zu einem späteren Zeitpunkt wieder aufrufst. Außerdem werden die
-              Workshops und Teilnehmer, sobald du auf "Gruppen jetzt einteilen" klickst, an einen Server geschickt, dort zur
-              Verarbeitung kurzzeitig gespeichert und dann gelöscht. 
+              Workshops und Teilnehmer an meinen Server geschickt, sobald du auf "Gruppen jetzt einteilen" klickst.
               <br />
-              Zur Fehleranalyse werden Diagnoseberichte gespeichert und von mir zur Verbesserung der Webseite verwendet.
-              Diese enthalten ggf. deine IP-Adresse und Informationen über die Einteilung,
-              die du angefordert hast, und die Einstellungen, die du vorgenommen hast.
+              Zur Fehleranalyse werden Diagnoseberichte gespeichert und von mir zur Verbesserung des Tools verwendet.
+              Diese enthalten ggf. deine IP-Adresse und die Workshops, Teilnehmer, und die Einstellungen, die du vorgenommen hast,
+              sowie das Ergebnis der Einteilung.
+              Sie enthalten außerdem Daten über dein Nutzungsverhalten und Daten über das von dir verwendete Gerät.
               Die Daten werden ausschließlich in der EU verarbeitet und nicht verkauft.
             </p>
           </div>
@@ -149,7 +149,7 @@ export default function WelcomePage(props) {
               <span className="font-bold">
                 2. Der Teilnehmer kann keinen seiner drei Wünsche erhalten.{" "}
               </span>
-              Es kann passieren, dass es einen Teilnehmer gibt, der keinen seiner Wünsche erfüllt
+              Es kann passieren, dass es einen Teilnehmer geben muss, der keinen seiner Wünsche erfüllt
               bekommen kann. 
               Je nach Einstellung der Option "Einteilung in nicht gewünschte Workshops zulassen"
               wird ein solcher Teilnehmer einem noch freien Workshop zugeteilt, oder überheupt nicht
@@ -158,6 +158,26 @@ export default function WelcomePage(props) {
           </div>
 
           <div className="p-8 bg-gray-100 rounded-lg dark:bg-gray-900 dark:bg-opacity-40">
+            <h1 className="font-semibold text-gray-700 dark:text-white">
+              Ist das Tool quelloffen (Open-Source)?
+            </h1>
+
+            <p className="mt-6 text-sm text-gray-500 dark:text-gray-300">
+              Der Quellcode ist aktuell nicht unter eine Open-Source-Lizenz lizensiert, aber zur Einsicht öffentlich verfügbar.
+            </p>
+
+            <p className="mt-6 text-sm text-gray-500 dark:text-gray-300">
+              <br/>
+              <br/>
+              Der Quellcode für die Webseite befindet sich hier: <a href="https://github.com/JonasBernard/gruppen-tool">https://github.com/JonasBernard/gruppen-tool</a>.
+              
+              <br/>
+              <br/>
+              Der Quellcode für "Min-Cost-Max-Flow" befindt sich hier: <a href="https://github.com/JonasBernard/min-cost-max-flow">https://github.com/JonasBernard/min-cost-max-flow</a>.
+            </p>
+          </div>
+
+          {/* <div className="p-8 bg-gray-100 rounded-lg dark:bg-gray-900 dark:bg-opacity-40">
             <h1 className="font-semibold text-gray-700 dark:text-white">
               Wie funktioniert die Einteilung mathematisch nun wirklich ganz ganz genau?
             </h1>
@@ -221,17 +241,8 @@ export default function WelcomePage(props) {
               Pfades in Richtung eines maxiamlen Flusses erhöht.
               Zum Finden der kürzesten Pfade wird in diesem Tool
               eine Implementierung des Bellman-Ford-Moore-Algorithmus verwendet.
-
-              <br/>
-              <br/>
-              Der Quellcode für die algorithmischen Teile des Tools befinden sich
-              hier: <a href="https://github.com/JonasBernard/min-cost-max-flow">https://github.com/JonasBernard/min-cost-max-flow</a>.
-
-              <br/>
-              <br/>
-              Der Quellcode für die Webseite befindet sich hier: <a href="https://github.com/JonasBernard/datto">https://github.com/JonasBernard/datto</a>.
             </p>
-          </div>
+          </div> */}
         </div>
       </div>
     </>

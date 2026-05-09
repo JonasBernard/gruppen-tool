@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { v4 as uuidv4 } from 'uuid';
 import Button from "../components/Button";
-import TextInput from "../components/TextInput";
+import TextInputWithAutocomplete from "../components/TextInputWithAutocomplete";
 import ImportExcelModal from "./importExcelModal";
 import NumberSelector from "../components/NumberSelector";
 import ImportJSONModal from "./importJSONModal";
@@ -21,9 +21,9 @@ export default function ParticipantsList(props) {
 
     useEffect(() => {
         setSettings(oldSettings => { return {
-            useWeighted: oldSettings.useWeighted,
-            allowAssignmentToNonWishedWorkshop: oldSettings.allowAssignmentToNonWishedWorkshop,
-            numberOfWishesPerParticipant: wishCount
+            ...oldSettings, 
+            numberOfWishesPerParticipant: wishCount,
+
         }})
     }, [wishCount, setSettings]);
 
@@ -125,7 +125,7 @@ export default function ParticipantsList(props) {
                                                 Sechst-Wunsch
                                             </th>) : <></>}
 
-                                            <th scope="col" className="relative py-3.5 px-2 text-sm whitespace-nowrap">
+                                            <th scope="col" className="relative py-3.5 px-2 text-sm whitespace-nowrap flex flex-col gap-2 items-center">
                                                 <ImportExcelModal onImportParticipants={(data) => {
                                                     setParticipants([
                                                         ...data,
@@ -137,7 +137,6 @@ export default function ParticipantsList(props) {
                                                 workshopNames={workshopNames}>
                                                     Aus Excel-Datei importieren
                                                 </ImportExcelModal>
-                                                <br/>
                                                 { process.env.NODE_ENV !== 'production' && 
                                                     <ImportJSONModal onImportParticipants={(data) => {
                                                         setParticipants([
@@ -148,7 +147,7 @@ export default function ParticipantsList(props) {
                                                     wishCount={wishCount}
                                                     maxWishCount={MAX_WISH_COUNT}
                                                     workshopNames={workshopNames}>
-                                                        JSON import
+                                                        Aus JSON-Datei importieren (Debug-Funktion)
                                                     </ImportJSONModal>
                                                 }
                                                 <span className="sr-only">Löschen</span>
@@ -159,11 +158,11 @@ export default function ParticipantsList(props) {
                                     
                                     <tr>
                                         <td className="p-1">
-                                            <TextInput extraStyle="rounded-none" placeholder="Name des Teilnehmers" ref={nameInputRef} value={newName} onChange={e => setNewName(e.target.value)}/>
+                                            <TextInputWithAutocomplete extraStyle="rounded-none" placeholder="Name des Teilnehmers" ref={nameInputRef} value={newName} onChange={e => setNewName(e.target.value)}/>
                                         </td>
                                         {[...Array(wishCount)].map((x, i) => {
                                             return <td className="p-1" key={i}>
-                                                <TextInput
+                                                <TextInputWithAutocomplete
                                                     key={i}
                                                     extraStyle="rounded-none" placeholder={i+1 + ". Wunsch"} 
                                                     value={newWishList[i]} onChange={e => updateWish(i, e.target.value)}
@@ -173,7 +172,7 @@ export default function ParticipantsList(props) {
                                                 />
                                             </td>
                                         })}
-                                        <td className="p-2 text-sm whitespace-nowrap">
+                                        <td className="p-2 text-sm text-center whitespace-nowrap">
                                             <Button onClick={() => addParticipant()}>
                                                 Hinzufügen
                                             </Button>
@@ -193,7 +192,7 @@ export default function ParticipantsList(props) {
                                                 </td>
                                             })}
 
-                                            <td className="px-2 py-2 text-sm whitespace-nowrap">
+                                            <td className="px-2 py-2 text-sm text-center whitespace-nowrap">
                                                 <Button
                                                     bgColor="bg-red-500 dark:bg-rose-600 dark:text-stone-100 p-2"
                                                     onClick={() => removeParticipant(k.id)}>
@@ -204,11 +203,11 @@ export default function ParticipantsList(props) {
                                     ))}
 
                                     {participants.length > 0 && <tr className="text-gray-500 dark:text-gray-400 text-sm">
-                                        <td className="p-1">
+                                        <td className="p-1 text-center">
                                             <span>Anzahl Teilnehmer: {participants.length}</span>
                                         </td>
                                         {[...Array(wishCount)].map((x, i) => {
-                                        return <td className="p-1" key={i}>
+                                        return <td className="p-1 text-center" key={i}>
                                             <span>Anzahl gesetzer Wünsche in dieser Spalte: {participants.reduce((a,b) => b.wishes[i] !== "" ? a + 1 : a, 0)}</span>
                                         </td>
                                         })}

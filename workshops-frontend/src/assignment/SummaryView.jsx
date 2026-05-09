@@ -16,13 +16,11 @@ export default function SummaryView(props) {
     });
 
     return (
-        <Accordion>
-            <Accordion.Panel isOpen={false}>
+        <Accordion collapseAll>
+            <Accordion.Panel>
                 <Accordion.Title>Zusammenfassung</Accordion.Title>
-                <Accordion.Content className="dark:bg-slate-800">
-                
-
-                    <div className="overflow-hidden border border-gray-200 dark:border-gray-700 md:rounded-lg md:rounded-bl-none">
+                <Accordion.Content>
+                    <div className="overflow-hidden border border-gray-200 dark:border-gray-700 dark:bg-slate-800 shadow-md md:rounded-lg">
                         <Table className="divide-y divide-gray-200 dark:divide-gray-700" hoverable={true}>
                             <thead>
                                 <tr>
@@ -54,7 +52,7 @@ export default function SummaryView(props) {
                                 ))}
                             </Table.Body>
                         </Table>
-                </div>
+                    </div>
 
                 </Accordion.Content>
             </Accordion.Panel>
