@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import Button from "./components/Button";
 import { FaRegHandPeace } from "react-icons/fa6";
 import { HiMail } from "react-icons/hi";
+import { FaCoffee } from "react-icons/fa";
 
 export default function AboutModal() {
   const [openModal, setOpenModal] = useState(false);
@@ -17,7 +18,7 @@ export default function AboutModal() {
 
   return (
     <>
-      <span className="text-xs">Made with ♥ by <a href="#" onClick={() => setOpenModal(true)} className="text-indigo-500 hover:underline cursor-pointer">Jonas Bernard</a></span>
+      <span className="text-xs">Made with ♥ by <button onClick={() => setOpenModal(true)} className="text-indigo-500 hover:underline cursor-pointer">Jonas Bernard</button></span>
       <Modal show={openModal} onClose={() => setOpenModal(false)} dismissible={true} popup={true} size="xl">
         <ModalBody className="mt-3 md:mt-8">
             <ModalHeader className="md:hidden">Über mich</ModalHeader>
@@ -40,10 +41,14 @@ export default function AboutModal() {
          <Button onClick={() => window.location.href = "mailto:contact@jonas-bernard.dev"}>
             <HiMail className="mr-2 h-5 w-5" /> E-Mail schreiben
           </Button>
-          <Button className="pl-0 pr-0 py-0">
-            <a href="https://www.buymeacoffee.com/JonasBernard" className="px-6 py-2" target="_blank" rel="noreferrer">
-                <img src="/bmc-full-logo.svg" alt="Buy me a coffe" width={110} />
-            </a>
+          <Button 
+          // className="pl-0 pr-0 py-0"
+          onClick={() => window.open("https://www.buymeacoffee.com/JonasBernard", "_blank", "noopener noreferrer")}
+          >
+            {/* <a href="https://www.buymeacoffee.com/JonasBernard" className="px-6 py-0" target="_blank" rel="noreferrer">
+                <img src="/bmc-full-logo.svg" alt="Buy me a coffe" width={110} className="max-h-6" />
+            </a> */}
+            <FaCoffee className="mr-2 h-5 w-5" /> Spenden
           </Button>
         </ModalFooter>
       </Modal>
