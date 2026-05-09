@@ -54,8 +54,12 @@ type Settings struct {
 }
 
 type ResponseSolution struct {
-	Solution []matching.MatchingEdge[Participant, Workshop] `json:"solution"`
-	Status   string                                         `json:"status"`
+	Solutions []Assignment `json:"solutions"`
+	Status    string       `json:"status"`
+}
+
+type Assignment struct {
+	Assignment [][]string `json:"assignment"`
 }
 
 func AllowOriginLocalhost(w *http.ResponseWriter) {
@@ -91,6 +95,35 @@ func Unweighted() func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func constructSolutionResponse(participants []Participant, matchingEdges []matching.MatchingEdge[Participant, Workshop]) ResponseSolution {
+	solution := make([][]string, len(participants))
+
+	for i, participant := range participants {
+		solution[i] = []string{participant.Name}
+	}
+
+	for _, edge := range matchingEdges {
+		p := edge.Left
+		w := edge.Right
+
+		for i, participant := range participants {
+			if participant.Name == p.Name {
+				solution[i] = append(solution[i], w.Name)
+			}
+		}
+	}
+
+	for i, _ := range participants {
+		if len(solution[i]) == 1 {
+			solution[i] = append(solution[i], "none")
+		}
+	}
+
+	return ResponseSolution{
+		Solutions: []Assignment{{Assignment: solution}},
+	}
+}
+
 func SolveGroupProblem(w http.ResponseWriter, req *http.Request, getEdgeWeight func(int) float64) {
 	AllowOriginLocalhost(&w)
 	AddDefaultHeader(&w)
@@ -123,6 +156,11 @@ func SolveGroupProblem(w http.ResponseWriter, req *http.Request, getEdgeWeight f
 
 	participants := wished.Participants
 
+	if len(participants) > 150 {
+		http.Error(w, "Number of participants must be at most 150.", http.StatusBadRequest)
+		return
+	}
+
 	workshops := wished.Workshops
 
 	allowAssignmentToNonWishedWorkshop := wished.Settings.AllowAssignmentToNonWishedWorkshop
@@ -154,9 +192,7 @@ func SolveGroupProblem(w http.ResponseWriter, req *http.Request, getEdgeWeight f
 
 	matchingEdges := solutions[0]
 
-	response := ResponseSolution{
-		Solution: matchingEdges,
-	}
+	response := constructSolutionResponse(participants, matchingEdges)
 
 	if err != nil {
 		fmt.Printf("%v\n", err)

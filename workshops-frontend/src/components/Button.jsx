@@ -8,7 +8,8 @@ export default function Button(props) {
             + "duration-300 transform rounded-lg "
             + "focus:outline-none focus:ring focus:ring-opacity-80 "
             + "disabled:bg-indigo-300 disabled:cursor-not-allowed "
-            + "inline-flex items-center"
+            + "inline-flex items-center "
+            + (props.className || "")
         }
         >
             {props.disabledWithloading && <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">

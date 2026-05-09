@@ -1,6 +1,6 @@
-import Button from "../components/Button";
-import Card from "../components/Card";
-import { exportExcel } from "../exportExcel";
+import AssignmentView from "./AssignmentView";
+import { Progress, Accordion, Alert, Card } from "flowbite-react";
+import { HiInformationCircle } from "react-icons/hi";
 
 function interpretStatus(status) {
     switch (status) {
@@ -8,6 +8,10 @@ function interpretStatus(status) {
         case "error-unknown": return "Es ist ein unbekannter Fehler aufgetreten. Es wurde eine Teillösung berechnet:"
         case "ok": return "Es wurde eine Einteilung gefunden. Falls es mehrere gleichwertige Einteilungen gab, wurde eine davon zufällig ausgewählt."
         case "unknown-status": return "Es wurde keine Nachricht zur Einteilung übermittelt."
+        case "v2:ok": return "Es wurden verschiedene Einteilungen gefunden."
+        case "v2:ok-single": return "Es wurde eine Einteilung gefunden. Diese ist die einzige optimale Einteilung."
+        case "v2:no-solution": return "Es ist keine Einteilung möglich. Es wurden keine Teilnehmer zugeteilt."
+        case "v2:scip-exception": return "Es ist ein Fehler bei der Berechnung der Einteilung aufgetreten. Fehlermeldung: " + (status.message || "Keine Fehlermeldung vorhanden.")
         default: return ""
     }
 }
@@ -19,46 +23,54 @@ export default function ResultView(props) {
         return (<></>);
     }
 
-    const problemSolution = result.solution || [];
     const status = result.status || "unknown-status";
 
-    const asssignedParticipants = problemSolution.map((e1, e2) => e1.Left.name);
-    const unassignedParticipants = result.participants.filter(participant => !(asssignedParticipants.includes(participant.name))).map(k => k.name);
+    if (!result.solutions || result.solutions.length === 0) {
+        return (
+            <div>
+                <Alert color="indigo" icon={HiInformationCircle} className="text-indigo-900 dark:bg-indigo-800 dark:text-indigo-100" dismissable={false}>{interpretStatus(status)}</Alert>
+            </div>
+        );
+    }
 
     return (
-        <div>
-            <span>{interpretStatus(status)}</span>
-            <div className="mt-3 flex flex-col items-stretch">
-                <Card className="rounded-xl bg-slate-100 dark:bg-gray-700 p-3 items-center justify-between mb-2">
-                    <div className="flex items-center justify-between">
-                        <span>Teilnehmer nach Alphabet sortiert:</span>
-                        <span>
-                            <Button 
-                            onClick={() => exportExcel(result.solution, unassignedParticipants)}
-                            bgColor="bg-green-800 focus:ring-green-200">Als Excel-Datei herunterladen</Button>
-                        </span>
-                    </div>
-                    <div className="mt-2">
-                    {problemSolution.sort((e1, e2) => e1.Left.name.localeCompare(e2.Left.name)).map(edge => {
-                        let wishNr = edge.Left.wishes.indexOf(edge.Right.name) + 1;
-                        return (<div key={edge.Left.id} className="rounded-xl even:bg-gray-200 odd:bg-gray-100 odd:dark:bg-gray-600 even:dark:bg-gray-700 p-3 flex items-center justify-between mb-2">
-                            <div className="flex items-center gap-2">
-                                <p className="text-xl">{edge.Left.name}</p>
-                            </div>
-                            <span className="flex flex-col items-end">
-                                <p className="text-xl">{edge.Right.name}</p>
-                                <p>({wishNr > 0 ? "entspricht " + wishNr + ". Wunsch" : "Wurde nicht gewünscht"})</p>
-                            </span>
-                        </div>
-                    )})}
-                    </div>
-                    <div className="mt-8">
-                        Zugeteilt wurden: {asssignedParticipants.join(", ") || "Niemand"} ({asssignedParticipants.length})
-                        <br /><br />
-                        Nicht zugeteilt wurden: {unassignedParticipants.join(", ") || "Niemand"} ({unassignedParticipants.length})
-                    </div>
-                </Card>
-            </div>
+        <div className="flex flex-col items-stretch gap-3">
+            <Alert color="indigo" icon={HiInformationCircle} className="text-indigo-900 dark:bg-indigo-800 dark:text-indigo-100" dismissable={false}>{interpretStatus(status)}</Alert>
+
+            {result.solutions.length > 1 && (
+                <Accordion>
+                    {result.solutions.map((solution, i) => {
+                        const problemSolution = result.solutions[i];
+                        return (
+                            <Accordion.Panel isOpen={false}>
+                                <Accordion.Title>
+                                 <span>
+                                    Einteilung {i+1}
+                                </span>
+                            </Accordion.Title>
+                            <Accordion.Content className="dark:bg-slate-800">
+                                {displaySolution(problemSolution, result)}
+                            </Accordion.Content>
+                        </Accordion.Panel>
+                )})}
+            </Accordion>)}
+
+            {result.solutions.length === 1 && displaySolution(result.solutions[0], result)}
+            
         </div>
     );
+}
+
+function displaySolution(solution, result) {
+    return (<div className="flex flex-col items-stretch gap-3">
+        {/* {solution.score && 
+            <Card>
+                <div className="flex flex-col max-w-24">
+                    Score: {100 * solution.score.toFixed(2)}%
+                    <Progress size="md" color="indigo"
+                        progress={100 * solution.score} />
+                </div>
+            </Card>} */}
+        <AssignmentView solution={solution.assignment} participants={result.participants} />
+    </div>);
 }

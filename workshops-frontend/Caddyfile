@@ -3,7 +3,12 @@ http://:4000 {
 
 	handle /api/* {
         uri strip_prefix /api
-		reverse_proxy localhost:5000
+		reverse_proxy {$PROXY_BACKEND_HOST}:5000
+	}
+
+	handle /api/v2/* {
+		uri strip_prefix /api/v2
+		reverse_proxy {$PROXY_BACKEND_V2_HOST}:5010
 	}
 
 	handle {

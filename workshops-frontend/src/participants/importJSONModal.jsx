@@ -62,6 +62,7 @@ export default function ImportJSONModal(props) {
     }
 
     try {
+      // TODO input sanitation e.g. do not import more than 6 wishes
       const importedParticipants = await JSON.parse(await file.text())["participants"];
 
         setSuccessMessage([
@@ -94,7 +95,7 @@ export default function ImportJSONModal(props) {
         onClick={() => {
           setOpenModal(true);
         }}
-        bgColor="bg-green-800 focus:ring-green-200"
+        bgColor="bg-amber-700 focus:ring-green-200"
       >
         {props.children}
       </Button>

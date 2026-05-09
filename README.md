@@ -2,23 +2,21 @@
 
 Hosted at https://gruppen-tool.de
 
-This is a tool to sort people into groups based on given wishes.
+This is a tool to assign people to groups based on given preferences and capacity constraints.
 See the READMEs in the folders for more information.
 
-- `workshops-frontend` contains the React code for the web-frontend
-- `workshops-backend` contains the Go code for the stateless backend logic
-- `Dockerfile` can be used to build an image running both the backend and frontend on alpine, served using caddy on port 4000
+- `workshops-frontend` contains the React code for the frontend as well as a `Caddyfile` for a global reverse proxy in Docker
+- `workshops-backend` contains the Go code for a stateless backend solving the assignment problem using "min-cost-max-flow"
+- `workshops-backend-v2` contains Python code for a statelesse backend solving the assignment problem using a MILP using SCIP
 
 # Using the Dockerfile
 
-To build this application using Docker, execute
+To build and push this application using Docker, execute
 ```
-docker build -t datto:latest .
+./docker-build-push.sh <TAG_PREFIX> <VERSION>
 ```
-in the repository root.
+in the repository root, e.g.:
+```
+./docker-build-push.sh user/gruppen-tool v0.1.1
+```
 
-To host the web application, execute
-```
-docker run -p 8000:4000 datto:latest
-```
-and route the traffic to port `8000` using a reverse proxy like Caddy.

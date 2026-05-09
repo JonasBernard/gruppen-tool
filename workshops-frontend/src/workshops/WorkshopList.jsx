@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { v4 as uuidv4 } from 'uuid';
 import Button from "../components/Button";
-import TextInput from "../components/TextInput";
+import TextInputWithAutocomplete from "../components/TextInputWithAutocomplete";
 import NumberInput from "../components/NumberInput";
 
 export default function Workshoplist(props) {
@@ -61,7 +61,7 @@ export default function Workshoplist(props) {
 
                                     <tr>
                                         <td className="p-1">
-                                            <TextInput extraStyle="rounded-none" placeholder="Name des Workshops" ref={nameInputRef} value={newName} onChange={e => setNewName(e.target.value)}/>
+                                            <TextInputWithAutocomplete extraStyle="rounded-none" placeholder="Name des Workshops" ref={nameInputRef} value={newName} onChange={e => setNewName(e.target.value)}/>
                                         </td>
                                         <td className="p-1">
                                             <NumberInput extraStyle="rounded-none" 
