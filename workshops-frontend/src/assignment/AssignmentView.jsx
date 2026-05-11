@@ -29,7 +29,7 @@ export default function AssignmentView(props) {
                                 <tr>
                                     <td className="py-3.5 px-4 text-sm font-normal text-center text-gray-500 dark:text-gray-400">Teilnehmer</td>
                                     {Array.from({ length: wLength }, (_, i) => (
-                                        <td className="py-3.5 px-4 text-sm font-normal text-center text-gray-500 dark:text-gray-400">Workshop{wLength > 1 ? " " + i + 1 : ""}</td>
+                                        <td className="py-3.5 px-4 text-sm font-normal text-center text-gray-500 dark:text-gray-400">Workshop{wLength > 1 ? " " + (i + 1) : ""}</td>
                                     ))}
                                     {/* <td className="py-3.5 px-4 text-sm font-normal text-center text-gray-500 dark:text-gray-400">entspricht Wunsch</td> */}
                                 </tr>
