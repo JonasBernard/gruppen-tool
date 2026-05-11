@@ -21,6 +21,7 @@ jobs:
           password: ${{ secrets.REGISTRY_PASSWORD }}
       
       - name: Build frontend
+        working-directory: ./workshops-frontend
         env:
           VERSION_TAG: ${{ github.ref_name }}
         run: |
@@ -48,6 +49,7 @@ jobs:
           password: ${{ secrets.REGISTRY_PASSWORD }}
       
       - name: Build backend
+        working-directory: ./workshops-backend
         env:
           VERSION_TAG: ${{ github.ref_name }}
         run: |
@@ -76,6 +78,7 @@ jobs:
           password: ${{ secrets.REGISTRY_PASSWORD }}
       
       - name: Build backend-v2
+        working-directory: ./workshops-backend-v2
         env:
           VERSION_TAG: ${{ github.ref_name }}
         run: |
