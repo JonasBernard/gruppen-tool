@@ -1,10 +1,10 @@
 FROM python:3.11-slim AS backend-v2
 
 WORKDIR /app
-COPY workshops-backend-v2/requirements.txt .
+COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
-COPY workshops-backend-v2/server.py .
-COPY workshops-backend-v2/solver.py .
+COPY server.py .
+COPY solver.py .
 
 EXPOSE 5010
 
