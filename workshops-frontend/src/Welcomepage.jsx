@@ -173,7 +173,7 @@ export default function WelcomePage(props) {
               
               <br/>
               <br/>
-              Der Quellcode für "Min-Cost-Max-Flow" befindt sich hier: <a href="https://github.com/JonasBernard/min-cost-max-flow">https://github.com/JonasBernard/min-cost-max-flow</a>.
+              Der Quellcode für "Min-Cost-Max-Flow" befindet sich hier: <a href="https://github.com/JonasBernard/min-cost-max-flow">https://github.com/JonasBernard/min-cost-max-flow</a>.
             </p>
           </div>
 
