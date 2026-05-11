@@ -1,11 +1,11 @@
 from flask import Flask, request
 import solver
 from flask_cors import CORS
+from solver import MAX_COMPUTED_ASSIGNMENTS
 
 app = Flask(__name__)
 
 MAX_NUM_REQUESTED_ASSIGNMENTS = 15
-MAX_COMPUTED_ASSIGNMENTS = 50
 MAX_PARTICIPANTS = 150
 
 def input_exception(message):

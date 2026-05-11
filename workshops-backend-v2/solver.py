@@ -1,7 +1,7 @@
 from pyscipopt import Model, quicksum
 import random
 
-from server import MAX_COMPUTED_ASSIGNMENTS
+MAX_COMPUTED_ASSIGNMENTS = 50
 
 DEBUG = True
 
