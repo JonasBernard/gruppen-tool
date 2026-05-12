@@ -1,9 +1,9 @@
 http://:4000 {
-    encode gzip
+  encode gzip
 
 	handle /api/* {
-        uri strip_prefix /api
-		reverse_proxy {$PROXY_BACKEND_HOST}:5000
+    uri strip_prefix /api
+	  reverse_proxy {$PROXY_BACKEND_HOST}:5000
 	}
 
 	handle /api/v2/* {
