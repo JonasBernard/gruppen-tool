@@ -34,10 +34,15 @@ def solve_group_assignment(participants, workshops,
     # TODO only create the variables that are needed in the end (allow_non_wished)
     x = {}
     for k in range(n):
-        ub = num_workshops_per_participant if allow_same_workshop_twice else 1
-        for j in range(m):
-            x[k, j] = model.addVar(vtype="I", lb=0, ub=ub, name=f"assign_{k}_{j}")
-        x[k, m] = model.addVar(vtype="I", lb=0, ub=ub, name=f"assign_{k}_none")
+        if allow_same_workshop_twice:
+            upper_bound = num_workshops_per_participant
+            for j in range(m):
+                x[k, j] = model.addVar(vtype="I", lb=0, ub=upper_bound, name=f"assign_{k}_{j}")
+            x[k, m] = model.addVar(vtype="I", lb=0, ub=upper_bound, name=f"assign_{k}_none")
+        else:
+            for j in range(m):
+                x[k, j] = model.addVar(vtype="B", name=f"assign_{k}_{j}")
+            x[k, m] = model.addVar(vtype="B", name=f"assign_{k}_none")
 
     obj_terms = []
     
@@ -66,11 +71,12 @@ def solve_group_assignment(participants, workshops,
     # Each participant must be assigned to so and so many workshops, can be assigned to "none" if not enough workshops available
     for k in range(n):
         model.addCons(quicksum(x[k, j] for j in range(m+1)) == num_workshops_per_participant, name=f"num_assignments_{k}")
-        
-    if not allow_same_workshop_twice:
-        for k in range(n):
-            for j in range(m):
-                model.addCons(x[k, j] <= 1, name=f"no_same_workshop_{k}_{j}")
+    
+    # This becomes redundant because we make binary variables when allow_same_workshop_twice is false, see above 
+    # if not allow_same_workshop_twice:
+    #     for k in range(n):
+    #         for j in range(m):
+    #             model.addCons(x[k, j] <= 1, name=f"no_same_workshop_{k}_{j}")
 
     # Capacity constraints per workshop
     for j in range(m):
