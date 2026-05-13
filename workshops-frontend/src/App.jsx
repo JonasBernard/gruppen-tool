@@ -112,7 +112,8 @@ function App() {
       doubleNames = Object.entries(doubleNames).filter(tuple => tuple[1] > 1)
       .map((k) => `${k[0]} (${k[1]}x)`)
       .join(", ");
-      setWarningMessage("Es gibt mehrere Workshops mit dem gleichem Namen. Das sollte behoben werden: " + doubleNames + ".");
+      setErrorMessage("Es gibt mehrere Workshops mit dem gleichem Namen. Das muss behoben werden, bevor eine Einteilung möglich ist: " + doubleNames + ".");
+      return
     }
 
     if (participantsOrig.filter(k => k.name === "").length > 0) {
