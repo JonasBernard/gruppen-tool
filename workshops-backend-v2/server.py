@@ -28,6 +28,7 @@ def index():
     num_requested_assignments = settings.get('numberOfRequestedAssignments', 3)
     num_workshops_per_participant = settings.get('numberOfWorkshopsPerParticipant', 1)
     allow_same_workshop_twice = settings.get('allowSameWorkshopTwice', False)
+    allow_second_workshop_before_first_filled = settings.get('allowSecondWorkshopBeforeFirstFilled', False)
     random_seed = settings.get('randomSeed', None)
     objective_slack = settings.get('objectiveSlack', 0.0)
     
@@ -56,16 +57,25 @@ def index():
         if len(participants) > MAX_PARTICIPANTS:
             return input_exception(f"Number of participants must be at most {MAX_PARTICIPANTS}.")
     
-        solutions = solver.solve_group_assignment(participants, workshops, 
-                                                  allow_non_wished,
-                                                  num_wishes_per_participant,
-                                                  use_weighted,
-                                                  num_requested_assignments,
-                                                  num_workshops_per_participant,
-                                                  allow_same_workshop_twice,
-                                                  random_seed,
-                                                  objective_slack)
+        options = {
+            'allow_non_wished': allow_non_wished,
+            'num_wishes_per_participant': num_wishes_per_participant,
+            'use_weighted': use_weighted,
+            'num_requested_assignments': num_requested_assignments,
+            'num_workshops_per_participant': num_workshops_per_participant,
+            'allow_same_workshop_twice': allow_same_workshop_twice,
+            'allow_second_workshop_before_first_filled': allow_second_workshop_before_first_filled,
+            'random_seed': random_seed,
+            'objective_slack': objective_slack
+        }
+    
+        solutions = solver.solve_group_assignment(participants, workshops, options)
     except Exception as e:
+        if str(e) == "Problem is infeasible.":
+            return {
+                "status": "v2:infeasible",
+                "message": "The problem is infeasible. No assignment is possible."
+            }, 500
         return {
             "status": "v2:scip-exception",
             "message": str(e)

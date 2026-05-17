@@ -17,6 +17,7 @@ export default function SettingsView(props) {
     const [numberOfRequestedAssignments, setNumberOfRequestedAssignments] = useState(initialSettings.numberOfRequestedAssignments !== undefined ? initialSettings.numberOfRequestedAssignments : 3);
     const [numberOfWorkshopsPerParticipant, setNumberOfWorkshopsPerParticipant] = useState(initialSettings.numberOfWorkshopsPerParticipant !== undefined ? initialSettings.numberOfWorkshopsPerParticipant : 1);
     const [allowSameWorkshopTwice, setAllowSameWorkshopTwice] = useState(initialSettings.allowSameWorkshopTwice !== undefined ? initialSettings.allowSameWorkshopTwice : false);
+    const [allowSecondWorkshopBeforeFirstFilled, setAllowSecondWorkshopBeforeFirstFilled] = useState(initialSettings.allowSecondWorkshopBeforeFirstFilled !== undefined ? initialSettings.allowSecondWorkshopBeforeFirstFilled : false);
     const [randomSeed, setRandomSeed] = useState(initialSettings.randomSeed !== undefined ? initialSettings.randomSeed : "");
 
     const [selectedAlgorithm, setSelectedAlgorithm] = useState(initialSettings.selectedAlgorithm !== undefined ? initialSettings.selectedAlgorithm : "min-cost-max-flow");
@@ -29,10 +30,11 @@ export default function SettingsView(props) {
             numberOfRequestedAssignments: numberOfRequestedAssignments,
             numberOfWorkshopsPerParticipant: numberOfWorkshopsPerParticipant,
             allowSameWorkshopTwice: allowSameWorkshopTwice,
+            allowSecondWorkshopBeforeFirstFilled: allowSecondWorkshopBeforeFirstFilled,
             randomSeed: randomSeed,
             selectedAlgorithm: selectedAlgorithm,
         }})
-    }, [useWeighted, allowAssignmentToNonWishedWorkshop, numberOfRequestedAssignments, numberOfWorkshopsPerParticipant, allowSameWorkshopTwice, randomSeed, selectedAlgorithm, setSettings]);
+    }, [useWeighted, allowAssignmentToNonWishedWorkshop, numberOfRequestedAssignments, numberOfWorkshopsPerParticipant, allowSameWorkshopTwice, allowSecondWorkshopBeforeFirstFilled, randomSeed, selectedAlgorithm, setSettings]);
 
     const minCostMaxFlowPopoverContent = (<div className="flex flex-col gap-4 m-4 max-w-lg">
         <h6 className="text-left text-sm font-semibold text-gray-800 dark:text-white">
@@ -166,9 +168,9 @@ export default function SettingsView(props) {
                                 <div className="flex items-center justify-start gap-8">
                                     <NumberSelector
                                         disabled={selectedAlgorithm !== "scip"}
-                                        text="Anzahl der Workshops pro Teilnehmer"
-                                        placeholder="Pro Teilnehmer mehrere Workshops zuweisen"
-                                        details="Zum Beispiel: Für einen am Vormittag und einen am Nachmittag hier 2 eintragen."
+                                        text="Anzahl der Workshop-Phasen"
+                                        placeholder="Teilnehmer werden in so viele Workshops eingeteilt"
+                                        details="Zum Beispiel: Für einen Workshop am Vormittag und einen am Nachmittag hier 2 eintragen."
                                         value={numberOfWorkshopsPerParticipant}
                                         setValue={(valueFn) => {
                                             const newVal = Number(valueFn(numberOfWorkshopsPerParticipant));
@@ -177,19 +179,27 @@ export default function SettingsView(props) {
                                             }
                                         }}
                                     ></NumberSelector>
-                                    <MyCheckbox 
-                                        disabled={selectedAlgorithm !== "scip"}
-                                        title="Mehrfache Einteilung in denselben Workshop erlauben"
-                                        details="Wenn diese Option gesetzt ist, können einzelne Teilnehmer mehrmals in denselben Workshop eingeteilt werden."
-                                        checked={allowSameWorkshopTwice}
-                                        onChange={(e) => setAllowSameWorkshopTwice(e.target.checked)}></MyCheckbox>
+                                    <div className="flex flex-col gap-3">
+                                        <MyCheckbox
+                                            disabled={selectedAlgorithm !== "scip"}
+                                            title="Zuerst erste Phase auffüllen, dann zweite Phase, usw."
+                                            details="Wenn diese Option nicht gesetzt ist, kann es passieren, dass ein Teilnehmer in mehreren Phasen einen Workshop erhält, während ein anderer noch gar nicht zugewiesen wurde."
+                                            checked={!allowSecondWorkshopBeforeFirstFilled}
+                                            onChange={(e) => setAllowSecondWorkshopBeforeFirstFilled(!e.target.checked)}></MyCheckbox>
+                                        <MyCheckbox
+                                            disabled={selectedAlgorithm !== "scip"}
+                                            title="Mehrfache Einteilung in denselben Workshop erlauben"
+                                            details="Wenn diese Option gesetzt ist, können einzelne Teilnehmer mehrmals in denselben Workshop eingeteilt werden."
+                                            checked={allowSameWorkshopTwice}
+                                            onChange={(e) => setAllowSameWorkshopTwice(e.target.checked)}></MyCheckbox>
+                                    </div>
                                 </div>
                                 <hr className="my-3"/>
                                 <div className="flex items-center gap-12">
                                     <NumberSelector
                                         className="shrink-0"
                                         disabled={selectedAlgorithm !== "scip"}
-                                        text="Anzahl der berechneten Einteilungen"
+                                        text="Anzahl der angefragten Einteilungen"
                                         placeholder="Verschiedene alternative Einteilungen berechnen"
                                         details="Es kann immer sein, dass weniger Einteilungen ausgegeben werden."
                                         value={numberOfRequestedAssignments}

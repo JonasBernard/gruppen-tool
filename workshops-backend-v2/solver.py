@@ -1,26 +1,38 @@
+from functools import reduce
 from pyscipopt import Model, quicksum
 import random
 
-MAX_COMPUTED_ASSIGNMENTS = 50
+MAX_COMPUTED_ASSIGNMENTS = 20
 
-DEBUG = True
+DEBUG = False
 
-def solve_group_assignment(participants, workshops, 
-                           allow_non_wished, num_wishes_per_participant, use_weighted, 
-                           num_requested_assignments, num_workshops_per_participant, 
-                           allow_same_workshop_twice, random_seed, objective_slack):
+def DefaultOptions():
+    return {
+        "num_workshops_per_participant": 1,
+        "allow_same_workshop_twice": False,
+        "allow_second_workshop_before_first_filled": False,
+        "allow_non_wished": False,
+        "use_weighted": True,
+        "num_wishes_per_participant": 1,
+        "objective_slack": 0.0,
+        "num_requested_assignments": 3,
+        "reseed_on_each_iteration": False, # Probably not necessary according to tests
+        "random_seed": ""
+    }
+
+def solve_group_assignment(participants, workshops, options={}):
+    options = {**DefaultOptions(), **options}
+    
     # 1. Initialize the Model
     model = Model("GroupAssignment")
     model.setMaximize()
 
-
+    random_seed = options['random_seed']
     if random_seed == "":
         random_seed = None
     
     random.seed(random_seed)
     
-    # this introduces some randomness but not enough to guarantee even distribution
-    # could be skipped.
     random.shuffle(participants)
     random.shuffle(workshops)
     
@@ -29,22 +41,27 @@ def solve_group_assignment(participants, workshops,
 
     n = len(participants)
     m = len(workshops)
+    
+    num_wishes_per_participant = reduce(max, [options['num_wishes_per_participant']] + [len(p['wishes']) for p in participants])
+    num_workshops_per_participant = options['num_workshops_per_participant']
+    allow_same_workshop_twice = options['allow_same_workshop_twice']
+    allow_non_wished = options['allow_non_wished']
+    use_weighted = options['use_weighted']
 
     # 2. Create Variables
     # TODO only create the variables that are needed in the end (allow_non_wished)
     x = {}
     for k in range(n):
-        if allow_same_workshop_twice:
-            upper_bound = num_workshops_per_participant
+        if num_workshops_per_participant > 1 and allow_same_workshop_twice:
             for j in range(m):
-                x[k, j] = model.addVar(vtype="I", lb=0, ub=upper_bound, name=f"assign_{k}_{j}")
-            x[k, m] = model.addVar(vtype="I", lb=0, ub=upper_bound, name=f"assign_{k}_none")
+                x[k, j] = model.addVar(vtype="I", lb=0, ub=num_workshops_per_participant, name=f"assign_{k}_{j}")
         else:
             for j in range(m):
                 x[k, j] = model.addVar(vtype="B", name=f"assign_{k}_{j}")
-            x[k, m] = model.addVar(vtype="B", name=f"assign_{k}_none")
+        x[k, m] = model.addVar(vtype="I", lb=0, ub=num_workshops_per_participant, name=f"assign_{k}_none")
 
     obj_terms = []
+    
     
     for k, participant in enumerate(participants):
         for j, workshop in enumerate(workshops):
@@ -65,7 +82,7 @@ def solve_group_assignment(participants, workshops,
                     model.addCons(x[k, j] == 0, name=f"no_wish_{k}_{j}")
 
     model.setObjective(quicksum(obj_terms), "maximize")
-    # TODO remove the following line if needed
+    # TODO remove the following line as soon as the objective can be changed by user
     model.setObjIntegral() # Informs SCIP that the objective value is always integral in every feasible solution.
 
     # Each participant must be assigned to so and so many workshops, can be assigned to "none" if not enough workshops available
@@ -77,6 +94,13 @@ def solve_group_assignment(participants, workshops,
     #     for k in range(n):
     #         for j in range(m):
     #             model.addCons(x[k, j] <= 1, name=f"no_same_workshop_{k}_{j}")
+    
+    if not options['allow_second_workshop_before_first_filled'] and num_workshops_per_participant > 1:
+        for k in range(n):
+            for l in range(n):
+                if k == l:
+                    continue
+                model.addCons(quicksum(x[k, j] for j in range(m)) - quicksum(x[l, j] for j in range(m)) <= 1, name=f"fill_first_before_second_{k}_{l}")
 
     # Capacity constraints per workshop
     for j in range(m):
@@ -93,6 +117,11 @@ def solve_group_assignment(participants, workshops,
     
     # Step 3: Find objective
     model.optimize()
+    
+    if model.getStatus() not in ["optimal", "feasible"]:
+        print("No solution found at all. Infeasible. This is unexpected. Problem may be infeasible. Memory limit or time limit too low?")
+        raise ValueError("Problem is infeasible.")
+    
     objective_value = model.getObjVal()
     
     if DEBUG:
@@ -102,6 +131,8 @@ def solve_group_assignment(participants, workshops,
     print(f"Optimal objective value: {objective_value}")
     
     model.freeTransform() # allow reoptimization
+    
+    objective_slack = options['objective_slack']
     value_threshold = objective_value * (1.0 - objective_slack)
     print(f"Adding objective slack constraint: objective >= {value_threshold} (slack: {objective_slack*100}%)")
     model.addCons(quicksum(obj_terms) >= value_threshold, name="objective_slack_constraint")
@@ -132,7 +163,10 @@ def solve_group_assignment(participants, workshops,
     M = num_workshops_per_participant + 2 # for < vs <= reasons
     sols = []
     l = 0
-    while l < MAX_COMPUTED_ASSIGNMENTS:
+    num_requested_assignments = options['num_requested_assignments']
+    # while l < MAX_COMPUTED_ASSIGNMENTS: 
+    # For now statistical tests are sufficient to assume that shuffleing participants and workshops is enough to create uniform distribution.
+    while l < num_requested_assignments:
         l += 1
         
         model.optimize()
@@ -147,14 +181,22 @@ def solve_group_assignment(participants, workshops,
 
         vals = [[round(model.getVal(x[i, j])) for j in range(m+1)] for i in range(n)]
         
-        print("All auxiliary variable values:")
-        for v in model.getVars():
-            print(f"{v.name}: {model.getVal(v)}")
-        
-        print("Found solution:", vals)
+        if DEBUG:
+            print("All auxiliary variable values:")
+            for v in model.getVars():
+                print(f"{v.name}: {model.getVal(v)}")
+            
+            print("Found solution:", vals)
         sols.append(vals)
 
         model.freeTransform()
+        
+        # Probably not necessary according to tests
+        if options['reseed_on_each_iteration']:
+            lpseed = random.randint(1, 1000000)
+            permutationseed = random.randint(1, 1000000)
+            model.setIntParam("randomization/lpseed", lpseed)
+            model.setIntParam("randomization/permutationseed", permutationseed)
         
         # -------------------------------------------------
         # No-good Constraint
