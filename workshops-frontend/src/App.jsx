@@ -176,6 +176,8 @@ function App() {
       path = settings.useWeighted ? "/weighted" : "/unweighted";
     }
 
+    const startTime = new Date().getTime();
+
     setIsLoading(true);
     fetch((useV2 ? APIBASE_V2 : APIBASE) + path, {
       method: "POST",
@@ -196,6 +198,8 @@ function App() {
       return response.json();
     })
     .then((data) => {
+      const endTime = new Date().getTime();
+      const processingTime = endTime - startTime;
       posthog.capture('assignment_computed', {
         requestPath: (useV2 ? APIBASE_V2 : APIBASE) + path,
         requestBody: JSON.stringify({
@@ -204,8 +208,10 @@ function App() {
           settings: settingsOrig,
         }),
         response: JSON.stringify(data),
+        processingTime: processingTime,
       });
       return data;
+      return { ...data, processingTime };
     })
     .catch((err) => {
       setIsLoading(false);

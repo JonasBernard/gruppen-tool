@@ -1,6 +1,6 @@
 import AssignmentView from "./AssignmentView";
-import { Progress, Accordion, Alert, Card } from "flowbite-react";
-import { HiInformationCircle } from "react-icons/hi";
+import { Accordion, Alert } from "flowbite-react";
+import { HiClock, HiInformationCircle } from "react-icons/hi";
 
 function interpretStatus(status) {
     switch (status) {
@@ -56,7 +56,8 @@ export default function ResultView(props) {
             </Accordion>)}
 
             {result.solutions.length === 1 && displaySolution(result.solutions[0], result)}
-            
+
+            <Alert color="gray" icon={HiClock} className="text-gray-800 dark:bg-gray-800 dark:text-gray-100" dismissable={false}>{`Die Berechnung hat ${Math.floor(result.processingTime*100.0) / 10000.0} Sekunden gedauert.`}</Alert>
         </div>
     );
 }
