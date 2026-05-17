@@ -49,7 +49,7 @@ function App() {
   const [workshops, setWorkshops] = useState([]);
 
   const [errorMessage, setErrorMessage] = useState("");
-  const [warningMessage, setWarningMessage] = useState("");
+  const [warningMessages, setWarningMessages] = useState([]);
   const [infoMessage, setInfoMessage] = useState("");
 
   const [settings, setSettings] = useState({});
@@ -75,14 +75,68 @@ function App() {
     saveData(participants, workshops, settings);
   }, [participants, workshops, settings]);
 
+  const addWarningMessage = (message) => {
+    setWarningMessages((prev) => [...prev, message]);
+  }
+
   const sendData = () => {
     setErrorMessage("");
-    setWarningMessage("");
+    setWarningMessages([]);
     setRequestResult(null);
 
     const participantsOrig = participants;
     const workshopsOrig = workshops;
     const settingsOrig = settings;
+
+    if (participantsOrig.filter(k => k.name === "").length > 0) {
+      addWarningMessage("Es gibt einen Teilnehmer mit leerem Namen. Das kann zu Problemen führen.");
+    }
+
+    const participantsWithDoubleWishes = participantsOrig.filter(k => {
+      return k.wishes.slice(0, settings.numberOfWishesPerParticipant).filter(w => w !== "").length > [...new Set(k.wishes.slice(0, settings.numberOfWishesPerParticipant).filter(w => w !== ""))].length;
+    });
+    if (participantsWithDoubleWishes.length > 0) {
+      addWarningMessage("Es gibt Teilnehmer, die sich den gleichen Workshop mehrfach wünschen: " + participantsWithDoubleWishes.map(k => k.name).join(", ") + ".");
+    }
+
+    const participantsWithEmptyWishes = participantsOrig.filter(k => {
+      return k.wishes.slice(0, settings.numberOfWishesPerParticipant).filter(w => w !== "").length < settings.numberOfWishesPerParticipant;
+    });
+    if (participantsWithEmptyWishes.length > 0) {
+      addWarningMessage("Es gibt Teilnehmer, die nicht alle Wunsch-Slots ausgefüllt haben: " + participantsWithEmptyWishes.map(k => k.name).join(", ") + ".");
+    }
+
+    const participantsWithNoWishes = participantsOrig.filter(k => {
+      return k.wishes.slice(0, settings.numberOfWishesPerParticipant).filter(w => w !== "").length === 0;
+    });
+    if (participantsWithNoWishes.length > 0) {
+      addWarningMessage("Es gibt Teilnehmer, die sich nichts wünschen: " + participantsWithNoWishes.map(k => k.name).join(", ") + ".");
+    }
+    
+    if (workshopsOrig.filter(w => w.name === "").length > 0) {
+      setErrorMessage("Es gibt einen Workshop mit leerem Namen. Das muss behoben werden bevor eine Einteilung gefunden werden kann.")
+      return;
+    }
+
+    if (workshopsOrig.filter(w => w.capacity === 0).length > 0) {
+      setErrorMessage("Es gibt minestens einen Workshop mit Kapazität null. Diese/r müssen/muss gelöscht werden bevor eine Einteilung gefunden werden kann: " + workshopsOrig.filter(w => w.capacity === 0).map(w => w.name).join(", ") + ".");
+      return;
+    }
+
+    if (participantsOrig.length === 0) {
+      setErrorMessage("Es gibt keine Teilnehmer. Bitte füge Teilnehmer hinzu bevor du die Einteilung berechnen lässt.");
+      return;
+    }
+
+    if (workshopsOrig.length === 0) {
+      setErrorMessage("Es gibt keine Workshops. Bitte füge Workshops hinzu bevor du die Einteilung berechnen lässt.");
+      return;
+    }
+
+    if (workshopsOrig.filter(w => w.name === "none").length > 0) {
+      setErrorMessage("Kein Workshop darf 'none' heißen. Bitte ändere die Namen der Workshops bevor du die Einteilung berechnen lässt.");
+      return;
+    }
 
     if (participantsOrig.length > [...new Set(participantsOrig.map(k=>k.name))].length) {
       let doubleNames = participantsOrig.reduce((acc, k) => {
@@ -115,58 +169,7 @@ function App() {
       setErrorMessage("Es gibt mehrere Workshops mit dem gleichem Namen. Das muss behoben werden, bevor eine Einteilung möglich ist: " + doubleNames + ".");
       return
     }
-
-    if (participantsOrig.filter(k => k.name === "").length > 0) {
-      setWarningMessage("Es gibt einen Teilnehmer mit leerem Namen. Das kann zu Problemen führen.");
-    }
-
-    const participantsWithDoubleWishes = participantsOrig.filter(k => {
-      return k.wishes.slice(0, settings.numberOfWishesPerParticipant).filter(w => w !== "").length > [...new Set(k.wishes.slice(0, settings.numberOfWishesPerParticipant).filter(w => w !== ""))].length;
-    });
-
-    if (participantsWithDoubleWishes.length > 0) {
-      setWarningMessage("Es gibt Teilnehmer, die sich den gleichen Workshop mehrfach wünschen: " + participantsWithDoubleWishes.map(k => k.name).join(", ") + ".");
-    }
-
-    const participantsWithEmptyWishes = participantsOrig.filter(k => {
-      return k.wishes.slice(0, settings.numberOfWishesPerParticipant).filter(w => w !== "").length < settings.numberOfWishesPerParticipant;
-    });
-    if (participantsWithEmptyWishes.length > 0) {
-      setWarningMessage("Es gibt Teilnehmer, die nicht alle Wunsch-Slots ausgefüllt haben: " + participantsWithEmptyWishes.map(k => k.name).join(", ") + ".");
-    }
-
-    const participantsWithNoWishes = participantsOrig.filter(k => {
-      return k.wishes.slice(0, settings.numberOfWishesPerParticipant).filter(w => w !== "").length === 0;
-    });
-    if (participantsWithNoWishes.length > 0) {
-      setWarningMessage("Es gibt Teilnehmer, die sich nichts wünschen: " + participantsWithNoWishes.map(k => k.name).join(", ") + ".");
-    }
     
-    if (workshopsOrig.filter(w => w.name === "").length > 0) {
-      setErrorMessage("Es gibt einen Workshop mit leerem Namen. Das muss behoben werden bevor eine Einteilung gefunden werden kann.")
-      return;
-    }
-
-    if (workshopsOrig.filter(w => w.capacity === 0).length > 0) {
-      setErrorMessage("Es gibt minestens einen Workshop mit Kapazität null. Diese/r müssen/muss gelöscht werden bevor eine Einteilung gefunden werden kann: " + workshopsOrig.filter(w => w.capacity === 0).map(w => w.name).join(", ") + ".");
-      return;
-    }
-
-    if (participantsOrig.length === 0) {
-      setErrorMessage("Es gibt keine Teilnehmer. Bitte füge Teilnehmer hinzu bevor du die Einteilung berechnen lässt.");
-      return;
-    }
-
-    if (workshopsOrig.length === 0) {
-      setErrorMessage("Es gibt keine Workshops. Bitte füge Workshops hinzu bevor du die Einteilung berechnen lässt.");
-      return;
-    }
-
-    if (workshopsOrig.filter(w => w.name === "none").length > 0) {
-      setErrorMessage("Kein Workshop darf 'none' heißen. Bitte ändere die Namen der Workshops bevor du die Einteilung berechnen lässt.");
-      return;
-    }
-
     saveData(participantsOrig, workshopsOrig);
 
     let useV2 = settings.selectedAlgorithm === "scip";
@@ -191,7 +194,7 @@ function App() {
     .then((response) => {
       if (!response.ok) {
         return response.json().then((data) => {
-          setErrorMessage("Ein Fehler ist aufgetreten: " + data.message);
+          setRequestResult({status: data.status});
           throw new Error(data.message);
         });
       }
@@ -201,16 +204,16 @@ function App() {
       const endTime = new Date().getTime();
       const processingTime = endTime - startTime;
       posthog.capture('assignment_computed', {
-        requestPath: (useV2 ? APIBASE_V2 : APIBASE) + path,
-        requestBody: JSON.stringify({
-          participants: participantsOrig,
-          workshops: workshopsOrig,
-          settings: settingsOrig,
-        }),
-        response: JSON.stringify(data),
+        apiVersion: useV2 ? "v2" : "v1",
+        apiBaseUrl: useV2 ? APIBASE_V2 : APIBASE,
+        requestPath: path,
+        participants: participantsOrig,
+        workshops: workshopsOrig,
+        settings: settingsOrig,
+        responseStatus: data.status,
+        responseData: data.solutions,
         processingTime: processingTime,
       });
-      return data;
       return { ...data, processingTime };
     })
     .catch((err) => {
@@ -220,6 +223,10 @@ function App() {
     })
     .then((actualData) => {
       setIsLoading(false);
+
+      if (!actualData || !actualData.solutions) { // We caught something before
+        return;
+      }
       const result = {
         ...actualData,
         participants: participantsOrig,
@@ -323,9 +330,9 @@ function App() {
             {currentTab === 2 && <div className="py-6 px-4 flex flex-col gap-5">
               <SummaryView participants={participants} workshops={workshops} settings={settings} />
               <SettingsView initialSettings={settings} setSettings={setSettings} sendData={sendData} isLoading={isLoading}></SettingsView>              
-              {warningMessage && (
-                  <Alert color="warning" icon={HiExclamation} className="text-yellow-900 dark:bg-gray-700 dark:text-yellow-300" dismissable={false}>{warningMessage}</Alert>
-              )}
+              {warningMessages && warningMessages.map((msg) => (
+                  <Alert color="warning" icon={HiExclamation} className="text-yellow-900 dark:bg-gray-700 dark:text-yellow-300" dismissable={false}>{msg}</Alert>
+              ))}
               {errorMessage && (
                   <Alert color="failure" icon={HiExclamationCircle} className="text-red-900 dark:bg-red-900 dark:text-red-100" dismissable={false}>{errorMessage}</Alert>
               )}
