@@ -128,7 +128,7 @@ export default function SettingsView(props) {
                             </Alert>
                             <Card>
                                 <h6 className="text-left text-lg font-semibold text-gray-800 dark:text-white">
-                                    Lösungs-Algorithmus
+                                    Einteilungs-Algorithmus
                                 </h6>
                                 <div className="flex w-100 gap-3 flex-wrap">
                                     <div className="flex-auto flex flex-warp gap-8">
