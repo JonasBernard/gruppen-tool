@@ -38,7 +38,7 @@ export default function AboutModal() {
             </div>
         </ModalBody>
         <ModalFooter className="flex flex-wrap gap-1 justify-end">
-         <Button onClick={() => window.location.href = "mailto:contact@jonas-bernard.dev"}>
+         <Button onClick={() => window.location.href = "mailto:info@gruppen-tool.de"}>
             <HiMail className="mr-2 h-5 w-5" /> E-Mail schreiben
           </Button>
           <Button 
