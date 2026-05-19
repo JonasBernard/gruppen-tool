@@ -1,3 +1,4 @@
+import time
 from flask import Flask, request
 import solver
 from flask_cors import CORS
@@ -69,7 +70,11 @@ def index():
             'objective_slack': objective_slack
         }
     
+        start_time = time.time()
         solutions = solver.solve_group_assignment(participants, workshops, options)
+        elapsed_time = time.time() - start_time
+        
+        print(f"Solving took {elapsed_time:.2f} seconds.")
     except Exception as e:
         if str(e) == "Problem is infeasible.":
             return {
@@ -80,18 +85,22 @@ def index():
             "status": "v2:scip-exception",
             "message": str(e)
         }, 500
+    
     if len(solutions) == 1:
         return {
             "status": "v2:ok-single",
+            "computation_time": elapsed_time,
             "solutions": solutions
         }
     if len(solutions) == 0:
         return {
             "status": "v2:no-solution",
+            "computation_time": elapsed_time,
             "solutions": []
         }
     return {
         "status": "v2:ok",
+        "computation_time": elapsed_time,
         "solutions": solutions
     }
 
