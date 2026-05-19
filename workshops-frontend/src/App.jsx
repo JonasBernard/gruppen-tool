@@ -11,6 +11,7 @@ import { usePostHog } from "posthog-js/react";
 import SummaryView from "./assignment/SummaryView";
 import { Alert, Banner, BannerCollapseButton } from "flowbite-react";
 import { HiX, HiAnnotation, HiExclamation, HiExclamationCircle, HiInformationCircle } from "react-icons/hi";
+import Footer from "./Footer";
 
 const APIBASE = process.env.REACT_APP_API_BASEURL || "http://localhost:5000";
 const APIBASE_V2 = process.env.REACT_APP_API_BASEURL_V2 || "http://localhost:5010";
@@ -240,8 +241,8 @@ function App() {
   };
 
   return (
-    <div className="App dark:bg-slate-700 dark:text-stone-100 h-screen">
-      <div className="dark:bg-slate-700 dark:text-stone-100 h-100">
+    <div className="App dark:bg-gray-700 dark:text-stone-100 h-screen flex flex-col justify-between">
+      <div className="dark:bg-gray-700 dark:text-stone-100 h-100">
         
         <Banner className="lg:hidden">
           <div className="flex w-full justify-between border-b border-gray-200 bg-gray-50 p-4 dark:border-gray-600 dark:bg-gray-700">
@@ -347,6 +348,7 @@ function App() {
           
         </div>
       </div>
+      <Footer />
     </div>
   );
 }

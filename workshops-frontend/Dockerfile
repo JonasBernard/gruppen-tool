@@ -15,6 +15,7 @@ ENV REACT_APP_API_BASEURL="/api"
 ENV REACT_APP_API_BASEURL_V2="/api/v2"
 ENV REACT_APP_POSTHOG_KEY="phc_9qcUXShTyQZi4PXtsx8F8FC1VvMdaGPXqNdC1vBfe7e"
 ENV REACT_APP_POSTHOG_HOST="https://eu.i.posthog.com"
+ARG REACT_APP_VERSION="(version unknown)"
 
 RUN npm run build
 

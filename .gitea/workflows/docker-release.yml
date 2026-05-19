@@ -26,7 +26,7 @@ jobs:
           VERSION_TAG: ${{ github.ref_name }}
         run: |
           IMAGE="git.jonasbernard.de/jonas/gruppen-tool-frontend:${VERSION_TAG}"
-          docker build -t "${IMAGE}" .
+          docker build -t "${IMAGE}" --build-arg REACT_APP_VERSION=${VERSION_TAG} .
 
       - name: Push frontend
         env:

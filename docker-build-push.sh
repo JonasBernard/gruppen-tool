@@ -10,7 +10,7 @@ tag_prefix=$1
 version=$2
 
 cd workshops-frontend
-docker build -t ${tag_prefix}-frontend:${version} .
+docker build -t ${tag_prefix}-frontend:${version} --build-arg REACT_APP_VERSION=${version} .
 docker push ${tag_prefix}-frontend:${version}
 
 cd ../workshops-backend

@@ -18,7 +18,7 @@ export default function AboutModal() {
 
   return (
     <>
-      <span className="text-xs">Made with ♥ by <button onClick={() => setOpenModal(true)} className="text-indigo-500 hover:underline cursor-pointer">Jonas Bernard</button></span>
+      <span className="text-xs">Made with ♥ by <button onClick={() => setOpenModal(true)} className="cursor-pointer text-indigo-600 dark:text-indigo-400">Jonas Bernard</button></span>
       <Modal show={openModal} onClose={() => setOpenModal(false)} dismissible={true} popup={true} size="xl">
         <ModalBody className="mt-3 md:mt-8">
             <ModalHeader className="md:hidden">Über mich</ModalHeader>
