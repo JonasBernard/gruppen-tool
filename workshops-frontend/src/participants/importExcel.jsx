@@ -13,7 +13,10 @@ export const importExcel = async (file, wishCount) => {
     const finalData = dataAsArrayOfArrays.flatMap((lineInSheet) => {
         if (!Array.isArray(lineInSheet) || lineInSheet.length === 0) return [];
         if (!lineInSheet[0]) lineInSheet[0] = "Unbenannt";
-        const w = lineInSheet.slice(1, Math.min(lineInSheet.length, wishCount+1));
+        let w = lineInSheet.slice(1, Math.min(lineInSheet.length, wishCount+1));
+        w = w.map((wish) => wish ? wish.toString() : "");
+        w = w.map((wish) => wish.trim());
+        w = w.map((wish) => wish.replaceAll(/\“/g, "")); // TODO this catches only the first occurence for some reason
         while (w.length < wishCount+1) {
             w.push("");
         }
