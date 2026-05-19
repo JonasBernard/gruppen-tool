@@ -41,8 +41,10 @@ export default function ParticipantsList(props) {
             wishes.pop();
         }
 
+        wishes = wishes.map(w => w.trim());
+
         setParticipants([
-            {"id": uuidv4(), "name": newName, "wishes": wishes},
+            {"id": uuidv4(), "name": newName.trim(), "wishes": wishes},
             ...participants
         ]);
         setNewWishList([...Array(MAX_WISH_COUNT).fill('')]);

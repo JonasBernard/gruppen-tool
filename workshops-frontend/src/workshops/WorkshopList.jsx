@@ -15,7 +15,7 @@ export default function Workshoplist(props) {
 
     const addWorkshop = () => {
         setWorkshops([
-            {id: uuidv4(), "name": newName, "capacity": newCapa},
+            {id: uuidv4(), "name": newName.trim(), "capacity": newCapa},
             ...workshops
         ]);
         setNewCapa(0);
