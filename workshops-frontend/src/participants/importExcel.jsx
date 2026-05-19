@@ -17,10 +17,11 @@ export const importExcel = async (file, wishCount) => {
         w = w.map((wish) => wish ? wish.toString() : "");
         w = w.map((wish) => wish.trim());
         w = w.map((wish) => wish.replaceAll(/\“/g, "")); // TODO this catches only the first occurence for some reason
+        w = w.map((wish) => wish.replaceAll(/\”/g, "")); // TODO this catches only the first occurence for some reason
         while (w.length < wishCount+1) {
             w.push("");
         }
-        return [{"id": uuidv4(), "name": lineInSheet[0], "wishes": w}];
+        return [{"id": uuidv4(), "name": lineInSheet[0].toString().trim(), "wishes": w}];
     });
 
     return [finalData, sheetNames];
