@@ -87,8 +87,14 @@ def index():
         }, 500
     
     if len(solutions) == 1:
+        if num_requested_assignments > 1:
+            return {
+                "status": "v2:ok-single-unique",
+                "computation_time": elapsed_time,
+                "solutions": solutions
+            }
         return {
-            "status": "v2:ok-single",
+            "status": "v2:ok-single-requested",
             "computation_time": elapsed_time,
             "solutions": solutions
         }

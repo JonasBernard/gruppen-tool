@@ -9,11 +9,12 @@ function interpretStatus(status) {
         case "ok": return "Es wurde eine Einteilung gefunden. Falls es mehrere gleichwertige Einteilungen gab, wurde eine davon zufällig ausgewählt."
         case "unknown-status": return "Es wurde keine Nachricht zur Einteilung übermittelt."
         case "v2:ok": return "Es wurden verschiedene Einteilungen gefunden."
-        case "v2:ok-single": return "Es wurde eine Einteilung gefunden. Diese ist die einzige optimale Einteilung."
+        case "v2:ok-single-unique": return "Es wurde eine Einteilung gefunden. Diese ist die einzige optimale Einteilung."
+        case "v2:ok-single-requested": return "Es wurde eine Einteilung gefunden."
         case "v2:no-solution": return "Es ist keine Einteilung möglich. Es wurden keine Teilnehmer zugeteilt."
         case "v2:scip-exception": return "Es ist ein Fehler bei der Berechnung der Einteilung aufgetreten. Fehlermeldung: " + (status.message || "Keine Fehlermeldung vorhanden.")
         case "v2:infeasible": return "Es ist keine Einteilung möglich. Das ist unerwartet. Sollte der Fehler bestehen, nimm Kontakt per E-Mail auf. Die Adresse findest du unten auf der Seite."
-        default: return ""
+        default: return "(Keine Nachricht zum Anzeigen verfügbar.)"
     }
 }
 
