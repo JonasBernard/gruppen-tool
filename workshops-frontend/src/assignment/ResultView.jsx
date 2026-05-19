@@ -74,6 +74,6 @@ function displaySolution(solution, result) {
                         progress={100 * solution.score} />
                 </div>
             </Card>} */}
-        <AssignmentView solution={solution.assignment} participants={result.participants} />
+        <AssignmentView solution={solution.assignment} participants={result.participants} workshops={result.workshops} />
     </div>);
 }
