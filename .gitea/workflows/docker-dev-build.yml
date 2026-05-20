@@ -4,6 +4,13 @@ on:
   push:
     branches:
       - "main"
+  workflow_dispatch:
+    inputs:
+      debug_enabled:
+        type: boolean
+        description: 'Enable SSH debugging'
+        required: false
+        default: false
 
 jobs:
   frontend:
@@ -109,4 +116,9 @@ jobs:
             cd ${{secrets.COMPOSE_PATH}}
             docker compose pull gruppen-tool-frontend-alpha gruppen-tool-backend-alpha gruppen-tool-backend-v2-alpha 
             docker compose up -d
+      - name: Debug with SSH
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled && failure() }}
+        uses: mxschmitt/action-tmate@v3
+
+
 
