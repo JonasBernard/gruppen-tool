@@ -64,7 +64,7 @@ export default function ResultView(props) {
                 dismissable={false}>
                     {
                     `Die Anfrage hat ${(result.processingTime / 1000.0).toLocaleString('de-DE')} Sekunden gedauert.` 
-                    + result.computation_time && `Davon entfielen ${(Math.ceil(result.computation_time*100.0) / 100.0).toLocaleString('de-DE')} Sekunden für die eigentliche Berechnung.`
+                    + (result.computation_time && `Davon entfielen ${(Math.ceil(result.computation_time*100.0) / 100.0).toLocaleString('de-DE')} Sekunden für die eigentliche Berechnung.`)
                     }
             </Alert>
         </div>
