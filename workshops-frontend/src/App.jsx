@@ -10,7 +10,7 @@ import SettingsView from "./assignment/SettingsView";
 import { usePostHog } from "posthog-js/react";
 import SummaryView from "./assignment/SummaryView";
 import { Alert, Banner, BannerCollapseButton } from "flowbite-react";
-import { HiX, HiAnnotation, HiExclamation, HiExclamationCircle, HiInformationCircle } from "react-icons/hi";
+import { HiX, HiAnnotation, HiExclamation, HiExclamationCircle, HiInformationCircle, HiOutlineLightBulb, HiOutlineUser, HiOutlineCollection, HiOutlineLightningBolt } from "react-icons/hi";
 import Footer from "./Footer";
 
 const APIBASE = process.env.REACT_APP_API_BASEURL || "http://localhost:5000";
@@ -279,7 +279,7 @@ function App() {
                         ? "text-indigo-600 border-indigo-500 dark:border-indigo-400 dark:text-indigo-300 "
                         : "text-gray-700 border-transparent dark:text-white focus:outline-none hover:border-gray-400 ")
                       + "whitespace-nowrap focus:outline-none"}>
-                      Workshops
+                      <HiOutlineCollection className="mr-2" /> Workshops
                   </button>
                   <button onClick={() => setTab(1)} className={
                       "inline-flex items-center h-10 px-4 -mb-px text-sm text-center bg-transparent border-b-2 sm:text-base "
@@ -288,7 +288,7 @@ function App() {
                         ? "text-indigo-600 border-indigo-500 dark:border-indigo-400 dark:text-indigo-300 "
                         : "text-gray-700 border-transparent dark:text-white focus:outline-none hover:border-gray-400 ")
                       + "whitespace-nowrap focus:outline-none"}>
-                      Teilnehmer
+                      <HiOutlineUser className="mr-2"/>Teilnehmer
                   </button>
                   <button onClick={() => setTab(2)} className={
                       "inline-flex items-center h-10 px-4 -mb-px text-sm text-center bg-transparent border-b-2 sm:text-base "
@@ -297,7 +297,7 @@ function App() {
                         ? "text-indigo-600 border-indigo-500 dark:border-indigo-400 dark:text-indigo-300 "
                         : "text-gray-700 border-transparent dark:text-white focus:outline-none hover:border-gray-400 ")
                       + "whitespace-nowrap focus:outline-none"}>
-                      Einteilen
+                      <HiOutlineLightningBolt className="mr-2"/>Einteilen
                   </button>
                 </div>
 
@@ -309,7 +309,7 @@ function App() {
                         ? "text-indigo-600 border-indigo-500 dark:border-indigo-400 dark:text-indigo-300 "
                         : "text-gray-700 border-transparent dark:text-white focus:outline-none hover:border-gray-400 ")
                       + "whitespace-nowrap focus:outline-none"}>
-                      So funktioniert's
+                      <HiOutlineLightBulb className="mr-2"/>So funktioniert's
                   </button>
                 </div>  
             </div>
