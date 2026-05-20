@@ -119,7 +119,7 @@ export default function SettingsView(props) {
                     onChange={(e) => setAllowAssignmentToNonWishedWorkshop(e.target.checked)}></Checkbox>
             </Card>
 
-            {getProfileOption("extentedSettings.enable") && <Accordion collapseAll>
+            {getProfileOption("extendedSettings.enable") && <Accordion collapseAll>
                 <Accordion.Panel>
                     <Accordion.Title>
                         Erweiterte Einstellungen
