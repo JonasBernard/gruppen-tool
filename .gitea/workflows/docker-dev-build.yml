@@ -111,7 +111,7 @@ jobs:
           username: ${{ secrets.DEPLOY_USER }}
           key: ${{ secrets.DEPLOY_SSH_KEY }}
           passphrase: ${{ secrets.DEPLOY_SSH_KEY_PASS }} 
-          fingerprint: ${{ secrets.DEPLOY_SSH_FINGERPRINT }}
+          # fingerprint: ${{ secrets.DEPLOY_SSH_FINGERPRINT }}
           script: |
             cd ${{secrets.COMPOSE_PATH}}
             docker compose pull gruppen-tool-frontend-alpha gruppen-tool-backend-alpha gruppen-tool-backend-v2-alpha 
