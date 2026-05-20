@@ -4,7 +4,7 @@ import { HiClock, HiInformationCircle } from "react-icons/hi";
 
 function interpretStatus(status) {
     switch (status) {
-        case "no-perfect-solution": return "Es ist keine vollständige Einteilung möglich. Die Gesamtkapazität der Workshops oder die Kapazität eines Workshops reichen nicht für alle Teilnehmer aus. Es wurden so viele Teilnehmer wie möglich zugeteilt."
+        case "no-perfect-solution": return "Es ist keine vollständige Einteilung möglich. Die Gesamtkapazität der Workshops reicht nicht aus oder es gibt andere Konflikte. Es wurden so viele Teilnehmer wie möglich zugeteilt."
         case "error-unknown": return "Es ist ein unbekannter Fehler aufgetreten. Es wurde eine Teillösung berechnet:"
         case "ok": return "Es wurde eine Einteilung gefunden. Falls es mehrere gleichwertige Einteilungen gab, wurde eine davon zufällig ausgewählt."
         case "unknown-status": return "Es wurde keine Nachricht zur Einteilung übermittelt."
