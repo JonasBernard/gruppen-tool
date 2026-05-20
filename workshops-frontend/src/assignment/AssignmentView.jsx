@@ -1,4 +1,5 @@
 import { Table } from "flowbite-react";
+import { useState } from "react";
 import Button from "../components/Button";
 import { exportExcel } from "../exportExcel";
 
@@ -8,6 +9,14 @@ export default function AssignmentView(props) {
     let workshops = props.workshops || [];
 
     const wLength = Math.max(...problemSolution.map(ass => ass.length - 1));
+
+    const [isExportLoading, setExportLoading] = useState(false);
+
+    const exportExcelSync = () => {
+        setExportLoading(true);
+        exportExcel(getAssignmentTableRows(), wLength, workshops);
+        setExportLoading(false);
+    };
 
     const getAssignmentTableRows = () => {
         let rows = problemSolution;
@@ -55,8 +64,9 @@ export default function AssignmentView(props) {
                 <div className="flex items-center justify-between">
                     <span>Teilnehmer nach Alphabet sortiert:</span>
                     <span>
-                        <Button 
-                        onClick={() => exportExcel(getAssignmentTableRows(), wLength, workshops)}
+                        <Button
+                        disable={isExportLoading} disabledWithloading={isExportLoading}
+                        onClick={() => exportExcelSync()}
                         bgColor="bg-green-800 focus:ring-green-200">Als Excel-Datei herunterladen</Button>
                     </span>
                 </div>
