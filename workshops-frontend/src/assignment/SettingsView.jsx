@@ -7,6 +7,7 @@ import TextInput from "../components/TextInput";
 import { HiArrowCircleRight, HiCheckCircle, HiInformationCircle, HiStar, HiXCircle } from "react-icons/hi";
 import RadioButtons from "../components/RadioButtons";
 import MyCheckbox from "../components/Checkbox";
+import useProfile from "../profile/useProfile";
 
 export default function SettingsView(props) {
     const setSettings = props.setSettings;
@@ -21,6 +22,8 @@ export default function SettingsView(props) {
     const [randomSeed, setRandomSeed] = useState(initialSettings.randomSeed !== undefined ? initialSettings.randomSeed : "");
 
     const [selectedAlgorithm, setSelectedAlgorithm] = useState(initialSettings.selectedAlgorithm !== undefined ? initialSettings.selectedAlgorithm : "min-cost-max-flow");
+
+    const [getProfileOption] = useProfile();
 
     useEffect(() => {
         setSettings(oldSettings => { return {
@@ -116,7 +119,7 @@ export default function SettingsView(props) {
                     onChange={(e) => setAllowAssignmentToNonWishedWorkshop(e.target.checked)}></Checkbox>
             </Card>
 
-            <Accordion collapseAll>
+            {getProfileOption("extentedSettings.enable") && <Accordion collapseAll>
                 <Accordion.Panel>
                     <Accordion.Title>
                         Erweiterte Einstellungen
@@ -234,7 +237,7 @@ export default function SettingsView(props) {
 
                     </Accordion.Content>
                 </Accordion.Panel>
-            </Accordion>
+            </Accordion>}
         </div>
 
         <div className="self-end flex flex-col items-center justify-center gap-4">

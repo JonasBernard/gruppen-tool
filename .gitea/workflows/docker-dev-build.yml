@@ -33,7 +33,7 @@ jobs:
           VERSION_TAG: dev
         run: |
           IMAGE="git.jonasbernard.de/jonas/gruppen-tool-frontend:${VERSION_TAG}"
-          docker build -t "${IMAGE}" --build-arg REACT_APP_VERSION=${VERSION_TAG} .
+          docker build -t "${IMAGE}" --build-arg REACT_APP_VERSION=${VERSION_TAG} --build-arg REACT_APP_ENABLE_EXTENDED_SETTINGS=true .
 
       - name: Push frontend
         env:
