@@ -12,6 +12,7 @@ import SummaryView from "./assignment/SummaryView";
 import { Alert, Banner, BannerCollapseButton } from "flowbite-react";
 import { HiX, HiAnnotation, HiExclamation, HiExclamationCircle, HiInformationCircle, HiOutlineLightBulb, HiOutlineUser, HiOutlineCollection, HiOutlineLightningBolt } from "react-icons/hi";
 import Footer from "./Footer";
+import AppSidebar from "./sidebar/Sidebar";
 
 const APIBASE = process.env.REACT_APP_API_BASEURL || "http://localhost:5000";
 const APIBASE_V2 = process.env.REACT_APP_API_BASEURL_V2 || "http://localhost:5010";
@@ -361,8 +362,9 @@ function App() {
           </Card>
           
         </div>
+        <AppSidebar setWorkshops={setWorkshops} setParticipants={setParticipants} resetTabToParticipants={() => setTab(1)} />
       </div>
-      <Footer />
+      <Footer className="dark:bg-slate-700" />
     </div>
   );
 }
