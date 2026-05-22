@@ -50,7 +50,7 @@ jobs:
 
       - name: Push frontend
         env:
-          VERSION_TAG: ${{ github.ref_name }}
+          VERSION_TAG: ${{ github.event.inputs.version_tag || github.ref_name }}
         run: |
           IMAGE="git.jonasbernard.de/jonas/gruppen-tool-frontend:${VERSION_TAG}"
           docker push "${IMAGE}"
@@ -71,14 +71,14 @@ jobs:
       - name: Build backend
         working-directory: ./workshops-backend
         env:
-          VERSION_TAG: ${{ github.ref_name }}
+          VERSION_TAG: ${{ github.event.inputs.version_tag || github.ref_name }}
         run: |
           IMAGE="git.jonasbernard.de/jonas/gruppen-tool-backend:${VERSION_TAG}"
           docker build -t "${IMAGE}" .
 
       - name: Push backend
         env:
-          VERSION_TAG: ${{ github.ref_name }}
+          VERSION_TAG: ${{ github.event.inputs.version_tag || github.ref_name }}
         run: |
           IMAGE="git.jonasbernard.de/jonas/gruppen-tool-backend:${VERSION_TAG}"
           docker push "${IMAGE}"
@@ -100,14 +100,14 @@ jobs:
       - name: Build backend-v2
         working-directory: ./workshops-backend-v2
         env:
-          VERSION_TAG: ${{ github.ref_name }}
+          VERSION_TAG: ${{ github.event.inputs.version_tag || github.ref_name }}
         run: |
           IMAGE="git.jonasbernard.de/jonas/gruppen-tool-backend-v2:${VERSION_TAG}"
           docker build -t "${IMAGE}" .
 
       - name: Push backend-v2
         env:
-          VERSION_TAG: ${{ github.ref_name }}
+          VERSION_TAG: ${{ github.event.inputs.version_tag || github.ref_name }}
         run: |
           IMAGE="git.jonasbernard.de/jonas/gruppen-tool-backend-v2:${VERSION_TAG}"
           docker push "${IMAGE}"
