@@ -20,7 +20,7 @@ on:
           - "release"
       version_tag:
         type: string
-        description: 'In case of a release: Version tag for the docker image (optional, defaults to the git ref name)'
+        description: 'Version tag for the docker image (optional, defaults to the git ref name)'
         required: false
         default: "vX.Y.Z"
 
@@ -43,7 +43,7 @@ jobs:
         working-directory: ./workshops-frontend
         env:
           VERSION_TAG: ${{ github.event.inputs.version_tag }} || ${{ github.ref_name }}
-          BUILD_PROFILE: ${{ github.event.inputs.build_profile }} || ${{ endsWith(github.ref_name, 'alpha') && 'alpha' || endsWith(github.ref_name, 'beta') && 'beta' || 'release' }}
+          BUILD_PROFILE: ${{ github.event.inputs.build_profile }} || (${{ endsWith(github.ref_name, 'alpha') && 'alpha' || (endsWith(github.ref_name, 'beta') && 'beta')) || 'release' }}
         run: |
           IMAGE="git.jonasbernard.de/jonas/gruppen-tool-frontend:${VERSION_TAG}"
           docker build -t "${IMAGE}" --build-arg REACT_APP_VERSION=${VERSION_TAG} $(cat docker.${BUILD_PROFILE}.build.args | sed 's@^@--build-arg @g' | paste -s -d " ") .
