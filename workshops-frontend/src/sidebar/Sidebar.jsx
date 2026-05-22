@@ -1,6 +1,6 @@
 import { Alert, Sidebar, SidebarCollapse, SidebarItem, SidebarItemGroup, SidebarItems, SidebarLogo } from "flowbite-react";
 import { useState } from "react";
-import { HiChevronRight, HiColorSwatch, HiDownload, HiExclamation, HiExternalLink, HiMenu, HiOutlineCheck, HiOutlineUserGroup, HiOutlineUsers, HiOutlineViewGridAdd } from "react-icons/hi";
+import { HiChevronRight, HiColorSwatch, HiDownload, HiExclamation, HiExternalLink, HiMenu, HiOutlineCheck, HiOutlineTrash, HiOutlineUserGroup, HiOutlineUsers, HiOutlineViewGridAdd } from "react-icons/hi";
 import Footer from "../Footer";
 import { getExampleData10P, getExampleData50P } from "./exampleData";
 import { useConfirm } from "../components/useConfirm";
@@ -23,6 +23,17 @@ export default function AppSidebar(props) {
             props.setWorkshops(workshops);
             props.setParticipants(participants);
             props.resetTabToParticipants();
+            setOpen(false);
+        }
+    );
+
+    const [modalElementReset, askConfirmationReset] = useConfirm(
+        "Möchtest du wirklich alle Workshops und alle Teilnehmer löschen?",
+        "Ja, alles löschen",
+        "Nein, doch nicht",
+        () => {
+            props.setWorkshops([]);
+            props.setParticipants([]);
             setOpen(false);
         }
     );
@@ -56,6 +67,9 @@ export default function AppSidebar(props) {
                             </span>
                         </Alert>) : <></>}
                         <SidebarItemGroup>
+                            <SidebarItem icon={HiOutlineTrash} className="cursor-pointer" onClick={(e) => askConfirmationReset()}>
+                                Alle Daten zurücksetzen
+                            </SidebarItem>
                             <Alert color="light" className="dark:bg-gray-700 bg-gray-100">
                                 Falls du das Tool dirkekt in Aktion sehen willst, kannst du hier Beispiel-Daten laden. Achtung: Das Laden überschreibt deine aktuellen Workshops, Teilnehmer und Einstellungen.
                             </Alert>
@@ -84,6 +98,7 @@ export default function AppSidebar(props) {
                 <HiChevronRight className={"transition-transform duration-300 ease-in-out " + (open ? "" : "-rotate-180 h-0 w-0")} />
             </button>
             {modalElement}
+            {modalElementReset}
         </>
     );
 }
