@@ -1,7 +1,7 @@
 export default function useProfile() {
     const defaultProfile = {
         "extendedSettings": {
-            "enable": true,
+            "enable": process.env.REACT_APP_ENABLE_EXTENDED_SETTINGS === "true",
         }
     }
     
