@@ -15,7 +15,7 @@ on:
         description: 'Select the build profile'
         required: true
         options:
-          - "dev"
+          - "alpha"
           - "beta"
           - "release"
       version_tag:
