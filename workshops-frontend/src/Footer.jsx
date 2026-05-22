@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Modal, ModalBody, ModalHeader } from "flowbite-react";
 import { HiMail } from "react-icons/hi";
 
-export default function Footer() {
+export default function Footer(props) {
     const [openImprintModal, setOpenImprintModal] = useState(false);
     const [openThankYouModal, setOpenThankYouModal] = useState(false);
 
@@ -69,11 +69,11 @@ export default function Footer() {
     }
 
     return (
-        <div className="text-center flex flex-col items-stretch gap-3 pt-24 p-3 text-sm text-gray-500 dark:text-gray-400 dark:bg-slate-700 ">
+        <div className={"text-center flex flex-col items-stretch gap-3 pt-24 pb-2 px-4 text-sm text-gray-500 dark:text-gray-400 dark:bg-slate-700 " + props.className}>
             <div>
                 <span>Gruppen-Tool in der Version {process.env.REACT_APP_VERSION || "(development)"}</span>
                 <span className="mx-2">•</span>
-                <a href="mailto:info@gruppen-tool.de" className="cursor-pointer text-indigo-600 dark:text-indigo-400">E-Mail: info@gruppen-tool.de</a>
+                <a href="mailto:info@gruppen-tool.de" className="cursor-pointer text-indigo-600 dark:text-indigo-400">info@gruppen-tool.de</a>
                 <span className="mx-2">•</span>
                 <button onClick={() => setOpenImprintModal(true)} className="cursor-pointer text-indigo-600 dark:text-indigo-400">Impressum</button>
                 {imprintModal()}

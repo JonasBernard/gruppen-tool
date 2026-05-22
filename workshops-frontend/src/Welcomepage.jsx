@@ -21,26 +21,24 @@ export default function WelcomePage(props) {
             </h1>
 
             <p className="mt-6 text-sm text-gray-500 dark:text-gray-300">
-              Unter dem Reiter{" "}
+              Im ersten Reiter definierst du die{" "}
               <button className="cursor-pointer text-indigo-600 dark:text-indigo-400" onClick={() => setTab(0)}>
                 Workshops
-              </button>{" "}
-              kannst du verschiedene Gruppen mit ihrem Namen und einer maximalen
-              Anzahl an Teilnehmern angeben.
+              </button>{": "}
+               Gib jeweils einen Namen und die maximale Teilnehmerzahl ein.
             </p>
 
             <p className="mt-6 text-sm text-gray-500 dark:text-gray-300">
-              Anschließend kannst du im daneben liegeneden Reiter{" "}
+              Im anschließenden Reiter{" "}
               <button className="cursor-pointer text-indigo-600 dark:text-indigo-400" onClick={() => setTab(1)}>
                 Teilnehmer
               </button>{" "}
-              Namen von Personen angeben, die in die Workshops eingeteilt
-              werden sollen. Jeder kann – je nach Einstellung in der Ecke oben rechts – bis zu sechs Wünsche
-              abgeben.
+              trägst du die Namen der Personen ein, die den Workshops zugeordnet werden sollen.
+              Je nach Konfiguration (siehe dort obere rechte Ecke) können die Teilnehmer bis zu sechs Präferenzen (Wünsche) hinterlegen.
             </p>
 
             <p className="mt-6 text-sm text-gray-500 dark:text-gray-300">
-              Ein ausführlicheres Tutorial befindet sich <a href="https://www.patreon.com/posts/willkommen-das-113754704?utm_medium=clipboard_copy&utm_source=copyLink&utm_campaign=postshare_creator&utm_content=join_link">auf Patreon.</a>
+              Ein detailliertes Tutorial findest du <a href="https://www.patreon.com/posts/willkommen-das-113754704?utm_medium=clipboard_copy&utm_source=copyLink&utm_campaign=postshare_creator&utm_content=join_link">auf Patreon</a>.
             </p>
           </div>
 
@@ -54,28 +52,26 @@ export default function WelcomePage(props) {
               <button className="cursor-pointer text-indigo-600 dark:text-indigo-400" onClick={() => setTab(2)}>
                 Einteilen
               </button>{" "}
-              kannst du deine Daten an den Server übermitteln und eine
-              Einteilung anfordern. Das Tool berechnet mit Hilfe eines mathmatischen
+              nimmst du Einstellungen vor und übermittelst deine Daten an den Server.
+              Das Tool berechnet mit Hilfe eines mathematischen
               Algorithmus eine Einteilung, die die maximalen
-              Kapzitäten der Workshops berückslichtigt und dabei möglichst vielen
+              Kapazitäten der Workshops berücksichtigt und dabei möglichst vielen
               Teilnehmern ihre Wünsche erfüllt.
             </p>
           </div>
 
           <div className="p-8 bg-gray-100 rounded-lg dark:bg-gray-900 dark:bg-opacity-40">
             <h1 className="font-semibold text-gray-700 dark:text-white">
-              Was ist, wenn es mehrere Möglichkeiten gibt?
+              Was passiert bei mehreren gleichwertigen Lösungen?
             </h1>
 
+ 
             <p className="mt-6 text-sm text-gray-500 dark:text-gray-300">
-              Wenn es verschiedene gleichwertige Einteilgungen gibt (d.h.
-              Einteilgungen, bei denen gleich viele Teilnehmer ihren Erst- bzw.
-              Zweit. bzw. Dritt-Wunsch erhalten), dann wird das Tool davon
-              zufällig eine auswählen.
+              Existieren verschiedene Einteilungen, bei denen gleich viele Teilnehmer ihre Erst-, Zweit- usw. Wünsche
+              erhalten, wählt das Tool zufällig eine davon aus.
               <br />
               <br />
-              Wenn du mehrfach auf den Button "Gruppen jetzt einteilen" klickst,
-              kannst du verschiedene zufällig generierte Einteilgungen ansehen.
+              Durch mehrfaches Klicken auf den Button „Gruppen jetzt einteilen" kannst du unterschiedliche zufällig generierte Einteilgungen ansehen.
             </p>
           </div>
 
@@ -85,16 +81,13 @@ export default function WelcomePage(props) {
             </h1>
 
             <p className="mt-6 text-sm text-gray-500 dark:text-gray-300">
-              Deine angegebenen Daten (Workshops und Teilnehmer) werden in
-              deinem Browser gespeichert und erneut in die Tabellen gefüllt, wenn du diese Seite
-              zu einem späteren Zeitpunkt wieder aufrufst. Außerdem werden die
-              Workshops und Teilnehmer an meinen Server geschickt, sobald du auf "Gruppen jetzt einteilen" klickst.
+              Deine Eingaben (Workshops und Teilnehmer) werden (lokal) in deinem Browser gespeichert, 
+              sodass sie beim erneuten Aufruf der Seite automatisch wieder geladen werden können. 
+              Sobald du auf „Gruppen jetzt einteilen" klickst, werden die Daten zur Berechnung an einen Server übermittelt.
               <br />
-              Zur Fehleranalyse werden Diagnoseberichte gespeichert und von mir zur Verbesserung des Tools verwendet.
-              Diese enthalten ggf. deine IP-Adresse und die Workshops, Teilnehmer, und die Einstellungen, die du vorgenommen hast,
-              sowie das Ergebnis der Einteilung.
-              Sie enthalten außerdem Daten über dein Nutzungsverhalten und Daten über das von dir verwendete Gerät.
-              Die Daten werden ausschließlich in der EU verarbeitet und nicht verkauft.
+              Zur Fehleranalyse werden Diagnoseberichte gespeichert, die deine IP-Adresse, die Workshop-Einstellungen, 
+              die Teilnehmerliste, das Endergebnis sowie Nutzungs- und Gerätedaten enthalten können.
+              Alle Daten werden ausschließlich in der EU verarbeitet und nicht verkauft.
             </p>
           </div>
 
@@ -109,7 +102,7 @@ export default function WelcomePage(props) {
               überschreitet.
               <br />
               <br />
-              Unter dieser Bedigung werden in zufälliger Reihnfolge Teilnehmer
+              Unter dieser Bedingung werden in zufälliger Reihenfolge Teilnehmer
               ihren Wünschen zugeordnet. Dabei werden Erst-Wünsche natürlich
               gegenüber Zweit-Wünschen und diese gegenüber Dritt-Wünschen
               priorisiert, sofern die entsprechende Einstellung aktiv ist.
@@ -133,7 +126,7 @@ export default function WelcomePage(props) {
             </h1>
 
             <p className="mt-6 text-sm text-gray-500 dark:text-gray-300">
-              Es gibt zwei verschiedene Probleme, durch die das vorkommen kann.
+              Der Konflikt kann mehrere Ursachen haben:
               <br />
               <br />
               <span className="font-bold">1. Kapazität reicht nicht aus. </span>
@@ -152,7 +145,7 @@ export default function WelcomePage(props) {
               Es kann passieren, dass es einen Teilnehmer geben muss, der keinen seiner Wünsche erfüllt
               bekommen kann. 
               Je nach Einstellung der Option "Einteilung in nicht gewünschte Workshops zulassen"
-              wird ein solcher Teilnehmer einem noch freien Workshop zugeteilt, oder überheupt nicht
+              wird ein solcher Teilnehmer einem noch freien Workshop zugeteilt, oder überhaupt nicht
               zugeteilt.
             </p>
           </div>
@@ -163,7 +156,7 @@ export default function WelcomePage(props) {
             </h1>
 
             <p className="mt-6 text-sm text-gray-500 dark:text-gray-300">
-              Der Quellcode ist aktuell nicht unter eine Open-Source-Lizenz lizensiert, aber zur Einsicht öffentlich verfügbar.
+              Der Quellcode ist aktuell nicht unter eine Open-Source-Lizenz lizenziert, aber zur Einsicht öffentlich verfügbar.
             </p>
 
             <p className="mt-6 text-sm text-gray-500 dark:text-gray-300">

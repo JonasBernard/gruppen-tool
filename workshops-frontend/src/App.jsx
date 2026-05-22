@@ -53,6 +53,15 @@ function App() {
   const [warningMessages, setWarningMessages] = useState([]);
   const [infoMessage, setInfoMessage] = useState("");
 
+  const [showInfoMessage, setShowInfoMessage] = useState(false);
+  const setInfoMessageWithTimeout = (message, timeout = 5000) => {
+    setInfoMessage(message);
+    setShowInfoMessage(true);
+    setTimeout(() => {
+      setShowInfoMessage(false);
+    }, timeout);
+  };
+
   const [settings, setSettings] = useState({});
   const [result, setRequestResult] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -68,7 +77,7 @@ function App() {
       setParticipants(k); setWorkshops(w); setTab(2);
       s && setSettings(s);
       
-      setInfoMessage("Es wurden Daten aus deiner letzten Sitzung wiederhergestellt.");
+      setInfoMessageWithTimeout("Es wurden Daten aus deiner letzten Sitzung wiederhergestellt.");
     }
   }, []);
 
@@ -264,8 +273,13 @@ function App() {
 
         <div className="flex flex-col items-center">
 
-          <div className="m-4 absolute z-10">
-            {infoMessage && (<Alert color="indigo" icon={HiInformationCircle} className="text-indigo-900" onDismiss={() => setInfoMessage("")}>{infoMessage}</Alert>)}
+          <div className={"mb-6 fixed z-10 bottom-2 left-0 transition-all duration-800 ease-in-out " + (showInfoMessage ? "translate-x-5" : "-translate-x-full")}>
+              <Alert color="indigo" icon={HiInformationCircle} 
+                className="text-indigo-900" 
+                onDismiss={() => setShowInfoMessage(false)}>
+                  <div className="absolute bottom-0 left-0 right-0 rounded-b-full h-1 bg-indigo-700 transition-width duration-5000 ease-linear" style={{width: showInfoMessage ? "0%" : "100%"}}></div>
+                  <span className="mr-4">{infoMessage}</span>
+              </Alert>
           </div>
 
           <Card extraStyle="container">
