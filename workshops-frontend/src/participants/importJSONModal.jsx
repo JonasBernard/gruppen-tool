@@ -95,7 +95,7 @@ export default function ImportJSONModal(props) {
         onClick={() => {
           setOpenModal(true);
         }}
-        bgColor="bg-amber-700 focus:ring-green-200"
+        bgColor="bg-amber-700 focus:ring-amber-200"
       >
         {props.children}
       </Button>

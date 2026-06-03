@@ -5,6 +5,7 @@ import TextInputWithAutocomplete from "../components/TextInputWithAutocomplete";
 import ImportExcelModal from "./importExcelModal";
 import NumberSelector from "../components/NumberSelector";
 import ImportJSONModal from "./importJSONModal";
+import { useConfirm } from "../components/useConfirm";
 
 export default function ParticipantsList(props) {
     const participants = props.participants;
@@ -62,6 +63,13 @@ export default function ParticipantsList(props) {
         setNewWishList(newlist);
     }
 
+    const [modalElementClearParticipants, askConfirmationClearParticipants] = useConfirm(
+        "Möchtest du alle Teilnehmer aus der Tabelle entfernen?",
+        "Ja, Tabelle leeren", 
+        "Nein, abbrechen", 
+        () => {setParticipants([])}
+    );
+
     return (
             <section className="container px-4 mx-auto">
                 {/* <h2 className="text-lg font-medium text-gray-800 dark:text-white">Teilnehmer</h2> */}
@@ -89,6 +97,43 @@ export default function ParticipantsList(props) {
                             }}
                         ></NumberSelector>
                     </span>
+                </div>
+
+                <div className="flex mt-4 justify-end">
+                    { process.env.NODE_ENV !== 'production' && 
+                        <div className="mr-3">
+                            <ImportJSONModal onImportParticipants={(data) => {
+                                setParticipants([
+                                    ...data,
+                                    ...participants
+                                ]);
+                            }}
+                            wishCount={wishCount}
+                            maxWishCount={MAX_WISH_COUNT}
+                            workshopNames={workshopNames}>
+                                Aus JSON-Datei importieren (Debug-Funktion)
+                            </ImportJSONModal>
+                        </div>
+                    }
+                    <ImportExcelModal onImportParticipants={(data) => {
+                        setParticipants([
+                            ...data,
+                            ...participants
+                        ]);
+                    }}
+                    wishCount={wishCount}
+                    maxWishCount={MAX_WISH_COUNT}
+                    workshopNames={workshopNames}>
+                        Aus Excel-Datei importieren
+                    </ImportExcelModal>
+                    <Button
+                        onClick={askConfirmationClearParticipants}
+                        bgColor="bg-red-500 focus:ring-red-300 dark:bg-rose-600 dark:text-stone-100 p-2"
+                        className="rounded-l-none"
+                    >
+                        Tabelle leeren
+                    </Button>
+                    {modalElementClearParticipants}
                 </div>
 
                 <div className="flex flex-col mt-4">
@@ -127,32 +172,8 @@ export default function ParticipantsList(props) {
                                                 Sechst-Wunsch
                                             </th>) : <></>}
 
-                                            <th scope="col" className="relative py-3.5 px-2 text-sm whitespace-nowrap flex flex-col gap-2 items-center">
-                                                <ImportExcelModal onImportParticipants={(data) => {
-                                                    setParticipants([
-                                                        ...data,
-                                                        ...participants
-                                                    ]);
-                                                }}
-                                                wishCount={wishCount}
-                                                maxWishCount={MAX_WISH_COUNT}
-                                                workshopNames={workshopNames}>
-                                                    Aus Excel-Datei importieren
-                                                </ImportExcelModal>
-                                                { process.env.NODE_ENV !== 'production' && 
-                                                    <ImportJSONModal onImportParticipants={(data) => {
-                                                        setParticipants([
-                                                            ...data,
-                                                            ...participants
-                                                        ]);
-                                                    }}
-                                                    wishCount={wishCount}
-                                                    maxWishCount={MAX_WISH_COUNT}
-                                                    workshopNames={workshopNames}>
-                                                        Aus JSON-Datei importieren (Debug-Funktion)
-                                                    </ImportJSONModal>
-                                                }
-                                                <span className="sr-only">Löschen</span>
+                                            <th scope="col" className="px-4 py-3.5 text-sm font-normal text-center text-gray-500 dark:text-gray-400">
+                                                Aktionen
                                             </th>
                                         </tr>
                                     </thead>
@@ -196,7 +217,7 @@ export default function ParticipantsList(props) {
 
                                             <td className="px-2 py-2 text-sm text-center whitespace-nowrap">
                                                 <Button
-                                                    bgColor="bg-red-500 dark:bg-rose-600 dark:text-stone-100 p-2"
+                                                    bgColor="bg-red-500 focus:ring-red-300 dark:bg-rose-600 dark:text-stone-100 p-2"
                                                     onClick={() => removeParticipant(k.id)}>
                                                     Löschen
                                                 </Button>

@@ -121,6 +121,7 @@ export default function ImportExcelModal(props) {
           setOpenModal(true);
         }}
         bgColor="bg-green-800 focus:ring-green-200"
+        className="rounded-r-none"
       >
         {props.children}
       </Button>
