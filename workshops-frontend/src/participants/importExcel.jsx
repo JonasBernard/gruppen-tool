@@ -8,7 +8,7 @@ export const importExcel = async (file, wishCount) => {
 
     const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
 
-    const dataAsArrayOfArrays = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
+    const dataAsArrayOfArrays = XLSX.utils.sheet_to_json(firstSheet, { header: 1, defval: "" });
 
     const finalData = dataAsArrayOfArrays.flatMap((lineInSheet) => {
         if (!Array.isArray(lineInSheet) || lineInSheet.length === 0) return [];
@@ -18,7 +18,7 @@ export const importExcel = async (file, wishCount) => {
         w = w.map((wish) => wish.trim());
         w = w.map((wish) => wish.replaceAll(/“/g, "")); // TODO this catches only the first occurence for some reason
         w = w.map((wish) => wish.replaceAll(/”/g, "")); // TODO this catches only the first occurence for some reason
-        w = w.map((wish) => (wish === null || wish === undefined) ? "" : wish);
+        w = w.map((wish) => (wish == null || wish == undefined) ? "" : wish); // should actually not happen because of defval: "" above
         while (w.length < wishCount+1) {
             w.push("");
         }
