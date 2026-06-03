@@ -39,7 +39,7 @@ func (w Workshop) String() string {
 
 type Workshop struct {
 	Name     string `json:"name"`
-	Capacity int    `json:"capacity,string"`
+	Capacity int    `json:"capacity"`
 }
 
 type SentWishes struct {

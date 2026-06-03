@@ -104,10 +104,10 @@ def solve_group_assignment(participants, workshops, options={}):
 
     # Capacity constraints per workshop
     for j in range(m):
-        if workshops[j]['capacity'] == "":
+        if type(workshops[j]['capacity']) == str:
             capacity = 0
         else:
-            capacity = int(workshops[j]['capacity'])
+            capacity = workshops[j]['capacity']
         model.addCons(quicksum(x[i, j] for i in range(n)) <= capacity, name=f"cap_{j}")
 
     print(f"Solving for {n} participants and {m} workshops...")

@@ -66,7 +66,7 @@ export default function Workshoplist(props) {
                                         <td className="p-1">
                                             <NumberInput extraStyle="rounded-none" 
                                                 placeholder="Wie viele Teilnehmer kann der Workshop aufnehmen?" 
-                                                value={newCapa} onChange={e => setNewCapa(e.target.value)}
+                                                value={newCapa} onChange={e => setNewCapa(parseInt(e.target.value) || 0)}
                                                 onKeyDown={(e) => ((e.key === 'Tab' && !e.shiftKey) || e.key === 'Enter' ) && (e.preventDefault() || addWorkshop())} 
                                             />
                                         </td>
@@ -101,7 +101,7 @@ export default function Workshoplist(props) {
                                             <span>Anzahl Workshops: {workshops.length}</span>
                                         </td>
                                         <td className="p-1 text-center">
-                                            <span>Gesamte Kapazität: {workshops.reduce((a,b) => a + Number(b.capacity), 0)}</span>
+                                            <span>Gesamte Kapazität: {workshops.reduce((a,b) => a + b.capacity, 0)}</span>
                                         </td>
                                         <td></td>
                                     </tr>}
