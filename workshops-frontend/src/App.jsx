@@ -123,6 +123,11 @@ function App() {
     if (participantsWithNoWishes.length > 0) {
       addWarningMessage("Es gibt Teilnehmer, die sich nichts wünschen: " + participantsWithNoWishes.map(k => k.name).join(", ") + ".");
     }
+
+    const overallCapacity = workshopsOrig.reduce((acc, w) => acc + w.capacity, 0);
+    if (overallCapacity < participantsOrig.length) {
+      addWarningMessage("Die Gesamtkapazität aller Workshops ist kleiner als die Anzahl der Teilnehmer. Eine vollständige Einteilung ist nicht möglich.");
+    }
     
     if (workshopsOrig.filter(w => w.name === "").length > 0) {
       setErrorMessage("Es gibt einen Workshop mit leerem Namen. Das muss behoben werden bevor eine Einteilung gefunden werden kann.")
