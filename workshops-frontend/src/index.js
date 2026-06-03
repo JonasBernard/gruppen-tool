@@ -12,6 +12,7 @@ root.render(
       apiKey={process.env.REACT_APP_POSTHOG_KEY}
       options={{
         api_host: process.env.REACT_APP_POSTHOG_HOST,
+        ui_host: process.env.REACT_APP_POSTHOG_UI_HOST,
         defaults: '2025-05-24',
         capture_exceptions: true,
         debug: process.env.NODE_ENV === 'development',
