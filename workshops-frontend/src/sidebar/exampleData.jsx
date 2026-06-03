@@ -24,13 +24,13 @@ export function getExampleData10P() {
 export function getExampleData50P() {
     return [
         [
-            { "id": "6dbc3327-cae2-4cad-b3bd-e5015d10c042", "name": "Kochen", "capacity": "10" },
-            { "id": "825b613d-e305-422f-92cb-8fb88a7532bd", "name": "Zeichnen", "capacity": "10" },
-            { "id": "ac418d33-0aa5-4723-b465-7f71ce2c35e2", "name": "Origami", "capacity": "10" },
-            { "id": "7a7120d4-9da0-4fd8-9aa8-38a6f5ffb580", "name": "Knüpfen", "capacity": "12" },
-            { "id": "a49ab5db-3c38-4b57-80f8-c363cfd9849b", "name": "Häkeln", "capacity": "8" },
-            { "id": "2f5f9e91-e6df-443d-84ca-64c4bd83c59a", "name": "Töpfern", "capacity": "10" },
-            { "id": "a4994a92-34b3-49e7-a877-e3a3e062fc5d", "name": "Holzwerken", "capacity": "12" },
+            { "id": "6dbc3327-cae2-4cad-b3bd-e5015d10c042", "name": "Kochen", "capacity": 10 },
+            { "id": "825b613d-e305-422f-92cb-8fb88a7532bd", "name": "Zeichnen", "capacity": 10 },
+            { "id": "ac418d33-0aa5-4723-b465-7f71ce2c35e2", "name": "Origami", "capacity": 10 },
+            { "id": "7a7120d4-9da0-4fd8-9aa8-38a6f5ffb580", "name": "Knüpfen", "capacity": 12 },
+            { "id": "a49ab5db-3c38-4b57-80f8-c363cfd9849b", "name": "Häkeln", "capacity": 8 },
+            { "id": "2f5f9e91-e6df-443d-84ca-64c4bd83c59a", "name": "Töpfern", "capacity": 10 },
+            { "id": "a4994a92-34b3-49e7-a877-e3a3e062fc5d", "name": "Holzwerken", "capacity": 12 },
         ],
         [
             { "id": "bc741117-00b8-4bce-a9d1-7ee480d0258c", "name": "Liam", "wishes": ["Häkeln", "Zeichnen", "Kochen"] },
