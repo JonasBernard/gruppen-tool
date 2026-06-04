@@ -2,7 +2,7 @@ import { Modal, ModalBody, ModalFooter, ModalHeader  } from "flowbite-react";
 import { useEffect, useState } from "react";
 import Button from "./components/Button";
 import { FaRegHandPeace } from "react-icons/fa6";
-import { HiMail } from "react-icons/hi";
+import { HiOutlineMail } from "react-icons/hi";
 import { FaCoffee } from "react-icons/fa";
 
 export default function AboutModal() {
@@ -39,7 +39,7 @@ export default function AboutModal() {
         </ModalBody>
         <ModalFooter className="flex flex-wrap gap-1 justify-end">
          <Button onClick={() => window.location.href = "mailto:info@gruppen-tool.de"}>
-            <HiMail className="mr-2 h-5 w-5" /> E-Mail schreiben
+            <HiOutlineMail className="mr-2 h-5 w-5" /> E-Mail schreiben
           </Button>
           <Button 
           // className="pl-0 pr-0 py-0"

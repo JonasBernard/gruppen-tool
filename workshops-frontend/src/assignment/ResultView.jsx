@@ -1,6 +1,6 @@
 import AssignmentView from "./AssignmentView";
 import { Accordion, Alert } from "flowbite-react";
-import { HiClock, HiInformationCircle } from "react-icons/hi";
+import { HiOutlineClock, HiOutlineInformationCircle } from "react-icons/hi";
 
 function interpretStatus(status) {
     switch (status) {
@@ -30,14 +30,14 @@ export default function ResultView(props) {
     if (!result.solutions || result.solutions.length === 0) {
         return (
             <div>
-                <Alert color="indigo" icon={HiInformationCircle} className="text-indigo-900 dark:bg-indigo-800 dark:text-indigo-100" dismissable={false}>{interpretStatus(status)}</Alert>
+                <Alert color="indigo" icon={HiOutlineInformationCircle} className="text-indigo-900 dark:bg-indigo-800 dark:text-indigo-100" dismissable={false}>{interpretStatus(status)}</Alert>
             </div>
         );
     }
 
     return (
         <div className="flex flex-col items-stretch gap-3">
-            <Alert color="indigo" icon={HiInformationCircle} className="text-indigo-900 dark:bg-indigo-800 dark:text-indigo-100" dismissable={false}>{interpretStatus(status)}</Alert>
+            <Alert color="indigo" icon={HiOutlineInformationCircle} className="text-indigo-900 dark:bg-indigo-800 dark:text-indigo-100" dismissable={false}>{interpretStatus(status)}</Alert>
 
             {result.solutions.length > 1 && (
                 <Accordion>
@@ -59,7 +59,7 @@ export default function ResultView(props) {
 
             {result.solutions.length === 1 && displaySolution(result.solutions[0], result)}
 
-            <Alert color="gray" icon={HiClock} 
+            <Alert color="gray" icon={HiOutlineClock} 
                 className="text-gray-800 dark:bg-gray-800 dark:text-gray-100"
                 dismissable={false}>
                     {

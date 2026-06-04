@@ -1,6 +1,6 @@
 import { Alert, Sidebar, SidebarCollapse, SidebarItem, SidebarItemGroup, SidebarItems, SidebarLogo } from "flowbite-react";
 import { useState } from "react";
-import { HiChevronRight, HiColorSwatch, HiDownload, HiExclamation, HiExternalLink, HiMenu, HiOutlineTrash, HiOutlineUserGroup, HiOutlineUsers } from "react-icons/hi";
+import { HiOutlineChevronRight, HiOutlineColorSwatch, HiOutlineDownload, HiOutlineExclamation, HiOutlineExternalLink, HiOutlineMenu, HiOutlineTrash, HiOutlineUserGroup, HiOutlineUsers } from "react-icons/hi";
 import Footer from "../Footer";
 import { getExampleData10P, getExampleData50P } from "./exampleData";
 import { useConfirm } from "../components/useConfirm";
@@ -39,6 +39,9 @@ export default function AppSidebar(props) {
     );
 
     const getChannelName = () => {
+        if (process.env.NODE_ENV === "development") {
+            return "Development";
+        }
         return process.env.REACT_APP_CHANNEL_FRIENDLY_NAME || "";
     };
 
@@ -52,9 +55,9 @@ export default function AppSidebar(props) {
                     </SidebarLogo>
                     <SidebarItems>
                         {getChannelName() === "Alpha" || getChannelName() === "Beta" ? (
-                            <Alert icon={HiExclamation} additionalContent={<>
+                            <Alert icon={HiOutlineExclamation} additionalContent={<>
                                 <a href="https://gruppen-tool.de" className="flex mt-2 text-xs font-medium"
-                                ><HiExternalLink className="-ml-0.5 mr-2 h-4 w-4" />Zur stabilen Version wechseln</a>
+                                ><HiOutlineExternalLink className="-ml-0.5 mr-2 h-4 w-4" />Zur stabilen Version wechseln</a>
                             </>} color="warning" className="text-yellow-900 dark:bg-gray-700 dark:text-yellow-300">
                                 <span>
                                     <span className="font-medium">
@@ -73,14 +76,14 @@ export default function AppSidebar(props) {
                             <Alert color="light" className="dark:bg-gray-700 bg-gray-100">
                                 Falls du das Tool dirkekt in Aktion sehen willst, kannst du hier Beispiel-Daten laden. Achtung: Das Laden überschreibt deine aktuellen Workshops, Teilnehmer und Einstellungen.
                             </Alert>
-                            <SidebarCollapse open={true} icon={HiColorSwatch} label="Beispiel-Daten laden">
+                            <SidebarCollapse open={true} icon={HiOutlineColorSwatch} label="Beispiel-Daten laden">
                                 <SidebarItem icon={HiOutlineUsers} className="cursor-pointer" onClick={(e) => askConfirmation("10-participants")}>
                                     Beispiel mit 10 Teilnehmern laden
                                 </SidebarItem>
                                 <SidebarItem icon={HiOutlineUserGroup} className="cursor-pointer" onClick={(e) => askConfirmation("50-participants")}>
                                     Beispiel mit 50 Teilnehmern laden
                                 </SidebarItem>
-                                <SidebarItem icon={HiDownload} className="cursor-pointer" onClick={() => window.open("/Gruppen-Tool Importvorlage.xlsx")}>
+                                <SidebarItem icon={HiOutlineDownload} className="cursor-pointer" onClick={() => window.open("/Gruppen-Tool Importvorlage.xlsx")}>
                                     Beispiel Excel-Datei für den Import herunterladen
                                 </SidebarItem>
                             </SidebarCollapse>
@@ -94,8 +97,8 @@ export default function AppSidebar(props) {
                 (open ? "" : "lg:translate-y-20 translate-y-0") + 
                 "transition-all duration-300 ease-in-out lg:top-2 lg:bottom-auto bottom-2 -right-1 fixed p-3 rounded-l-full bg-white shadow-md " + 
                 "dark:bg-gray-800 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600 focus:ring-2 focus:ring-gray-400"}>
-                <HiMenu className={"transition-transform duration-300 ease-in-out " + (open ? "rotate-180 h-0 w-0" : "")} />
-                <HiChevronRight className={"transition-transform duration-300 ease-in-out " + (open ? "" : "-rotate-180 h-0 w-0")} />
+                <HiOutlineMenu className={"transition-transform duration-300 ease-in-out " + (open ? "rotate-180 h-0 w-0" : "")} />
+                <HiOutlineChevronRight className={"transition-transform duration-300 ease-in-out " + (open ? "" : "-rotate-180 h-0 w-0")} />
             </button>
             {modalElement}
             {modalElementReset}

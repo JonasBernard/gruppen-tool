@@ -4,7 +4,7 @@ import Button from "../components/Button";
 import NumberSelector from "../components/NumberSelector";
 import { List, ListItem, Alert, Card, Accordion } from "flowbite-react";
 import TextInput from "../components/TextInput";
-import { HiArrowCircleRight, HiCheckCircle, HiInformationCircle, HiStar, HiXCircle } from "react-icons/hi";
+import { HiOutlineArrowCircleRight, HiOutlineCheckCircle, HiOutlineInformationCircle, HiOutlineStar, HiOutlineXCircle } from "react-icons/hi";
 import RadioButtons from "../components/RadioButtons";
 import MyCheckbox from "../components/Checkbox";
 import useProfile from "../profile/useProfile";
@@ -44,29 +44,29 @@ export default function SettingsView(props) {
             Min-Cost-Max-Flow (empfohlen)
         </h6>
         <List>
-            <ListItem icon={HiStar} className="text-green-700 dark:text-green-400 text-left font-bold">
+            <ListItem icon={HiOutlineStar} className="text-green-700 dark:text-green-400 text-left font-bold">
                 Der Algorithmus ist fair: alle optimalen Einteilungen sind gleich wahrscheinlich
             </ListItem>
             <hr />
-            <ListItem icon={HiArrowCircleRight} className="dark:text-gray-200">
+            <ListItem icon={HiOutlineArrowCircleRight} className="dark:text-gray-200">
                 Der Algorithmus stellt immer genau eine Einteilung zur Verfügung
             </ListItem>
-            <ListItem icon={HiCheckCircle} className="text-green-700 dark:text-green-400">
+            <ListItem icon={HiOutlineCheckCircle} className="text-green-700 dark:text-green-400">
                 Er wählt garantiert die (eine) beste Einteilung aus
             </ListItem>
-            <ListItem icon={HiCheckCircle} className="text-green-700 dark:text-green-400">
+            <ListItem icon={HiOutlineCheckCircle} className="text-green-700 dark:text-green-400">
                 Unter allen optimalen Einteilungen wählt er zufällig (gleichverteilt!) eine aus
             </ListItem>
-            <ListItem icon={HiCheckCircle} className="text-green-700 dark:text-green-400">
+            <ListItem icon={HiOutlineCheckCircle} className="text-green-700 dark:text-green-400">
                 Wenn nicht alle Teilnehmer zugeteilt werden können, werden so viele Teilnehmer wie möglich zugeteilt
             </ListItem>
-            <ListItem icon={HiXCircle} className="text-red-700 dark:text-red-400">
+            <ListItem icon={HiOutlineXCircle} className="text-red-700 dark:text-red-400">
                 Es stehen weniger Einstellungen zur Verfügung als bei SCIP
             </ListItem>
-            <ListItem icon={HiCheckCircle} className="text-green-700 dark:text-green-400">
+            <ListItem icon={HiOutlineCheckCircle} className="text-green-700 dark:text-green-400">
                 Der Algorithmus ist gut getestet, robust und schnell
             </ListItem>
-            <ListItem icon={HiArrowCircleRight} className="text-left dark:text-gray-200">
+            <ListItem icon={HiOutlineArrowCircleRight} className="text-left dark:text-gray-200">
                 Der Algorithmus wird empfohlen, wenn nicht die speziellen Einstellungen von SCIP benötigt werden
             </ListItem>
         </List>
@@ -78,20 +78,20 @@ export default function SettingsView(props) {
             SCIP
         </h6>
         <List>
-            <ListItem icon={HiStar} className="text-green-700 dark:text-green-400 text-left font-bold">
+            <ListItem icon={HiOutlineStar} className="text-green-700 dark:text-green-400 text-left font-bold">
                 Es können pro Teilnehmer mehrere Workshops zugeteilt werden (z.B. einer für Vormittags und einer für Nachmittags)
             </ListItem>
             <hr />
-            <ListItem icon={HiArrowCircleRight} className="dark:text-gray-200">
+            <ListItem icon={HiOutlineArrowCircleRight} className="dark:text-gray-200">
                 Der Algorithmus stellt mehrere Einteilungen zur Verfügung
             </ListItem>
-            <ListItem icon={HiCheckCircle} className="text-green-700 dark:text-green-400">
+            <ListItem icon={HiOutlineCheckCircle} className="text-green-700 dark:text-green-400">
                 Wenn nicht alle Teilnehmer zugeteilt werden können, werden so viele Teilnehmer wie möglich zugeteilt
             </ListItem>
-            <ListItem icon={HiXCircle} className="text-red-700 dark:text-red-400">
+            <ListItem icon={HiOutlineXCircle} className="text-red-700 dark:text-red-400">
                 Er verwendet Zufall, aber garantiert nicht, dass die optimale Einteilung gleichverteilt ausgewählt wird
             </ListItem>
-            <ListItem icon={HiXCircle} className="text-red-700 dark:text-red-400">
+            <ListItem icon={HiOutlineXCircle} className="text-red-700 dark:text-red-400">
                 Der Algorithmus ist noch nicht so gut getestet wie Min-Cost-Max-Flow und evtl. langsamer
             </ListItem>
         </List>
@@ -126,7 +126,7 @@ export default function SettingsView(props) {
                     </Accordion.Title>
                     <Accordion.Content>
                         <div className="flex flex-col gap-4">
-                            <Alert color="indigo" icon={HiInformationCircle} className="text-left dark:bg-indigo-900 dark:text-indigo-100">
+                            <Alert color="indigo" icon={HiOutlineInformationCircle} className="text-left dark:bg-indigo-900 dark:text-indigo-100">
                                 Hier können erweiterte Einstellungen vorgenommen werden, die für die meisten Anwendungsfälle nicht relevant sind. Es wird empfohlen, die Standardeinstellungen zu verwenden, es sei denn, es besteht ein spezieller Bedarf.
                             </Alert>
                             <Card>
@@ -145,10 +145,10 @@ export default function SettingsView(props) {
                                             className="max-w-md shrink-0"
                                         />
                                         <div className="flex flex-col gap-3">
-                                            <Alert color="indigo" icon={HiInformationCircle} className="text-left dark:bg-indigo-900 dark:text-indigo-100">
+                                            <Alert color="indigo" icon={HiOutlineInformationCircle} className="text-left dark:bg-indigo-900 dark:text-indigo-100">
                                                 Die Wahl des Algorithmus beeinflusst, welche Einstellungen unten zur Verfügung stehen.
                                             </Alert>
-                                            <Alert color="yellow" icon={HiInformationCircle} className="text-left dark:bg-gray-700 dark:text-yellow-300">
+                                            <Alert color="yellow" icon={HiOutlineInformationCircle} className="text-left dark:bg-gray-700 dark:text-yellow-300">
                                                 Das Ergebnis (d.h. die Definition einer "optimalen Einteilung") unterscheidet sich aktuell zwischen den beiden Algorithmen und ist (noch) nicht konfigurierbar.
                                                 Min-Cost-Max-Flow verwendet eine konvexe (quadratische) Kostenfunktion, während SCIP eine lineare Kostenfunktion verwendet.
                                                 Deshalb liefern die beiden Algorithmen möglicherweise sehr unterschiedliche Ergebnisse.

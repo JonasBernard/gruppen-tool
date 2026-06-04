@@ -6,6 +6,7 @@ import ImportExcelModal from "./importExcelModal";
 import NumberSelector from "../components/NumberSelector";
 import ImportJSONModal from "./importJSONModal";
 import { useConfirm } from "../components/useConfirm";
+import { HiOutlineTrash } from "react-icons/hi";
 
 export default function ParticipantsList(props) {
     const participants = props.participants;
@@ -136,7 +137,7 @@ export default function ParticipantsList(props) {
                         bgColor="bg-red-500 focus:ring-red-300 dark:bg-rose-600 dark:text-stone-100 p-2"
                         className="rounded-l-none"
                     >
-                        Tabelle leeren
+                        <HiOutlineTrash className="mr-2 h-5 w-5" /> Tabelle leeren
                     </Button>
                     {modalElementClearParticipants}
                 </div>

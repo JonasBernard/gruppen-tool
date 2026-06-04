@@ -10,7 +10,7 @@ import SettingsView from "./assignment/SettingsView";
 import { usePostHog } from "posthog-js/react";
 import SummaryView from "./assignment/SummaryView";
 import { Alert, Banner, BannerCollapseButton } from "flowbite-react";
-import { HiX, HiAnnotation, HiExclamation, HiExclamationCircle, HiInformationCircle, HiOutlineLightBulb, HiOutlineUser, HiOutlineCollection, HiOutlineLightningBolt } from "react-icons/hi";
+import { HiOutlineX, HiOutlineAnnotation, HiOutlineExclamation, HiOutlineExclamationCircle, HiOutlineInformationCircle, HiOutlineLightBulb, HiOutlineUser, HiOutlineCollection, HiOutlineLightningBolt } from "react-icons/hi";
 import Footer from "./Footer";
 import AppSidebar from "./sidebar/Sidebar";
 import { isExampleData } from "./sidebar/exampleData";
@@ -279,14 +279,14 @@ function App() {
           <div className="flex w-full justify-between border-b border-gray-200 bg-gray-50 p-4 dark:border-gray-600 dark:bg-gray-700">
             <div className="mx-auto flex items-center">
               <p className="flex items-center text-sm font-normal text-gray-500 dark:text-gray-400">
-                <HiAnnotation className="shrink-0 mr-4 h-4 w-4" />
+                <HiOutlineAnnotation className="shrink-0 mr-4 h-4 w-4" />
                 <span className="[&_p]:inline">
                   Diese Seite ist nicht für mobile Geräte und kleine Bildschirme geeignet. Besuche uns wieder auf einem Laptop oder Desktop.
                 </span>
               </p>
             </div>
             <BannerCollapseButton color="gray" className="border-0 bg-transparent text-gray-500 dark:text-gray-400">
-              <HiX className="h-4 w-4" />
+              <HiOutlineX className="h-4 w-4" />
             </BannerCollapseButton>
           </div>
         </Banner>
@@ -296,7 +296,7 @@ function App() {
         <div className="flex flex-col items-center">
 
           <div className={"mb-6 fixed z-10 bottom-2 left-0 transition-all duration-800 ease-in-out " + (showInfoMessage ? "translate-x-5" : "-translate-x-full")}>
-              <Alert color="indigo" icon={HiInformationCircle} 
+              <Alert color="indigo" icon={HiOutlineInformationCircle} 
                 className="text-indigo-900" 
                 onDismiss={() => setShowInfoMessage(false)}>
                   <div className="absolute bottom-0 left-0 right-0 rounded-b-full h-1 bg-indigo-700 transition-width duration-5000 ease-linear" style={{width: showInfoMessage ? "0%" : "100%"}}></div>
@@ -368,10 +368,10 @@ function App() {
               <SummaryView participants={participants} workshops={workshops} settings={settings} />
               <SettingsView initialSettings={settings} setSettings={setSettings} sendData={sendData} isLoading={isLoading}></SettingsView>              
               {warningMessages && warningMessages.map((msg) => (
-                  <Alert color="warning" icon={HiExclamation} className="text-yellow-900 dark:bg-gray-700 dark:text-yellow-300" dismissable={false}>{msg}</Alert>
+                  <Alert color="warning" icon={HiOutlineExclamation} className="text-yellow-900 dark:bg-gray-700 dark:text-yellow-300" dismissable={false}>{msg}</Alert>
               ))}
               {errorMessage && (
-                  <Alert color="failure" icon={HiExclamationCircle} className="text-red-900 dark:bg-red-900 dark:text-red-100" dismissable={false}>{errorMessage}</Alert>
+                  <Alert color="failure" icon={HiOutlineExclamationCircle} className="text-red-900 dark:bg-red-900 dark:text-red-100" dismissable={false}>{errorMessage}</Alert>
               )}
               <ResultView result={result} />
             </div>}
