@@ -1,6 +1,6 @@
 import { Alert, Sidebar, SidebarCollapse, SidebarItem, SidebarItemGroup, SidebarItems, SidebarLogo } from "flowbite-react";
 import { useState } from "react";
-import { HiChevronRight, HiColorSwatch, HiDownload, HiExclamation, HiExternalLink, HiMenu, HiOutlineCheck, HiOutlineTrash, HiOutlineUserGroup, HiOutlineUsers, HiOutlineViewGridAdd } from "react-icons/hi";
+import { HiChevronRight, HiColorSwatch, HiDownload, HiExclamation, HiExternalLink, HiMenu, HiOutlineTrash, HiOutlineUserGroup, HiOutlineUsers } from "react-icons/hi";
 import Footer from "../Footer";
 import { getExampleData10P, getExampleData50P } from "./exampleData";
 import { useConfirm } from "../components/useConfirm";

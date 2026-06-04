@@ -13,6 +13,7 @@ import { Alert, Banner, BannerCollapseButton } from "flowbite-react";
 import { HiX, HiAnnotation, HiExclamation, HiExclamationCircle, HiInformationCircle, HiOutlineLightBulb, HiOutlineUser, HiOutlineCollection, HiOutlineLightningBolt } from "react-icons/hi";
 import Footer from "./Footer";
 import AppSidebar from "./sidebar/Sidebar";
+import { isExampleData } from "./sidebar/exampleData";
 
 const APIBASE = process.env.REACT_APP_API_BASEURL || "http://localhost:5000";
 const APIBASE_V2 = process.env.REACT_APP_API_BASEURL_V2 || "http://localhost:5010";
@@ -226,6 +227,7 @@ function App() {
         participants: participantsOrig,
         workshops: workshopsOrig,
         settings: settingsOrig,
+        isExampleData: isExampleData(participantsOrig, workshopsOrig),
         responseStatus: data.status,
         responseData: data.solutions,
         processingTime: processingTime,

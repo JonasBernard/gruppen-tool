@@ -86,3 +86,35 @@ export function getExampleData50P() {
         ]
     ];
 }
+
+export function isExampleData(workshops, participants) {
+    const exampleData10P = getExampleData10P();
+    const exampleData50P = getExampleData50P();
+
+    const isSameWorkshops = (workshops, exampleWorkshops) => {
+        if (workshops.length !== exampleWorkshops.length) return false;
+        for (let i = 0; i < workshops.length; i++) {
+            if (workshops[i].id !== exampleWorkshops[i].id ||
+                workshops[i].name !== exampleWorkshops[i].name ||
+                workshops[i].capacity !== exampleWorkshops[i].capacity) {
+                return false;
+            }
+        }
+        return true;
+    };
+
+    const isSameParticipants = (participants, exampleParticipants) => {
+        if (participants.length !== exampleParticipants.length) return false;
+        for (let i = 0; i < participants.length; i++) {
+            if (participants[i].id !== exampleParticipants[i].id ||
+                participants[i].name !== exampleParticipants[i].name ||
+                JSON.stringify(participants[i].wishes) !== JSON.stringify(exampleParticipants[i].wishes)) {
+                return false;
+            }
+        }
+        return true;
+    };
+
+    return (isSameWorkshops(workshops, exampleData10P[0]) && isSameParticipants(participants, exampleData10P[1])) ||
+           (isSameWorkshops(workshops, exampleData50P[0]) && isSameParticipants(participants, exampleData50P[1]));
+}
