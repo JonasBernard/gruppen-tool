@@ -19,7 +19,7 @@ const APIBASE = process.env.REACT_APP_API_BASEURL || "http://localhost:5000";
 const APIBASE_V2 = process.env.REACT_APP_API_BASEURL_V2 || "http://localhost:5010";
 
 function saveData(participants, workshops, settings) {
-  localStorage.dataV2 = JSON.stringify({
+  localStorage.dataV3 = JSON.stringify({
     participants: participants,
     workshops: workshops,
     settings: settings,
@@ -27,8 +27,21 @@ function saveData(participants, workshops, settings) {
 }
 
 function loadData() {
+  if (localStorage.dataV3) {
+    let data = JSON.parse(localStorage.dataV3);
+    if (data.participants.length > 0 || data.workshops.length > 0)
+      return [true, data.participants, data.workshops, data.settings];
+  }
   if (localStorage.dataV2) {
     let data = JSON.parse(localStorage.dataV2);
+    for (const workshop of data.workshops) {
+      if (workshop.capacity instanceof String) {
+        workshop.capacity = parseInt(workshop.capacity);
+      }
+    }
+
+    localStorage.removeItem("dataV2");
+    saveData(data.participants, data.workshops, data.settings);
     if (data.participants.length > 0 || data.workshops.length > 0)
       return [true, data.participants, data.workshops, data.settings];
   }
