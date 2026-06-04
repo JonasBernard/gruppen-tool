@@ -6,7 +6,8 @@ import ImportExcelModal from "./importExcelModal";
 import NumberSelector from "../components/NumberSelector";
 import ImportJSONModal from "./importJSONModal";
 import { useConfirm } from "../components/useConfirm";
-import { HiOutlineTrash } from "react-icons/hi";
+import { HiOutlineCheck, HiOutlineDocumentAdd, HiOutlinePencil, HiOutlinePlus, HiOutlineTrash, HiOutlineX } from "react-icons/hi";
+import { Dropdown, Popover } from "flowbite-react";
 
 export default function ParticipantsList(props) {
     const participants = props.participants;
@@ -69,12 +70,176 @@ export default function ParticipantsList(props) {
         setNewWishList(newlist);
     }
 
+    const editWishOfParticipant = (id, index, wish) => {
+        const participant = participants.find(k => k.id === id);
+        if (participant) {
+            if (!participant.editsMade) {
+                participant.editsMade = {};
+            }
+            if (!participant.editsMade.wishes) {
+                participant.editsMade = participant.wishes ? {wishes: [...participant.wishes]} : {wishes: []};
+            }
+            participant.editsMade.wishes[index] = wish;
+            setParticipants([...participants]);
+        }
+    }
+
+    const editParticipantName = (id, name) => {
+        const participant = participants.find(k => k.id === id);
+        if (participant) {
+            if (!participant.editsMade) {
+                participant.editsMade = {};
+            }
+            participant.editsMade.name = name;
+            setParticipants([...participants]);
+        }
+    }
+
+    const confirmEdit = () => {
+        for (const participant of participants) {
+            if (participant.editable) {
+                if (!participant.editsMade) {
+                    continue;
+                }
+                if (participant.editsMade.name !== undefined) {
+                    let name = participant.editsMade.name.trim();
+                    if (name === "") {
+                        name = "[ohne Name]";
+                    }
+                    participant.name = name;
+                }
+                if (participant.editsMade.wishes !== undefined) {
+                    participant.wishes = participant.editsMade.wishes;
+                }
+                delete participant.editsMade;
+            }
+        }
+        setParticipants([...participants]);
+    }
+
+    const setEditable = (id, editable) => {
+        const participant = participants.find(k => k.id === id);
+        if (participant) {
+            if (editable === true)
+                participant.editable = true;
+            else
+                delete participant.editable;
+                delete participant.editsMade;
+            setParticipants([...participants]);
+        }
+    }
+
     const [modalElementClearParticipants, askConfirmationClearParticipants] = useConfirm(
         "Möchtest du alle Teilnehmer aus der Tabelle entfernen?",
         "Ja, Tabelle leeren", 
         "Nein, abbrechen", 
         () => {setParticipants([])}
     );
+
+    const renderNonEditableParticipantRow = (participant) => {
+        return (<tr key={participant.id}>
+            <td className="px-2 py-2 text-sm font-medium whitespace-nowrap">
+                <h2 className="font-medium text-gray-800 dark:text-white text-center">{participant.name}</h2>
+            </td>
+            {[...Array(wishCount)].map((x, i) => {
+                return <td key={i} className={"px-2 py-2 text-sm text-center whitespace-nowrap"}>
+                    <span className={((workshopNames.includes(participant.wishes[i]) || participant.wishes[i] === "" || participant.wishes[i] === null || participant.wishes[i] === undefined) ? "" : "px-4 py-1 rounded-xl bg-yellow-500 text-black")}>
+                        {participant.wishes[i]}
+                    </span>
+                </td>
+            })}
+
+            <td className="px-2 py-2 text-sm text-center whitespace-nowrap flex justify-center">
+                <Popover 
+                    content={<span className="font-medium m-4">Bearbeiten</span>}
+                    aria-labelledby="default-popover"
+                    placement="bottom"
+                    trigger="hover">
+                        <div>
+                            <Button
+                            className="bg-indigo-500 focus:ring-indigo-300 dark:bg-indigo-600 dark:text-stone-100 px-0 rounded-r-none"
+                            onClick={() => setEditable(participant.id, true)}>
+                            <HiOutlinePencil className="h-5 w-5" />
+                        </Button>         
+                        </div>
+                </Popover>    
+                <Popover 
+                    content={<span className="font-medium m-4">Löschen</span>}
+                    aria-labelledby="default-popover"
+                    placement="bottom"
+                    trigger="hover">
+                        <div>
+                            <Button
+                                className="bg-red-500 focus:ring-red-300 dark:bg-rose-600 dark:text-stone-100 px-0 rounded-l-none"
+                                onClick={() => removeParticipant(participant.id)}>
+                                <HiOutlineTrash className="h-5 w-5" />
+                            </Button>
+                        </div>
+                </Popover>
+            </td>
+        </tr>);
+    }
+
+    const renderEditableParticipantRow = (participant) => {
+        return (<tr>
+            <td className="p-1">
+                <TextInputWithAutocomplete extraStyle="rounded-none" placeholder="Name des Teilnehmers" value={participant.editsMade?.name !== undefined ? participant.editsMade?.name : participant.name} onChange={e => editParticipantName(participant.id, e.target.value)}/>
+            </td>
+            {[...Array(wishCount)].map((x, i) => {
+                return <td className="p-1" key={i}>
+                    <div className="flex justify-center">
+                        {/* <TextInputWithAutocomplete
+                            key={i}
+                            extraStyle="rounded-none" placeholder={i+1 + ". Wunsch"}
+                            value={participant.editsMade?.wishes?.[i] || participant.wishes[i]}
+                            onChange={e => editWishOfParticipant(participant.id, i, e.target.value)}
+                            onKeyDown={(e, trAuoCom) => (i === wishCount-1 && (e.key === 'Enter') && !trAuoCom) && (e.preventDefault() || setEditable(participant.id, false))}
+                            autocomplete={workshopNames}
+                            autocompleteSetValue={value => editWishOfParticipant(participant.id, i, value)}
+                        /> */}
+                        <Dropdown color="dark" placement="center" label={participant.editsMade?.wishes?.[i] !== undefined ? participant.editsMade?.wishes?.[i] : participant.wishes[i]}>
+                            {workshopNames.map(workshop => (
+                                <Dropdown.Item key={workshop} onClick={() => editWishOfParticipant(participant.id, i, workshop)}>
+                                    {workshop}
+                                </Dropdown.Item>
+                            ))}
+                            <Dropdown.Item onClick={() => editWishOfParticipant(participant.id, i, "")}>
+                                [Kein Wunsch]
+                            </Dropdown.Item>
+                        </Dropdown>
+                    </div>
+                </td>
+            })}
+            <td className="p-2 text-sm text-center whitespace-nowrap flex justify-center">
+                <Popover 
+                    content={<span className="font-medium m-4">Fertig</span>}
+                    aria-labelledby="default-popover"
+                    placement="bottom"
+                    trigger="hover">
+                        <div>
+                            <Button
+                            className="bg-indigo-500 focus:ring-indigo-300 dark:bg-indigo-600 dark:text-stone-100 px-0 rounded-r-none"
+                            onClick={() => {confirmEdit(); setEditable(participant.id, false)}}>
+                            <HiOutlineCheck className="h-5 w-5" />
+                        </Button>         
+                        </div>
+                </Popover>    
+                <Popover 
+                    content={<span className="font-medium m-4">Abbrechen</span>}
+                    aria-labelledby="default-popover"
+                    placement="bottom"
+                    trigger="hover">
+                        <div>
+                            <Button
+                                className="bg-red-500 focus:ring-red-300 dark:bg-rose-600 dark:text-stone-100 px-0 rounded-l-none"
+                                onClick={() => setEditable(participant.id, false)}>
+                                <HiOutlineX className="h-5 w-5" />
+                            </Button>
+                        </div>
+                </Popover>
+            </td>
+        </tr>);
+    }
 
     return (
             <section className="container px-4 mx-auto">
@@ -130,7 +295,7 @@ export default function ParticipantsList(props) {
                     wishCount={wishCount}
                     maxWishCount={MAX_WISH_COUNT}
                     workshopNames={workshopNames}>
-                        Aus Excel-Datei importieren
+                        <HiOutlineDocumentAdd className="mr-2 h-5 w-5" /> Aus Excel-Datei importieren
                     </ImportExcelModal>
                     <Button
                         onClick={askConfirmationClearParticipants}
@@ -191,44 +356,38 @@ export default function ParticipantsList(props) {
                                         </td>
                                         {[...Array(wishCount)].map((x, i) => {
                                             return <td className="p-1" key={i}>
-                                                <TextInputWithAutocomplete
+                                                {/* <TextInputWithAutocomplete
                                                     key={i}
                                                     extraStyle="rounded-none" placeholder={i+1 + ". Wunsch"} 
-                                                    value={newWishList[i]} onChange={e => updateWish(i, e.target.value)}
+                                                    value={newWishList[i]}
+                                                    onChange={e => updateWish(i, e.target.value)}
                                                     onKeyDown={(e, trAuoCom) => (i === wishCount-1 && (e.key === 'Enter') && !trAuoCom) && (e.preventDefault() || addParticipant())}
                                                     autocomplete={workshopNames}
                                                     autocompleteSetValue={value => updateWish(i, value)}
-                                                />
+                                                /> */}
+                                                <div className="flex justify-center">
+                                                    <Dropdown color="dark" placement="center" label={newWishList[i]}>
+                                                        {workshopNames.map(workshop => (
+                                                            <Dropdown.Item key={workshop} onClick={() => updateWish(i, workshop)}>
+                                                                {workshop}
+                                                            </Dropdown.Item>
+                                                        ))}
+                                                        <Dropdown.Item onClick={() => updateWish(i, "")}>
+                                                            [Kein Wunsch]
+                                                        </Dropdown.Item>
+                                                    </Dropdown>
+                                                </div>
                                             </td>
                                         })}
                                         <td className="p-2 text-sm text-center whitespace-nowrap">
                                             <Button onClick={() => addParticipant()}>
-                                                Hinzufügen
+                                                <HiOutlinePlus className="h-5 w-5 mr-2" /> Hinzufügen
                                             </Button>
                                         </td>
                                     </tr>
 
                                     {participants.map(k => (
-                                        <tr key={k.id}>
-                                            <td className="px-2 py-2 text-sm font-medium whitespace-nowrap">
-                                                <h2 className="font-medium text-gray-800 dark:text-white text-center">{k.name}</h2>
-                                            </td>
-                                            {[...Array(wishCount)].map((x, i) => {
-                                                return <td key={i} className={"px-2 py-2 text-sm text-center whitespace-nowrap"}>
-                                                    <span className={((workshopNames.includes(k.wishes[i]) || k.wishes[i] === "" || k.wishes[i] === null || k.wishes[i] === undefined) ? "" : "px-4 py-1 rounded-xl bg-yellow-500 text-black")}>
-                                                        {k.wishes[i]}
-                                                    </span>
-                                                </td>
-                                            })}
-
-                                            <td className="px-2 py-2 text-sm text-center whitespace-nowrap">
-                                                <Button
-                                                    bgColor="bg-red-500 focus:ring-red-300 dark:bg-rose-600 dark:text-stone-100 p-2"
-                                                    onClick={() => removeParticipant(k.id)}>
-                                                    Löschen
-                                                </Button>
-                                            </td>
-                                        </tr>
+                                        (k.editable) ? renderEditableParticipantRow(k) : renderNonEditableParticipantRow(k)
                                     ))}
 
                                     {participants.length > 0 && <tr className="text-gray-500 dark:text-gray-400 text-sm">

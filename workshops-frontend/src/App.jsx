@@ -109,6 +109,11 @@ function App() {
     setWarningMessages([]);
     setRequestResult(null);
 
+    for (const participant of participants) {
+      delete participant.editable;
+      delete participant.editsMade;
+    }
+
     const participantsOrig = participants;
     const workshopsOrig = workshops;
     const settingsOrig = settings;

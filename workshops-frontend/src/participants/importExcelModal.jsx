@@ -126,7 +126,7 @@ export default function ImportExcelModal(props) {
         {props.children}
       </Button>
 
-      <Modal dismissible size="6xl" show={openModal} onClose={() => setOpenModal(false)}>
+      <Modal dismissible size="8xl" show={openModal} onClose={() => setOpenModal(false)}>
         <Modal.Header>Importieren</Modal.Header>
         <Modal.Body>
           <div className="space-y-6">
