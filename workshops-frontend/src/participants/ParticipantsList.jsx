@@ -34,6 +34,11 @@ export default function ParticipantsList(props) {
     const nameInputRef = useRef(null);
 
     const addParticipant = () => {
+        let name = newName.trim();
+        if (name === "") {
+            name = "Teilnehmer " + (participants.length + 1);
+        }
+
         let wishes = newWishList; // Data from the form
         while (wishes.length < MAX_WISH_COUNT) {
             wishes.push("");
@@ -45,7 +50,7 @@ export default function ParticipantsList(props) {
         wishes = wishes.map(w => w.trim());
 
         setParticipants([
-            {"id": uuidv4(), "name": newName.trim(), "wishes": wishes},
+            {"id": uuidv4(), "name": name, "wishes": wishes},
             ...participants
         ]);
         setNewWishList([...Array(MAX_WISH_COUNT).fill('')]);

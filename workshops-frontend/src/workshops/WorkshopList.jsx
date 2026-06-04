@@ -14,8 +14,13 @@ export default function Workshoplist(props) {
     const nameInputRef = useRef(null);
 
     const addWorkshop = () => {
+        let name = newName.trim();
+        if (name === "") {
+            name = "Workshop " + (workshops.length + 1);
+        }
+        
         setWorkshops([
-            {id: uuidv4(), "name": newName.trim(), "capacity": newCapa},
+            {id: uuidv4(), "name": name, "capacity": newCapa},
             ...workshops
         ]);
         setNewCapa(0);
