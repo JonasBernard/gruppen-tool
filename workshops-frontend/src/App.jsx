@@ -247,6 +247,7 @@ function App() {
         ...actualData,
         participants: participantsOrig,
         workshops: workshopsOrig,
+        settings: settingsOrig,
       }
       setRequestResult(result);
     })

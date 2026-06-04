@@ -4,17 +4,18 @@ import Button from "../components/Button";
 import { exportExcel } from "../exportExcel";
 
 export default function AssignmentView(props) {
-    let problemSolution = props.solution;
-    let participants = props.participants || [];
-    let workshops = props.workshops || [];
+    const problemSolution = props.solution;
+    const participants = props.participants || [];
+    const workshops = props.workshops || [];
+    const settings = props.settings || {};
 
-    const wLength = Math.max(...problemSolution.map(ass => ass.length - 1));
+    const numberOfWorkshopsPerParticipant = Math.max(...problemSolution.map(ass => ass.length - 1));
 
     const [isExportLoading, setExportLoading] = useState(false);
 
     const exportExcelSync = () => {
         setExportLoading(true);
-        exportExcel(getAssignmentTableRows(), wLength, workshops);
+        exportExcel(getAssignmentTableRows(), numberOfWorkshopsPerParticipant, workshops);
         setExportLoading(false);
     };
 
@@ -27,12 +28,13 @@ export default function AssignmentView(props) {
         rows = rows.sort((ass1, ass2) => ass1[0].localeCompare(ass2[0]));
         rows = rows.map((assignment, index) => {
             const participantName = assignment[0] || "";
+            const participant = participants.find(p => p.name === participantName);
 
-            const columns =Array.from({ length: wLength }, (_, i) => {
-                let wishNr = participants.find(p => p.name === participantName)?.wishes.findIndex(w => w === assignment[i + 1]) + 1 || -1;
+            const columns = Array.from({ length: numberOfWorkshopsPerParticipant }, (_, i) => {
+                let wishNr = participant?.wishes.findIndex(w => w === assignment[i + 1]) + 1 || -1;
                 
                 // if wished for with preference e.g. 4 but currently only 3 are used accoring to numWishesPerParticipant
-                if (wishNr > wLength+1) {
+                if (wishNr > settings.numberOfWishesPerParticipant) {
                     // TODO hier könnte man einen sinnvollen Kommentar hinterlassen.
                     wishNr = -1;
                 }
@@ -76,8 +78,8 @@ export default function AssignmentView(props) {
                             <thead>
                                 <tr>
                                     <td className="py-3.5 px-4 text-sm font-normal text-center text-gray-500 dark:text-gray-400">Teilnehmer</td>
-                                    {Array.from({ length: wLength }, (_, i) => (
-                                        <td className="py-3.5 px-4 text-sm font-normal text-center text-gray-500 dark:text-gray-400">{wLength > 1 ? "Phase " + (i + 1) : "Workshop"}</td>
+                                    {Array.from({ length: numberOfWorkshopsPerParticipant }, (_, i) => (
+                                        <td className="py-3.5 px-4 text-sm font-normal text-center text-gray-500 dark:text-gray-400">{numberOfWorkshopsPerParticipant > 1 ? "Phase " + (i + 1) : "Workshop"}</td>
                                     ))}
                                     {/* <td className="py-3.5 px-4 text-sm font-normal text-center text-gray-500 dark:text-gray-400">entspricht Wunsch</td> */}
                                 </tr>
