@@ -8,6 +8,7 @@ import ImportJSONModal from "./importJSONModal";
 import { useConfirm } from "../components/useConfirm";
 import { HiOutlineCheck, HiOutlineDocumentAdd, HiOutlinePencil, HiOutlinePlus, HiOutlineTrash, HiOutlineX } from "react-icons/hi";
 import { Dropdown, Popover } from "flowbite-react";
+import { useTheme } from "../Navbar";
 
 export default function ParticipantsList(props) {
     const participants = props.participants;
@@ -34,6 +35,8 @@ export default function ParticipantsList(props) {
     const [newWishList, setNewWishList] = useState([...Array(MAX_WISH_COUNT).fill('')]);
 
     const nameInputRef = useRef(null);
+
+    const [, isDarkMode, ] = useTheme();
 
     const addParticipant = () => {
         let name = newName.trim();
@@ -197,7 +200,7 @@ export default function ParticipantsList(props) {
                             autocomplete={workshopNames}
                             autocompleteSetValue={value => editWishOfParticipant(participant.id, i, value)}
                         /> */}
-                        <Dropdown color="dark" placement="center" label={participant.editsMade?.wishes?.[i] !== undefined ? participant.editsMade?.wishes?.[i] : participant.wishes[i]}>
+                        <Dropdown color={isDarkMode ? "dark" : "indigo"} placement="center" label={participant.editsMade?.wishes?.[i] !== undefined ? participant.editsMade?.wishes?.[i] : participant.wishes[i]}>
                             {workshopNames.map(workshop => (
                                 <Dropdown.Item key={workshop} onClick={() => editWishOfParticipant(participant.id, i, workshop)}>
                                     {workshop}
@@ -366,7 +369,7 @@ export default function ParticipantsList(props) {
                                                     autocompleteSetValue={value => updateWish(i, value)}
                                                 /> */}
                                                 <div className="flex justify-center">
-                                                    <Dropdown color="dark" placement="center" label={newWishList[i]}>
+                                                    <Dropdown color={isDarkMode ? "dark" : "indigo"} placement="center" label={newWishList[i]}>
                                                         {workshopNames.map(workshop => (
                                                             <Dropdown.Item key={workshop} onClick={() => updateWish(i, workshop)}>
                                                                 {workshop}

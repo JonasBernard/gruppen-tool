@@ -1,45 +1,52 @@
 import { useEffect, useState } from "react";
 import { Sun, Moon } from "lucide-react";
 import AboutModal from "./AboutModal";
- 
-const saveTheme = (theme) => {
-    localStorage.theme = theme
-}
 
-const getSystemTheme = () => {
-    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-}
-
-const loadTheme = () => {
-    if (!('theme' in localStorage)) {
-        const theme = getSystemTheme();
-        saveTheme(theme);
-        return theme;
-    } else return localStorage.theme
-}
-
-const realizeTheme = (theme) => {
-    if (theme === 'dark') {
-        document.documentElement.classList.add('dark')
-    } else {
-        document.documentElement.classList.remove('dark')
+export const useTheme = () => {
+    const getSystemTheme = () => {
+        return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
     }
-}
 
-export default function NavBar(props) {
+    const saveTheme = (theme) => {
+        localStorage.theme = theme;
+    }
+
+    const loadTheme = () => {
+        if (!('theme' in localStorage)) {
+            const theme = getSystemTheme();
+            saveTheme(theme);
+            return theme;
+        } else return localStorage.theme
+    }
+
     const [theme, setTheme] = useState(loadTheme());
+    const [isDarkMode, setIsDarkMode] = useState(theme === 'dark');
 
     const toggleTheme = () => {
         const newTheme = theme === 'light' ? 'dark' : 'light';
         setTheme(newTheme);
-        saveTheme(newTheme);
-        realizeTheme(newTheme);
+
     }
 
     useEffect(() => {
-        setTheme(loadTheme());
+        saveTheme(theme);
+        setIsDarkMode(theme === 'dark');
         realizeTheme(theme);
     }, [theme]);
+
+    const realizeTheme = (theme) => {
+        if (theme === 'dark') {
+            document.documentElement.classList.add('dark')
+        } else {
+            document.documentElement.classList.remove('dark')
+        }
+    }
+
+    return [theme, isDarkMode, toggleTheme];
+};
+
+export default function NavBar(props) {
+    const [, isDarkMode, toggleTheme] = useTheme();
 
     return <nav className="mb-2 bg-white shadow dark:bg-gray-800 flex justify-between">
         <div className="container flex items-center justify-between p-4 mx-auto text-gray-600 capitalize dark:text-gray-300">
@@ -55,7 +62,7 @@ export default function NavBar(props) {
                         onClick={toggleTheme}
                         className="p-2 rounded-full bg-gray-900 dark:bg-gray-700"
                     >
-                        {theme === 'dark' ? <Sun className="text-yellow-500" /> : <Moon className="text-white" />}
+                        {isDarkMode ? <Sun className="text-yellow-500" /> : <Moon className="text-white" />}
                     </button>
                 </div>
             </div>
