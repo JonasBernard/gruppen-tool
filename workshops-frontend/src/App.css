@@ -6,3 +6,12 @@ a {
     --tw-text-opacity: 1;
     color: rgb(129 140 248 / var(--tw-text-opacity));
 }
+
+/* Adjust color of lines between timeline entires */
+#changelog-timeline-content ol li span.dark\:ring-gray-900:is(.dark *) {
+    --tw-ring-color: oklch(37.3% 0.034 259.733 / var(--tw-ring-opacity, 1));
+}
+
+#changelog-timeline-content ol.dark\:border-gray-700:is(.dark *) {
+    border-color: oklch(55.1% 0.027 264.364 / var(--tw-border-opacity, 1));
+}

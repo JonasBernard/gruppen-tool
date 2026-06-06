@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Modal, ModalBody, ModalHeader } from "flowbite-react";
 import { HiMail } from "react-icons/hi";
+import ChangelogModal from "./ChangelogModal";
 
 export default function Footer(props) {
     const [openImprintModal, setOpenImprintModal] = useState(false);
@@ -71,7 +72,7 @@ export default function Footer(props) {
     return (
         <div className={"text-center flex flex-col items-stretch gap-3 pt-24 pb-2 px-4 text-sm text-gray-500 dark:text-gray-400 " + props.className}>
             <div>
-                <span>Gruppen-Tool in der Version {process.env.REACT_APP_VERSION || "[development]"}</span>
+                <ChangelogModal />
                 <span className="mx-2">•</span>
                 <a href="mailto:info@gruppen-tool.de" className="cursor-pointer text-indigo-600 dark:text-indigo-400">info@gruppen-tool.de</a>
                 <span className="mx-2">•</span>
