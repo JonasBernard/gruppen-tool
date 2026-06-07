@@ -160,7 +160,7 @@ export default function ParticipantsList(props) {
                     trigger="hover">
                         <div>
                             <Button
-                            className="bg-indigo-500 focus:ring-indigo-300 dark:bg-indigo-600 dark:text-stone-100 px-0 rounded-r-none"
+                            className="bg-indigo-500 focus:ring-indigo-300 dark:bg-indigo-600 hover:bg-indigo-400 hover:dark:bg-indigo-500 dark:text-stone-100 px-0 rounded-r-none"
                             onClick={() => setEditable(participant.id, true)}>
                             <HiOutlinePencil className="h-5 w-5" />
                         </Button>         
@@ -173,7 +173,7 @@ export default function ParticipantsList(props) {
                     trigger="hover">
                         <div>
                             <Button
-                                className="bg-red-500 focus:ring-red-300 dark:bg-rose-600 dark:text-stone-100 px-0 rounded-l-none"
+                                className="bg-red-500 focus:ring-red-300 dark:bg-rose-600 hover:bg-red-400 hover:dark:bg-rose-500 dark:text-stone-100 px-0 rounded-l-none"
                                 onClick={() => removeParticipant(participant.id)}>
                                 <HiOutlineTrash className="h-5 w-5" />
                             </Button>
@@ -221,7 +221,7 @@ export default function ParticipantsList(props) {
                     trigger="hover">
                         <div>
                             <Button
-                            className="bg-indigo-500 focus:ring-indigo-300 dark:bg-indigo-600 dark:text-stone-100 px-0 rounded-r-none"
+                            className="bg-indigo-500 focus:ring-indigo-300 dark:bg-indigo-600 hover:bg-indigo-400 hover:dark:bg-indigo-500 dark:text-stone-100 px-0 rounded-r-none"
                             onClick={() => {confirmEdit(); setEditable(participant.id, false)}}>
                             <HiOutlineCheck className="h-5 w-5" />
                         </Button>         
@@ -234,7 +234,7 @@ export default function ParticipantsList(props) {
                     trigger="hover">
                         <div>
                             <Button
-                                className="bg-red-500 focus:ring-red-300 dark:bg-rose-600 dark:text-stone-100 px-0 rounded-l-none"
+                                className="bg-red-500 focus:ring-red-300 dark:bg-rose-600 hover:bg-red-400 hover:dark:bg-rose-500 dark:text-stone-100 px-0 rounded-l-none"
                                 onClick={() => setEditable(participant.id, false)}>
                                 <HiOutlineX className="h-5 w-5" />
                             </Button>

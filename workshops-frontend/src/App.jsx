@@ -113,6 +113,10 @@ function App() {
       delete participant.editable;
       delete participant.editsMade;
     }
+    for (const workshop of workshops) {
+      delete workshop.editable;
+      delete workshop.editsMade;
+    }
 
     const participantsOrig = participants;
     const workshopsOrig = workshops;

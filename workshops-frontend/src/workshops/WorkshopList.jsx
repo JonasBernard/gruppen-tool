@@ -3,6 +3,8 @@ import { v4 as uuidv4 } from 'uuid';
 import Button from "../components/Button";
 import TextInputWithAutocomplete from "../components/TextInputWithAutocomplete";
 import NumberInput from "../components/NumberInput";
+import { HiOutlineCheck, HiOutlinePencil, HiOutlinePlus, HiOutlineTrash, HiOutlineX } from "react-icons/hi";
+import { Popover } from "flowbite-react";
 
 export default function Workshoplist(props) {
     const workshops = props.workshops;
@@ -33,6 +35,149 @@ export default function Workshoplist(props) {
         setWorkshops(workshops.filter(w => w.id !== id));
     }
 
+    const editWorkshopName = (id, name) => {
+        const workshop = workshops.find(w => w.id === id);
+        if (workshop) {
+            if (!workshop.editsMade) {
+                workshop.editsMade = {};
+            }
+            workshop.editsMade.name = name;
+            setWorkshops([...workshops]);
+        }
+    }
+
+    const editWorkshopCapacity = (id, capacity) => {
+        const workshop = workshops.find(w => w.id === id);
+        if (workshop) {
+            if (!workshop.editsMade) {
+                workshop.editsMade = {};
+            }
+            workshop.editsMade.capacity = capacity;
+            setWorkshops([...workshops]);
+        }
+    }
+
+    const confirmEdit = () => {
+        for (const workshop of workshops) {
+            if (workshop.editable) {
+                if (!workshop.editsMade) {
+                    continue;
+                }
+                if (workshop.editsMade.name !== undefined) {
+                    let name = workshop.editsMade.name.trim();
+                    if (name === "") {
+                        name = "[ohne Name]";
+                    }
+                    workshop.name = name;
+                }
+                if (workshop.editsMade.capacity !== undefined) {
+                    workshop.capacity = workshop.editsMade.capacity;
+                    if (Number.isNaN(workshop.capacity)) {
+                        workshop.capacity = 0;
+                    }
+                }
+                delete workshop.editsMade;
+            }
+        }
+        setWorkshops([...workshops]);
+    }
+
+    const setEditable = (id, editable) => {
+        const workshop = workshops.find(w => w.id === id);
+        if (workshop) {
+            if (editable === true)
+                workshop.editable = true;
+            else {
+                delete workshop.editable;
+                delete workshop.editsMade;
+            }
+            setWorkshops([...workshops]);
+        }
+    }
+
+    const renderNonEditableWorkshopRow = (workshop) => {
+        return (<tr key={workshop.id}>
+            <td className="px-2 py-2 text-sm font-medium text-center whitespace-nowrap">
+                <h2 className="font-medium text-gray-800 dark:text-white">{workshop.name}</h2>
+            </td>
+            <td className={"px-2 py-2 text-sm text-center whitespace-nowrap"}>
+                {workshop.capacity}
+            </td>
+
+            <td className="px-2 py-2 text-sm text-center whitespace-nowrap flex justify-center">
+                <Popover 
+                    content={<span className="font-medium m-4">Bearbeiten</span>}
+                    aria-labelledby="default-popover"
+                    placement="bottom"
+                    trigger="hover">
+                        <div>
+                            <Button
+                            className="bg-indigo-500 focus:ring-indigo-300 dark:bg-indigo-600 hover:bg-indigo-400 hover:dark:bg-indigo-500 dark:text-stone-100 px-0 rounded-r-none"
+                            onClick={() => setEditable(workshop.id, true)}>
+                            <HiOutlinePencil className="h-5 w-5" />
+                        </Button>         
+                        </div>
+                </Popover>    
+                <Popover 
+                    content={<span className="font-medium m-4">Löschen</span>}
+                    aria-labelledby="default-popover"
+                    placement="bottom"
+                    trigger="hover">
+                        <div>
+                            <Button
+                                className="bg-red-500 focus:ring-red-300 dark:bg-rose-600 hover:bg-red-400 hover:dark:bg-rose-500 dark:text-stone-100 px-0 rounded-l-none"
+                                onClick={() => removeWorkshop(workshop.id)}>
+                                <HiOutlineTrash className="h-5 w-5" />
+                            </Button>
+                        </div>
+                </Popover>
+            </td>
+        </tr>);
+    }
+
+    const renderEditableWorkshopRow = (workshop) => {
+        return (<tr key={workshop.id}>
+            <td className="p-1">
+                <TextInputWithAutocomplete extraStyle="rounded-none" placeholder="Name des Workshops" value={workshop.editsMade?.name !== undefined ? workshop.editsMade?.name : workshop.name} onChange={e => editWorkshopName(workshop.id, e.target.value)}/>
+            </td>
+            <td className="p-1">
+                <NumberInput extraStyle="rounded-none" 
+                    placeholder="Kapazität" 
+                    value={workshop.editsMade?.capacity !== undefined ? workshop.editsMade?.capacity : workshop.capacity} 
+                    onChange={e => editWorkshopCapacity(workshop.id, parseInt(e.target.value))}
+                />
+            </td>
+            <td className="p-2 text-sm text-center whitespace-nowrap flex justify-center">
+                <Popover 
+                    content={<span className="font-medium m-4">Fertig</span>}
+                    aria-labelledby="default-popover"
+                    placement="bottom"
+                    trigger="hover">
+                        <div>
+                            <Button
+                            className="bg-indigo-500 focus:ring-indigo-300 dark:bg-indigo-600 hover:bg-indigo-400 hover:dark:bg-indigo-500 dark:text-stone-100 px-0 rounded-r-none"
+                            onClick={() => {confirmEdit(); setEditable(workshop.id, false)}}>
+                            <HiOutlineCheck className="h-5 w-5" />
+                        </Button>         
+                        </div>
+                </Popover>    
+                <Popover 
+                    content={<span className="font-medium m-4">Abbrechen</span>}
+                    aria-labelledby="default-popover"
+                    placement="bottom"
+                    trigger="hover">
+                        <div>
+                            <Button
+                                className="bg-red-500 focus:ring-red-300 dark:bg-rose-600 hover:bg-red-400 hover:dark:bg-rose-500 dark:text-stone-100 px-0 rounded-l-none"
+                                onClick={() => setEditable(workshop.id, false)}>
+                                <HiOutlineX className="h-5 w-5" />
+                            </Button>
+                        </div>
+                </Popover>
+            </td>
+        </tr>);
+    }
+
     return (
             <section className="container px-4 mx-auto">
                 {/* <h2 className="text-lg font-medium text-gray-800 dark:text-white">Workshops</h2> */}
@@ -57,8 +202,8 @@ export default function Workshoplist(props) {
                                                 Kapazität
                                             </th>
 
-                                            <th scope="col" className="relative py-3.5 px-4">
-                                                <span className="sr-only">Löschen</span>
+                                            <th scope="col" className="px-4 py-3.5 text-sm font-normal text-center text-gray-500 dark:text-gray-400">
+                                                Aktionen
                                             </th>
                                         </tr>
                                     </thead>
@@ -77,28 +222,13 @@ export default function Workshoplist(props) {
                                         </td>
                                         <td className="p-2 text-sm text-center whitespace-nowrap">
                                             <Button onClick={() => addWorkshop()}>
-                                                Hinzufügen
+                                                <HiOutlinePlus className="h-5 w-5 mr-2" /> Hinzufügen
                                             </Button>
                                         </td>
                                     </tr>
 
                                     {workshops.map(w => (
-                                        <tr key={w.id}>
-                                            <td className="px-2 py-2 text-sm font-medium text-center whitespace-nowrap">
-                                                <h2 className="font-medium text-gray-800 dark:text-white ">{w.name}</h2>
-                                            </td>
-                                            <td className={"px-2 py-2 text-sm text-center whitespace-nowrap"}>
-                                                {w.capacity}
-                                            </td>
-
-                                            <td className="px-2 py-2 text-sm text-center whitespace-nowrap">
-                                                <Button
-                                                    bgColor="bg-red-500 dark:bg-rose-600 dark:text-stone-100 p-2"
-                                                    onClick={() => removeWorkshop(w.id)}>
-                                                    Löschen
-                                                </Button>
-                                            </td>
-                                        </tr>
+                                        (w.editable) ? renderEditableWorkshopRow(w) : renderNonEditableWorkshopRow(w)
                                     ))}
 
                                     {workshops.length > 0 && <tr className="text-gray-500 dark:text-gray-400 text-sm">
