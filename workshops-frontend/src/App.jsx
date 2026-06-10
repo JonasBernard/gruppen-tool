@@ -4,12 +4,11 @@ import ParticipantsList from "./participants/ParticipantsList";
 import Workshoplist from "./workshops/WorkshopList";
 import ResultView from "./assignment/ResultView";
 import NavBar from "./Navbar";
-import Card from "./components/Card";
 import WelcomePage from "./Welcomepage";
 import SettingsView from "./assignment/SettingsView";
 import { usePostHog } from "posthog-js/react";
 import SummaryView from "./assignment/SummaryView";
-import { Alert, Banner, BannerCollapseButton } from "flowbite-react";
+import { Alert, Banner, BannerCollapseButton, Card } from "flowbite-react";
 import { HiOutlineX, HiOutlineAnnotation, HiOutlineExclamation, HiOutlineExclamationCircle, HiOutlineInformationCircle, HiOutlineLightBulb, HiOutlineUser, HiOutlineCollection, HiOutlineLightningBolt } from "react-icons/hi";
 import Footer from "./Footer";
 import AppSidebar from "./sidebar/Sidebar";
@@ -313,7 +312,7 @@ function App() {
               </Alert>
           </div>
 
-          <Card extraStyle="container">
+          <Card className="container">
             <div className="flex justify-between overflow-x-auto overflow-y-hidden border-b border-gray-200 whitespace-nowrap dark:border-gray-700">
                 <div className="flex">
                   <button onClick={() => setTab(0)}

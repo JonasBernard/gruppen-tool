@@ -20,13 +20,13 @@ export default function SummaryView(props) {
             <Accordion.Panel>
                 <Accordion.Title>Zusammenfassung</Accordion.Title>
                 <Accordion.Content>
-                    <div className="overflow-hidden border border-gray-200 dark:border-gray-700 dark:bg-slate-800 shadow-md md:rounded-lg">
+                    <div className="overflow-hidden border border-gray-200 dark:border-gray-700 dark:bg-gray-800 shadow-md md:rounded-lg">
                         <Table className="divide-y divide-gray-200 dark:divide-gray-700" hoverable={true}>
                             <thead>
                                 <tr>
                                     <td className="py-3.5 px-4 text-sm font-normal text-center text-gray-500 dark:text-gray-400">Workshop</td>
                                     {props.settings.numberOfWishesPerParticipant > 0 && Array.from({ length: props.settings.numberOfWishesPerParticipant }, (_, i) => (
-                                        <td className="py-3.5 px-4 text-sm font-normal text-center text-gray-500 dark:text-gray-400">Anzahl {i + 1}. Wünsche</td>
+                                        <td key={i} className="py-3.5 px-4 text-sm font-normal text-center text-gray-500 dark:text-gray-400">Anzahl {i + 1}. Wünsche</td>
                                     ))}
                                     <td className="py-3.5 px-4 text-sm font-normal text-center text-gray-500 dark:text-gray-400">Kapazität</td>
                                     <td className="py-3.5 px-4 text-sm font-normal text-center text-gray-500 dark:text-gray-400">Beliebtheit</td>
