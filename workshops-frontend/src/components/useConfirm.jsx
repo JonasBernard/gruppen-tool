@@ -19,7 +19,7 @@ export function useConfirm(title, yesButtonLabel, noButtonLabel, onConfirm) {
         <ModalHeader />
         <ModalBody>
           <div className="text-center">
-            <HiOutlineQuestionMarkCircle className="mx-auto mb-4 h-14 w-14 text-gray-400 dark:text-gray-200" />
+            {/* <HiOutlineQuestionMarkCircle className="mx-auto mb-4 h-14 w-14 text-gray-400 dark:text-gray-200" /> */}
             <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
               {title}
             </h3>

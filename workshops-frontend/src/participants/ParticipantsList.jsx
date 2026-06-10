@@ -8,7 +8,7 @@ import ImportJSONModal from "./importJSONModal";
 import { useConfirm } from "../components/useConfirm";
 import { HiOutlineCheck, HiOutlineDocumentAdd, HiOutlinePencil, HiOutlinePlus, HiOutlineTrash, HiOutlineX } from "react-icons/hi";
 import { Dropdown, Popover } from "flowbite-react";
-import { useTheme } from "../Navbar";
+import { useTheme } from "../ThemeContext";
 
 export default function ParticipantsList(props) {
     const participants = props.participants;
@@ -36,7 +36,7 @@ export default function ParticipantsList(props) {
 
     const nameInputRef = useRef(null);
 
-    const [, isDarkMode, ] = useTheme();
+    const { isDarkMode } = useTheme();
 
     const addParticipant = () => {
         let name = newName.trim();

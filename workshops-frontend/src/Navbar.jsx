@@ -1,52 +1,9 @@
-import { useEffect, useState } from "react";
 import { Sun, Moon } from "lucide-react";
 import AboutModal from "./AboutModal";
-
-export const useTheme = () => {
-    const getSystemTheme = () => {
-        return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-    }
-
-    const saveTheme = (theme) => {
-        localStorage.theme = theme;
-    }
-
-    const loadTheme = () => {
-        if (!('theme' in localStorage)) {
-            const theme = getSystemTheme();
-            saveTheme(theme);
-            return theme;
-        } else return localStorage.theme
-    }
-
-    const [theme, setTheme] = useState(loadTheme());
-    const [isDarkMode, setIsDarkMode] = useState(theme === 'dark');
-
-    const toggleTheme = () => {
-        const newTheme = theme === 'light' ? 'dark' : 'light';
-        setTheme(newTheme);
-
-    }
-
-    useEffect(() => {
-        saveTheme(theme);
-        setIsDarkMode(theme === 'dark');
-        realizeTheme(theme);
-    }, [theme]);
-
-    const realizeTheme = (theme) => {
-        if (theme === 'dark') {
-            document.documentElement.classList.add('dark')
-        } else {
-            document.documentElement.classList.remove('dark')
-        }
-    }
-
-    return [theme, isDarkMode, toggleTheme];
-};
+import { useTheme } from "./ThemeContext";
 
 export default function NavBar(props) {
-    const [, isDarkMode, toggleTheme] = useTheme();
+    const { isDarkMode, toggleTheme } = useTheme();
 
     return <nav className="mb-2 bg-white shadow dark:bg-gray-800 flex justify-between">
         <div className="container flex items-center justify-between p-4 mx-auto text-gray-600 capitalize dark:text-gray-300">
