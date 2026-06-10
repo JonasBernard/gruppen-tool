@@ -361,7 +361,11 @@ function App() {
 
 
             {currentTab === 0 && <div className="pt-3">
-              <Workshoplist workshops={workshops} setWorkshops={setWorkshops} />
+              <Workshoplist 
+                participants={participants}
+                setParticipants={setParticipants}
+                workshops={workshops} 
+                setWorkshops={setWorkshops} />
             </div>}
             {currentTab === 1 && <div className="pt-3">
               <ParticipantsList

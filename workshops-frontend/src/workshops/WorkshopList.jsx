@@ -5,8 +5,11 @@ import TextInputWithAutocomplete from "../components/TextInputWithAutocomplete";
 import NumberInput from "../components/NumberInput";
 import { HiOutlineCheck, HiOutlinePencil, HiOutlinePlus, HiOutlineTrash, HiOutlineX } from "react-icons/hi";
 import { Popover } from "flowbite-react";
+import { useConfirm } from "../components/useConfirm";
 
 export default function Workshoplist(props) {
+    const participants = props.participants;
+    const setParticipants = props.setParticipants;
     const workshops = props.workshops;
     const setWorkshops = props.setWorkshops;
 
@@ -14,6 +17,21 @@ export default function Workshoplist(props) {
     const [newCapa, setNewCapa] = useState(0);
 
     const nameInputRef = useRef(null);
+
+    const [modalElementAdjustParticipantWishes, confirmParticipantWishes] = useConfirm(
+        "Du hast den Workshop umbenannt. Sollen die Wünsche der Teilnehmer entsprechend angepasst werden?", 
+        "Ja, Wünsche anpassen",
+        "Nein, Wünsche nicht anpassen",
+        (oldName, newName) => {
+            if (!participants || participants.length === 0) {
+                return;
+            }
+            participants.forEach(participant => {
+                participant.wishes = participant.wishes.map(wish => wish === oldName ? newName : wish);
+            });
+            setParticipants([...participants]);
+        }
+    );
 
     const addWorkshop = () => {
         let name = newName.trim();
@@ -67,6 +85,10 @@ export default function Workshoplist(props) {
                     let name = workshop.editsMade.name.trim();
                     if (name === "") {
                         name = "[ohne Name]";
+                    }
+
+                    if (workshop.name !== name && participants && participants.length > 0) {
+                        confirmParticipantWishes(workshop.name, name);
                     }
                     workshop.name = name;
                 }
@@ -179,45 +201,40 @@ export default function Workshoplist(props) {
     }
 
     return (
+        <>
             <section className="container px-4 mx-auto">
                 {/* <h2 className="text-lg font-medium text-gray-800 dark:text-white">Workshops</h2> */}
-
                 <p className="mt-1 text-sm text-center text-gray-500 dark:text-gray-300">
                     Füge die Workshops hinzu, die es gibt.
                 </p>
-
                 <div className="flex flex-col mt-6">
                     <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
                         <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
                             <div className="overflow-hidden border border-gray-200 dark:border-gray-700 md:rounded-lg">
-
                                 <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                                     <thead className="bg-gray-50 dark:bg-gray-800">
                                         <tr>
                                             <th scope="col" className="py-3.5 px-4 text-sm font-normal text-center text-gray-500 dark:text-gray-400">
                                                 Name
                                             </th>
-
                                             <th scope="col" className="px-4 py-3.5 text-sm font-normal text-center text-gray-500 dark:text-gray-400">
                                                 Kapazität
                                             </th>
-
                                             <th scope="col" className="px-4 py-3.5 text-sm font-normal text-center text-gray-500 dark:text-gray-400">
                                                 Aktionen
                                             </th>
                                         </tr>
                                     </thead>
                                     <tbody className="bg-white divide-y divide-gray-200 dark:divide-gray-700 dark:bg-gray-900 dark:bg-opacity-40">
-
                                     <tr>
                                         <td className="p-1">
                                             <TextInputWithAutocomplete extraStyle="rounded-none" placeholder="Name des Workshops" ref={nameInputRef} value={newName} onChange={e => setNewName(e.target.value)}/>
                                         </td>
                                         <td className="p-1">
-                                            <NumberInput extraStyle="rounded-none" 
-                                                placeholder="Wie viele Teilnehmer kann der Workshop aufnehmen?" 
+                                            <NumberInput extraStyle="rounded-none"
+                                                placeholder="Wie viele Teilnehmer kann der Workshop aufnehmen?"
                                                 value={newCapa} onChange={e => setNewCapa(parseInt(e.target.value) || 0)}
-                                                onKeyDown={(e) => ((e.key === 'Tab' && !e.shiftKey) || e.key === 'Enter' ) && (e.preventDefault() || addWorkshop())} 
+                                                onKeyDown={(e) => ((e.key === 'Tab' && !e.shiftKey) || e.key === 'Enter' ) && (e.preventDefault() || addWorkshop())}
                                             />
                                         </td>
                                         <td className="p-2 text-sm text-center whitespace-nowrap">
@@ -226,11 +243,9 @@ export default function Workshoplist(props) {
                                             </Button>
                                         </td>
                                     </tr>
-
                                     {workshops.map(w => (
                                         (w.editable) ? renderEditableWorkshopRow(w) : renderNonEditableWorkshopRow(w)
                                     ))}
-
                                     {workshops.length > 0 && <tr className="text-gray-500 dark:text-gray-400 text-sm">
                                         <td className="p-1 text-center">
                                             <span>Anzahl Workshops: {workshops.length}</span>
@@ -242,11 +257,12 @@ export default function Workshoplist(props) {
                                     </tr>}
                                     </tbody>
                                 </table>
-
                             </div>
                         </div>
                     </div>
                 </div>
             </section>
+            {modalElementAdjustParticipantWishes}
+        </>
     );
 } 
