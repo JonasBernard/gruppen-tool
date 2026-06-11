@@ -9,10 +9,12 @@ import SettingsView from "./assignment/SettingsView";
 import { usePostHog } from "posthog-js/react";
 import SummaryView from "./assignment/SummaryView";
 import { Alert, Banner, BannerCollapseButton, Card } from "flowbite-react";
-import { HiOutlineX, HiOutlineAnnotation, HiOutlineExclamation, HiOutlineExclamationCircle, HiOutlineInformationCircle, HiOutlineLightBulb, HiOutlineUser, HiOutlineCollection, HiOutlineLightningBolt } from "react-icons/hi";
+import { HiOutlineX, HiOutlineAnnotation, HiOutlineExclamation, HiOutlineExclamationCircle, HiOutlineInformationCircle, HiOutlineLightBulb, HiOutlineUser, HiOutlineCollection, HiOutlineLightningBolt, HiOutlineKey } from "react-icons/hi";
 import Footer from "./Footer";
 import AppSidebar from "./sidebar/Sidebar";
 import { isExampleData } from "./sidebar/exampleData";
+import AdminTab from "./AdminTab";
+import useProfile from "./profile/useProfile";
 
 const APIBASE = process.env.REACT_APP_API_BASEURL || "http://localhost:5000";
 const APIBASE_V2 = process.env.REACT_APP_API_BASEURL_V2 || "http://localhost:5010";
@@ -81,6 +83,8 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
 
   const [currentTab, setTab] = useState(3);
+
+  const [getProfileOption] = useProfile();
 
   const posthog = usePostHog();
 
@@ -355,6 +359,17 @@ function App() {
                       + "whitespace-nowrap focus:outline-none"}>
                       <HiOutlineLightBulb className="mr-2"/>So funktioniert's
                   </button>
+                  {getProfileOption("adminTab.enable") && (
+                    <button onClick={() => setTab(4)} className={
+                        "inline-flex items-center h-10 px-4 -mb-px text-sm text-center bg-transparent border-b-2 sm:text-base "
+                        + (
+                          currentTab === 4
+                          ? "text-indigo-600 border-indigo-500 dark:border-indigo-400 dark:text-indigo-300 "
+                        : "text-gray-700 border-transparent dark:text-white focus:outline-none hover:border-gray-400 ")
+                      + "whitespace-nowrap focus:outline-none"}>
+                      <HiOutlineKey className="mr-2"/>Admin
+                  </button>
+                  )}
                 </div>  
             </div>
 
@@ -390,6 +405,10 @@ function App() {
 
             {currentTab === 3 && <div className="pt-3">
               <WelcomePage setTab={setTab}></WelcomePage>
+            </div>}
+
+            {currentTab === 4 && <div className="pt-3">
+              <AdminTab></AdminTab>
             </div>}
 
           </Card>
