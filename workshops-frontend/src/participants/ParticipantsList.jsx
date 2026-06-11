@@ -6,9 +6,12 @@ import ImportExcelModal from "./importExcelModal";
 import NumberSelector from "../components/NumberSelector";
 import ImportJSONModal from "./importJSONModal";
 import { useConfirm } from "../components/useConfirm";
-import { HiOutlineCheck, HiOutlineDocumentAdd, HiOutlinePencil, HiOutlinePlus, HiOutlineTrash, HiOutlineX } from "react-icons/hi";
+import { HiOutlineCheck, HiOutlineDocumentAdd, HiOutlineDotsVertical, HiOutlinePencil, HiOutlinePlus, HiOutlineTrash, HiOutlineX } from "react-icons/hi";
+import { BsFillMenuButtonWideFill } from "react-icons/bs";
+import { LuTextCursorInput } from "react-icons/lu";
 import { Dropdown, Popover } from "flowbite-react";
 import { useTheme } from "../ThemeContext";
+import ButtonGroupSelector from "../components/ButtonGroupSelector";
 
 export default function ParticipantsList(props) {
     const participants = props.participants;
@@ -37,6 +40,10 @@ export default function ParticipantsList(props) {
     const nameInputRef = useRef(null);
 
     const { isDarkMode } = useTheme();
+
+    const [UISettings, setUISettings] = useState({
+        wishInputType: "dropdown"
+    });
 
     const addParticipant = () => {
         let name = newName.trim();
@@ -190,27 +197,29 @@ export default function ParticipantsList(props) {
             </td>
             {[...Array(wishCount)].map((x, i) => {
                 return <td className="p-1" key={i}>
-                    <div className="flex justify-center">
-                        {/* <TextInputWithAutocomplete
+                    {UISettings.wishInputType === "dropdown" ? (
+                        <div className="flex justify-center">
+                            <Dropdown data-testid="dropdown" color={isDarkMode ? "dark" : "indigo"} placement="center" label={participant.editsMade?.wishes?.[i] !== undefined ? participant.editsMade?.wishes?.[i] : participant.wishes[i]}>
+                                {workshopNames.map(workshop => (
+                                    <Dropdown.Item key={workshop} onClick={() => editWishOfParticipant(participant.id, i, workshop)}>
+                                        {workshop}
+                                    </Dropdown.Item>
+                                ))}
+                                <Dropdown.Item onClick={() => editWishOfParticipant(participant.id, i, "")}>
+                                    [Kein Wunsch]
+                                </Dropdown.Item>
+                            </Dropdown>
+                        </div>
+                    ) : (
+                        <TextInputWithAutocomplete
                             key={i}
                             extraStyle="rounded-none" placeholder={i+1 + ". Wunsch"}
                             value={participant.editsMade?.wishes?.[i] || participant.wishes[i]}
                             onChange={e => editWishOfParticipant(participant.id, i, e.target.value)}
                             onKeyDown={(e, trAuoCom) => (i === wishCount-1 && (e.key === 'Enter') && !trAuoCom) && (e.preventDefault() || setEditable(participant.id, false))}
-                            autocomplete={workshopNames}
-                            autocompleteSetValue={value => editWishOfParticipant(participant.id, i, value)}
-                        /> */}
-                        <Dropdown data-testid="dropdown" color={isDarkMode ? "dark" : "indigo"} placement="center" label={participant.editsMade?.wishes?.[i] !== undefined ? participant.editsMade?.wishes?.[i] : participant.wishes[i]}>
-                            {workshopNames.map(workshop => (
-                                <Dropdown.Item key={workshop} onClick={() => editWishOfParticipant(participant.id, i, workshop)}>
-                                    {workshop}
-                                </Dropdown.Item>
-                            ))}
-                            <Dropdown.Item onClick={() => editWishOfParticipant(participant.id, i, "")}>
-                                [Kein Wunsch]
-                            </Dropdown.Item>
-                        </Dropdown>
-                    </div>
+                        autocomplete={workshopNames}
+                        autocompleteSetValue={value => editWishOfParticipant(participant.id, i, value)}
+                    /> )}
                 </td>
             })}
             <td className="p-2 text-sm text-center whitespace-nowrap flex justify-center">
@@ -245,129 +254,145 @@ export default function ParticipantsList(props) {
     }
 
     return (
-            <section className="container px-4 mx-auto">
-                {/* <h2 className="text-lg font-medium text-gray-800 dark:text-white">Teilnehmer</h2> */}
+        <section className="container px-4 mx-auto">
+            {/* <h2 className="text-lg font-medium text-gray-800 dark:text-white">Teilnehmer</h2> */}
 
-                <div className="flex justify-between items-center">
-                    <p className="ml-3 mt-1 text-sm text-gray-500 dark:text-gray-300">
-                        Füge die Teilnehmer und ihre Wünsche hinzu.
-                    
-                        Workshops, die es in der Workshopliste nicht gibt, werden
-                        <span className="mx-1 px-2 py-1 rounded-xl bg-yellow-500 text-black text-nowrap">
-                            in gelb
-                        </span>
-                        markiert.
-                    </p>
-                    <span>
-                        <NumberSelector
-                            text="Anzahl der Wünsche pro Teilnehmer"
-                            placeholder="Festlegen der Wünsche pro Teilnehmer über Plus und Minus"
-                            value={wishCount}
-                            setValue={(valueFn) => {
-                                const newVal = Number(valueFn(wishCount));
-                                if (1 <= newVal && newVal <= MAX_WISH_COUNT) {
-                                    setWishCount(newVal);
-                                }
-                            }}
-                        ></NumberSelector>
+            <div className="flex justify-between items-center">
+                <p className="ml-3 mt-1 text-sm text-gray-500 dark:text-gray-300">
+                    Füge die Teilnehmer und ihre Wünsche hinzu.
+                
+                    Workshops, die es in der Workshopliste nicht gibt, werden
+                    <span className="mx-1 px-2 py-1 rounded-xl bg-yellow-500 text-black text-nowrap">
+                        in gelb
                     </span>
-                </div>
+                    markiert.
+                </p>
+                <span>
+                    <NumberSelector
+                        text="Anzahl der Wünsche pro Teilnehmer"
+                        placeholder="Festlegen der Wünsche pro Teilnehmer über Plus und Minus"
+                        value={wishCount}
+                        setValue={(valueFn) => {
+                            const newVal = Number(valueFn(wishCount));
+                            if (1 <= newVal && newVal <= MAX_WISH_COUNT) {
+                                setWishCount(newVal);
+                            }
+                        }}
+                    ></NumberSelector>
+                </span>
+            </div>
 
-                <div className="flex mt-4 justify-end">
-                    { process.env.NODE_ENV !== 'production' && 
-                        <div className="mr-3">
-                            <ImportJSONModal onImportParticipants={(data) => {
-                                setParticipants([
-                                    ...data,
-                                    ...participants
-                                ]);
-                            }}
-                            wishCount={wishCount}
-                            maxWishCount={MAX_WISH_COUNT}
-                            workshopNames={workshopNames}>
-                                Aus JSON-Datei importieren (Debug-Funktion)
-                            </ImportJSONModal>
+            <div className="flex mt-4 justify-end">
+                { process.env.NODE_ENV !== 'production' && 
+                    <div className="mr-3">
+                        <ImportJSONModal onImportParticipants={(data) => {
+                            setParticipants([
+                                ...data,
+                                ...participants
+                            ]);
+                        }}
+                        wishCount={wishCount}
+                        maxWishCount={MAX_WISH_COUNT}
+                        workshopNames={workshopNames}>
+                            Aus JSON-Datei importieren (Debug-Funktion)
+                        </ImportJSONModal>
+                    </div>
+                }
+                <ImportExcelModal onImportParticipants={(data) => {
+                    setParticipants([
+                        ...data,
+                        ...participants
+                    ]);
+                }}
+                wishCount={wishCount}
+                maxWishCount={MAX_WISH_COUNT}
+                workshopNames={workshopNames}>
+                    <HiOutlineDocumentAdd className="mr-2 h-5 w-5" /> Aus Excel-Datei importieren
+                </ImportExcelModal>
+                <Button
+                    onClick={askConfirmationClearParticipants}
+                    bgColor="bg-red-500 focus:ring-red-300 dark:bg-rose-600 dark:text-stone-100 p-2"
+                    className="rounded-none"
+                >
+                    <HiOutlineTrash className="mr-2 h-5 w-5" /> Tabelle leeren
+                </Button>
+                {modalElementClearParticipants}
+                <Popover
+                    content={
+                        <div className="px-2 py-2 flex items-center gap-2">
+                            <span className="font-medium mx-4 text-gray-700 dark:text-gray-300">Eingabe der Wünsche</span>
+                            <ButtonGroupSelector 
+                                options={[
+                                    {id: "dropdown", label: <><BsFillMenuButtonWideFill className="h-5 w-5 mr-2" /> Per Dropdown</> },
+                                    {id: "textfield", label: <><LuTextCursorInput className="h-5 w-5 mr-2" /> Per Textfeld</>},
+                                ]}
+                                onChange={(value) => setUISettings(old => ({...old, wishInputType: value}))}
+                                value={UISettings.wishInputType}
+                            ></ButtonGroupSelector>
                         </div>
                     }
-                    <ImportExcelModal onImportParticipants={(data) => {
-                        setParticipants([
-                            ...data,
-                            ...participants
-                        ]);
-                    }}
-                    wishCount={wishCount}
-                    maxWishCount={MAX_WISH_COUNT}
-                    workshopNames={workshopNames}>
-                        <HiOutlineDocumentAdd className="mr-2 h-5 w-5" /> Aus Excel-Datei importieren
-                    </ImportExcelModal>
-                    <Button
-                        onClick={askConfirmationClearParticipants}
-                        bgColor="bg-red-500 focus:ring-red-300 dark:bg-rose-600 dark:text-stone-100 p-2"
-                        className="rounded-l-none"
-                    >
-                        <HiOutlineTrash className="mr-2 h-5 w-5" /> Tabelle leeren
-                    </Button>
-                    {modalElementClearParticipants}
-                </div>
+                    aria-labelledby="default-popover"
+                    placement="bottom"
+                    trigger="click"
+                >
+                        <button
+                            className="bg-gray-200 focus:ring-gray-300 dark:bg-gray-700 text-gray-800 dark:text-stone-100 rounded-l-none rounded-r-lg p-2"
+                        >
+                            <HiOutlineDotsVertical className="h-5 w-5" />
+                        </button>
+                </Popover>
+            </div>
 
-                <div className="flex flex-col mt-4">
-                    <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                        <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
-                            <div className="overflow-hidden border border-gray-200 dark:border-gray-700 md:rounded-lg">
+            <div className="flex flex-col mt-4">
+                <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                    <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
+                        <div className="overflow-hidden border border-gray-200 dark:border-gray-700 md:rounded-lg">
 
-                                <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                                    <thead className="bg-gray-50 dark:bg-gray-800">
-                                        <tr>
-                                            <th scope="col" className="py-3.5 px-4 text-sm font-normal text-center text-gray-500 dark:text-gray-400">
-                                                Name
-                                            </th>
-
-                                            <th scope="col" className="px-4 py-3.5 text-sm font-normal text-center text-gray-500 dark:text-gray-400">
-                                                Erst-Wunsch
-                                            </th>
-
-                                            {wishCount >= 2 ? (<th scope="col" className="px-4 py-3.5 text-sm font-normal text-center text-gray-500 dark:text-gray-400">
-                                                Zweit-Wunsch
-                                            </th>) : <></>}
-
-                                            {wishCount >= 3 ? (<th scope="col" className="px-4 py-3.5 text-sm font-normal text-center text-gray-500 dark:text-gray-400">
-                                                Dritt-Wunsch
-                                            </th>) : <></>}
-
-                                            {wishCount >= 4 ? (<th scope="col" className="px-4 py-3.5 text-sm font-normal text-center text-gray-500 dark:text-gray-400">
-                                                Viert-Wunsch
-                                            </th>) : <></>}
-
-                                            {wishCount >= 5 ? (<th scope="col" className="px-4 py-3.5 text-sm font-normal text-center text-gray-500 dark:text-gray-400">
-                                                Fünft-Wunsch
-                                            </th>) : <></>}
-
-                                            {wishCount >= 6 ? (<th scope="col" className="px-4 py-3.5 text-sm font-normal text-center text-gray-500 dark:text-gray-400">
-                                                Sechst-Wunsch
-                                            </th>) : <></>}
-
-                                            <th scope="col" className="px-4 py-3.5 text-sm font-normal text-center text-gray-500 dark:text-gray-400">
-                                                Aktionen
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="bg-white divide-y divide-gray-200 dark:divide-gray-700 dark:bg-gray-900 dark:bg-opacity-40">
-                                    
+                            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                                <thead className="bg-gray-50 dark:bg-gray-800">
                                     <tr>
-                                        <td className="p-1">
-                                            <TextInputWithAutocomplete extraStyle="rounded-none" placeholder="Name des Teilnehmers" ref={nameInputRef} value={newName} onChange={e => setNewName(e.target.value)}/>
-                                        </td>
-                                        {[...Array(wishCount)].map((x, i) => {
-                                            return <td className="p-1" key={i}>
-                                                {/* <TextInputWithAutocomplete
-                                                    key={i}
-                                                    extraStyle="rounded-none" placeholder={i+1 + ". Wunsch"} 
-                                                    value={newWishList[i]}
-                                                    onChange={e => updateWish(i, e.target.value)}
-                                                    onKeyDown={(e, trAuoCom) => (i === wishCount-1 && (e.key === 'Enter') && !trAuoCom) && (e.preventDefault() || addParticipant())}
-                                                    autocomplete={workshopNames}
-                                                    autocompleteSetValue={value => updateWish(i, value)}
-                                                /> */}
+                                        <th scope="col" className="py-3.5 px-4 text-sm font-normal text-center text-gray-500 dark:text-gray-400">
+                                            Name
+                                        </th>
+
+                                        <th scope="col" className="px-4 py-3.5 text-sm font-normal text-center text-gray-500 dark:text-gray-400">
+                                            Erst-Wunsch
+                                        </th>
+
+                                        {wishCount >= 2 ? (<th scope="col" className="px-4 py-3.5 text-sm font-normal text-center text-gray-500 dark:text-gray-400">
+                                            Zweit-Wunsch
+                                        </th>) : <></>}
+
+                                        {wishCount >= 3 ? (<th scope="col" className="px-4 py-3.5 text-sm font-normal text-center text-gray-500 dark:text-gray-400">
+                                            Dritt-Wunsch
+                                        </th>) : <></>}
+
+                                        {wishCount >= 4 ? (<th scope="col" className="px-4 py-3.5 text-sm font-normal text-center text-gray-500 dark:text-gray-400">
+                                            Viert-Wunsch
+                                        </th>) : <></>}
+
+                                        {wishCount >= 5 ? (<th scope="col" className="px-4 py-3.5 text-sm font-normal text-center text-gray-500 dark:text-gray-400">
+                                            Fünft-Wunsch
+                                        </th>) : <></>}
+
+                                        {wishCount >= 6 ? (<th scope="col" className="px-4 py-3.5 text-sm font-normal text-center text-gray-500 dark:text-gray-400">
+                                            Sechst-Wunsch
+                                        </th>) : <></>}
+
+                                        <th scope="col" className="px-4 py-3.5 text-sm font-normal text-center text-gray-500 dark:text-gray-400">
+                                            Aktionen
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody className="bg-white divide-y divide-gray-200 dark:divide-gray-700 dark:bg-gray-900 dark:bg-opacity-40">
+                                
+                                <tr>
+                                    <td className="p-1">
+                                        <TextInputWithAutocomplete extraStyle="rounded-none" placeholder="Name des Teilnehmers" ref={nameInputRef} value={newName} onChange={e => setNewName(e.target.value)}/>
+                                    </td>
+                                    {[...Array(wishCount)].map((x, i) => {
+                                        return <td className="p-1" key={i}>
+                                            {UISettings.wishInputType === "dropdown" ? (
                                                 <div className="flex justify-center">
                                                     <Dropdown data-testid="dropdown" color={isDarkMode ? "dark" : "indigo"} placement="center" label={newWishList[i]}>
                                                         {workshopNames.map(workshop => (
@@ -380,38 +405,48 @@ export default function ParticipantsList(props) {
                                                         </Dropdown.Item>
                                                     </Dropdown>
                                                 </div>
-                                            </td>
-                                        })}
-                                        <td className="p-2 text-sm text-center whitespace-nowrap">
-                                            <Button onClick={() => addParticipant()}>
-                                                <HiOutlinePlus className="h-5 w-5 mr-2" /> Hinzufügen
-                                            </Button>
+                                            ) : (
+                                                <TextInputWithAutocomplete
+                                                    key={i}
+                                                    extraStyle="rounded-none" placeholder={i+1 + ". Wunsch"} 
+                                                    value={newWishList[i]}
+                                                    onChange={e => updateWish(i, e.target.value)}
+                                                    onKeyDown={(e, trAuoCom) => (i === wishCount-1 && (e.key === 'Enter') && !trAuoCom) && (e.preventDefault() || addParticipant())}
+                                                autocomplete={workshopNames}
+                                                autocompleteSetValue={value => updateWish(i, value)}
+                                            /> )}
                                         </td>
-                                    </tr>
+                                    })}
+                                    <td className="p-2 text-sm text-center whitespace-nowrap">
+                                        <Button onClick={() => addParticipant()}>
+                                            <HiOutlinePlus className="h-5 w-5 mr-2" /> Hinzufügen
+                                        </Button>
+                                    </td>
+                                </tr>
 
-                                    {participants.map(k => (
-                                        (k.editable) ? renderEditableParticipantRow(k) : renderNonEditableParticipantRow(k)
-                                    ))}
+                                {participants.map(k => (
+                                    (k.editable) ? renderEditableParticipantRow(k) : renderNonEditableParticipantRow(k)
+                                ))}
 
-                                    {participants.length > 0 && <tr className="text-gray-500 dark:text-gray-400 text-sm">
-                                        <td className="p-1 text-center">
-                                            <span>Anzahl Teilnehmer: {participants.length}</span>
-                                        </td>
-                                        {[...Array(wishCount)].map((x, i) => {
-                                        return <td className="p-1 text-center" key={i}>
-                                            <span>Anzahl gesetzer Wünsche in dieser Spalte: {participants.reduce((a,b) => b.wishes[i] !== "" ? a + 1 : a, 0)}</span>
-                                        </td>
-                                        })}
-                                        <td></td>
-                                    </tr>}
+                                {participants.length > 0 && <tr className="text-gray-500 dark:text-gray-400 text-sm">
+                                    <td className="p-1 text-center">
+                                        <span>Anzahl Teilnehmer: {participants.length}</span>
+                                    </td>
+                                    {[...Array(wishCount)].map((x, i) => {
+                                    return <td className="p-1 text-center" key={i}>
+                                        <span>Anzahl gesetzer Wünsche in dieser Spalte: {participants.reduce((a,b) => b.wishes[i] !== "" ? a + 1 : a, 0)}</span>
+                                    </td>
+                                    })}
+                                    <td></td>
+                                </tr>}
 
-                                    </tbody>
-                                </table>
+                                </tbody>
+                            </table>
 
-                            </div>
                         </div>
                     </div>
                 </div>
-            </section>
+            </div>
+        </section>
     );
 }
