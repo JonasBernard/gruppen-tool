@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import "./App.css";
 import ParticipantsList from "./participants/ParticipantsList";
 import Workshoplist from "./workshops/WorkshopList";
@@ -61,7 +62,7 @@ function loadData() {
   return [false, [], []];
 }
 
-function App() {
+function AppContent() {
   const [participants, setParticipants] = useState([]);
   const [workshops, setWorkshops] = useState([]);
 
@@ -82,17 +83,39 @@ function App() {
   const [result, setRequestResult] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const [currentTab, setTab] = useState(3);
-
   const [getProfileOption] = useProfile();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const posthog = usePostHog();
+
+  const getTabFromPath = () => {
+    const path = location.pathname;
+    const tabMap = {
+      '/workshops': 0,
+      '/participants': 1,
+      '/assign': 2,
+      '/': 3,
+      '/admin': 4,
+    };
+    return tabMap[path] !== undefined ? tabMap[path] : 3;
+  };
+
+  const navigateToTab = (tabIndex) => {
+    const pathMap = {
+      0: '/workshops',
+      1: '/participants',
+      2: '/assign',
+      3: '/',
+      4: '/admin',
+    };
+    navigate(pathMap[tabIndex]);
+  };
 
   useEffect(() => {
     let [loaded,k,w,s] = loadData();
     if (loaded) {
-      
-      setParticipants(k); setWorkshops(w); setTab(2);
+      setParticipants(k); setWorkshops(w);
       s && setSettings(s);
       
       setInfoMessageWithTimeout("Es wurden Daten aus deiner letzten Sitzung wiederhergestellt.");
@@ -102,6 +125,8 @@ function App() {
   useEffect(() => {
     saveData(participants, workshops, settings);
   }, [participants, workshops, settings]);
+
+  const currentTab = getTabFromPath();
 
   const addWarningMessage = (message) => {
     setWarningMessages((prev) => [...prev, message]);
@@ -319,7 +344,7 @@ function App() {
           <Card className="container">
             <div className="flex justify-between overflow-x-auto overflow-y-hidden border-b border-gray-200 whitespace-nowrap dark:border-gray-700">
                 <div className="flex">
-                  <button onClick={() => setTab(0)}
+                  <button onClick={() => navigateToTab(0)}
                     className={
                       "inline-flex items-center h-10 px-4 -mb-px text-sm text-center bg-transparent border-b-2 sm:text-base "
                       + (
@@ -329,7 +354,7 @@ function App() {
                       + "whitespace-nowrap focus:outline-none"}>
                       <HiOutlineCollection className="mr-2" /> Workshops
                   </button>
-                  <button onClick={() => setTab(1)} className={
+                  <button onClick={() => navigateToTab(1)} className={
                       "inline-flex items-center h-10 px-4 -mb-px text-sm text-center bg-transparent border-b-2 sm:text-base "
                       + (
                         currentTab === 1
@@ -338,7 +363,7 @@ function App() {
                       + "whitespace-nowrap focus:outline-none"}>
                       <HiOutlineUser className="mr-2"/>Teilnehmer
                   </button>
-                  <button onClick={() => setTab(2)} className={
+                  <button onClick={() => navigateToTab(2)} className={
                       "inline-flex items-center h-10 px-4 -mb-px text-sm text-center bg-transparent border-b-2 sm:text-base "
                       + (
                         currentTab === 2
@@ -350,7 +375,7 @@ function App() {
                 </div>
 
                 <div className="flex">
-                  <button onClick={() => setTab(3)} className={
+                  <button onClick={() => navigateToTab(3)} className={
                       "inline-flex items-center h-10 px-4 -mb-px text-sm text-center bg-transparent border-b-2 sm:text-base "
                       + (
                         currentTab === 3
@@ -360,7 +385,7 @@ function App() {
                       <HiOutlineLightBulb className="mr-2"/>So funktioniert's
                   </button>
                   {getProfileOption("adminTab.enable") && (
-                    <button onClick={() => setTab(4)} className={
+                    <button onClick={() => navigateToTab(4)} className={
                         "inline-flex items-center h-10 px-4 -mb-px text-sm text-center bg-transparent border-b-2 sm:text-base "
                         + (
                           currentTab === 4
@@ -374,50 +399,69 @@ function App() {
             </div>
 
 
-            {currentTab === 0 && <div className="pt-3">
-              <Workshoplist 
-                participants={participants}
-                setParticipants={setParticipants}
-                workshops={workshops} 
-                setWorkshops={setWorkshops} />
-            </div>}
-            {currentTab === 1 && <div className="pt-3">
-              <ParticipantsList
-                participants={participants}
-                setParticipants={setParticipants}
-                workshopNames={workshops.map(w => w.name)}
-                initialSettings={settings}
-                setSettings={setSettings}
-              />
-            </div>}
-
-            {currentTab === 2 && <div className="py-6 px-4 flex flex-col gap-5">
-              <SummaryView participants={participants} workshops={workshops} settings={settings} />
-              <SettingsView initialSettings={settings} setSettings={setSettings} sendData={sendData} isLoading={isLoading}></SettingsView>              
-              {warningMessages && warningMessages.map((msg) => (
-                  <Alert color="warning" icon={HiOutlineExclamation} className="text-yellow-900 dark:bg-gray-700 dark:text-yellow-300" dismissable={false}>{msg}</Alert>
-              ))}
-              {errorMessage && (
-                  <Alert color="failure" icon={HiOutlineExclamationCircle} className="text-red-900 dark:bg-red-900 dark:text-red-100" dismissable={false}>{errorMessage}</Alert>
+            <Routes>
+              <Route path="/workshops" element={
+                <div className="pt-3">
+                  <Workshoplist 
+                    participants={participants}
+                    setParticipants={setParticipants}
+                    workshops={workshops} 
+                    setWorkshops={setWorkshops} />
+                </div>
+              } />
+              <Route path="/participants" element={
+                <div className="pt-3">
+                  <ParticipantsList
+                    participants={participants}
+                    setParticipants={setParticipants}
+                    workshopNames={workshops.map(w => w.name)}
+                    initialSettings={settings}
+                    setSettings={setSettings}
+                  />
+                </div>
+              } />
+              <Route path="/assign" element={
+                <div className="py-6 px-4 flex flex-col gap-5">
+                  <SummaryView participants={participants} workshops={workshops} settings={settings} />
+                  <SettingsView initialSettings={settings} setSettings={setSettings} sendData={sendData} isLoading={isLoading}></SettingsView>              
+                  {warningMessages && warningMessages.map((msg) => (
+                      <Alert color="warning" icon={HiOutlineExclamation} className="text-yellow-900 dark:bg-gray-700 dark:text-yellow-300" dismissable={false}>{msg}</Alert>
+                  ))}
+                  {errorMessage && (
+                      <Alert color="failure" icon={HiOutlineExclamationCircle} className="text-red-900 dark:bg-red-900 dark:text-red-100" dismissable={false}>{errorMessage}</Alert>
+                  )}
+                  <ResultView result={result} />
+                </div>
+              } />
+              <Route path="/" element={
+                <div className="pt-3">
+                  <WelcomePage setTab={navigateToTab}></WelcomePage>
+                </div>
+              } />
+              {getProfileOption("adminTab.enable") && (
+                <Route path="/admin" element={
+                  <div className="pt-3">
+                    <AdminTab></AdminTab>
+                  </div>
+                } />
               )}
-              <ResultView result={result} />
-            </div>}
-
-            {currentTab === 3 && <div className="pt-3">
-              <WelcomePage setTab={setTab}></WelcomePage>
-            </div>}
-
-            {currentTab === 4 && <div className="pt-3">
-              <AdminTab></AdminTab>
-            </div>}
+            </Routes>
 
           </Card>
           
         </div>
-        <AppSidebar setWorkshops={setWorkshops} setParticipants={setParticipants} resetTabToParticipants={() => setTab(1)} />
+        <AppSidebar setWorkshops={setWorkshops} setParticipants={setParticipants} resetTabToParticipants={() => navigateToTab(1)} />
       </div>
       <Footer className="dark:bg-slate-700" />
     </div>
+  );
+}
+
+function App() {
+  return (
+    <Router>
+      <AppContent />
+    </Router>
   );
 }
 
