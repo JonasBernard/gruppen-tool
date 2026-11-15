@@ -1,4 +1,3 @@
-from functools import reduce
 from pyscipopt import Model, quicksum
 import random
 
@@ -42,7 +41,9 @@ def solve_group_assignment(participants, workshops, options={}):
     n = len(participants)
     m = len(workshops)
     
-    num_wishes_per_participant = reduce(max, [options['num_wishes_per_participant']] + [len(p['wishes']) for p in participants])
+    num_wishes_per_participant = options['num_wishes_per_participant']
+    for participant in participants:
+        participant['wishes'] = participant['wishes'][:num_wishes_per_participant]
     num_workshops_per_participant = options['num_workshops_per_participant']
     allow_same_workshop_twice = options['allow_same_workshop_twice']
     allow_non_wished = options['allow_non_wished']
