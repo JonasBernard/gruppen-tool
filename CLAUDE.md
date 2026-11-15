@@ -2,6 +2,20 @@
 
 Gruppen-Tool (https://gruppen-tool.de) assigns participants to groups ("workshops") from ranked wishes and capacity limits. It is a German-language web app. A React frontend calls one of two stateless solver backends.
 
+## Working rules (binding)
+
+The owner's own wording of these rules is in `humandoc/00_README_agent_rules.md`, and that file wins if the two disagree.
+
+- **Documentation split.** Everything under `/humandoc/` is human-written specification. Never change its content; at most fix links or formatting when a human asks. Documentation written by an agent goes under `/aidoc/`. `CLAUDE.md` stays at the repository root so Claude Code loads it.
+- **Human review for all code.** Every change goes through a GitHub pull request that a human reviews. Never push to `main`.
+- **Watch your pull requests.** After opening one, keep watching it for reviews and comments and fix what they ask for.
+- **Delete merged branches.** After a pull request is merged, delete its branch.
+- **UI text is for humans to write.** UI text is German with informal "du", and a human should ideally write it. If you have to draft some, point it out clearly in the pull request so a human can approve or rewrite it.
+- **Few comments.** Comment only what isn't obvious from the code, and be conservative about adding them.
+- **Removing beats patching.** Before patching or fixing something, consider whether code, features or functions could be removed instead, and present that option to the human.
+- **Check fit.** Check each fix against the overall architecture, the existing practice in this repository, and the goal of the project.
+- **Step back after big changes.** After a larger change, ask whether it was sensible or just added clutter. Keep solutions simple and verify them. If no simple solution was possible, consider whether a larger refactor is warranted (architecture change, new dependency, new file layout, new module or separation of concerns) and propose it.
+
 ## Repository layout
 
 | Path | What it is |
@@ -10,6 +24,8 @@ Gruppen-Tool (https://gruppen-tool.de) assigns participants to groups ("workshop
 | `workshops-backend/` | v1 solver in Go 1.21 (`src/main.go`, single file). It uses min-cost-max-flow from `github.com/JonasBernard/min-cost-max-flow`. Port 5000. |
 | `workshops-backend-v2/` | v2 solver in Python 3.11 with Flask, gunicorn and SCIP (`pyscipopt`). `server.py` handles HTTP and validation, `solver.py` builds the MILP. Port 5010. |
 | `keycloak-theme/` | Keycloakify + Tailwind/shadcn login theme, taken from a community starter. It is **not wired into the app or CI yet**, so leave it alone unless asked. |
+| `humandoc/` | Human-written specification. Agents never change its content. |
+| `aidoc/` | Documentation written by agents (create it when needed). |
 | `testdata/` | Excel/ODS files for testing the import by hand. |
 | `.gitea/workflows/docker-build.yml` | CI. It builds and pushes all three images to `git.jonasbernard.de` when a `v*.*.*[-alpha\|-beta]` tag is pushed. |
 | `docker-build-push.sh` | Manual alternative to CI: `./docker-build-push.sh <TAG_PREFIX> <VERSION>`. |
@@ -78,7 +94,7 @@ Request body (the same shape for both backends):
 
 ## Conventions
 
-- All UI text is **German** and uses the informal "du". Code, identifiers and comments are in English.
+- All UI text is **German** and uses the informal "du", and a human should write or approve it (see Working rules). Code, identifiers and comments are in English.
 - Use "workshop" and "participant" in code. The old name "kid" only survives in the migration code (the recent "Consistent workshop renaming" commit removed the rest).
 - Keep the backends stateless. The frontend owns all data.
 - Commits are short imperative English summaries ("Add charts", "Fix theme issues with dropdown").
