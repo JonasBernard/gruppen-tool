@@ -62,6 +62,9 @@ type Assignment struct {
 	Assignment [][]string `json:"assignment"`
 }
 
+// 150 participants with 7 strings of up to 64 four-byte characters is about 300 KB.
+const maxRequestBodyBytes = 1 << 20
+
 func AllowOriginLocalhost(w *http.ResponseWriter) {
 	(*w).Header().Set("Access-Control-Allow-Origin", "*")
 }
@@ -140,7 +143,7 @@ func SolveGroupProblem(w http.ResponseWriter, req *http.Request, getEdgeWeight f
 		return
 	}
 
-	body, err := io.ReadAll(req.Body)
+	body, err := io.ReadAll(http.MaxBytesReader(w, req.Body, maxRequestBodyBytes))
 
 	defer req.Body.Close()
 	if err != nil {
@@ -173,6 +176,9 @@ func SolveGroupProblem(w http.ResponseWriter, req *http.Request, getEdgeWeight f
 
 	solutions, err := matchingProblem.SolveMany(1, func(c Participant, w Workshop) (connect bool, weight float64) {
 		for j := 0; j < numberOfWishesPerParticipant; j++ {
+			if j >= len(c.Wishes) {
+				break
+			}
 			wi := c.Wishes[j]
 
 			if NormalizeString(wi) == NormalizeString(w.Name) {
@@ -188,6 +194,7 @@ func SolveGroupProblem(w http.ResponseWriter, req *http.Request, getEdgeWeight f
 
 	if len(solutions) < 1 {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 
 	matchingEdges := solutions[0]
