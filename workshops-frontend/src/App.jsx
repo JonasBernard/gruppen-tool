@@ -29,35 +29,41 @@ function saveData(participants, workshops, settings) {
 }
 
 function loadData() {
-  if (localStorage.dataV3) {
-    let data = JSON.parse(localStorage.dataV3);
-    if (data.participants.length > 0 || data.workshops.length > 0)
-      return [true, data.participants, data.workshops, data.settings];
-  }
-  if (localStorage.dataV2) {
-    let data = JSON.parse(localStorage.dataV2);
-    for (const workshop of data.workshops) {
-      if (workshop.capacity instanceof String) {
-        workshop.capacity = parseInt(workshop.capacity);
+  try {
+    if (localStorage.dataV3) {
+      let data = JSON.parse(localStorage.dataV3);
+      if (data.participants.length > 0 || data.workshops.length > 0)
+        return [true, data.participants, data.workshops, data.settings];
+    }
+    if (localStorage.dataV2) {
+      let data = JSON.parse(localStorage.dataV2);
+      for (const workshop of data.workshops) {
+        if (workshop.capacity instanceof String) {
+          workshop.capacity = parseInt(workshop.capacity);
+        }
+      }
+
+      localStorage.removeItem("dataV2");
+      saveData(data.participants, data.workshops, data.settings);
+      if (data.participants.length > 0 || data.workshops.length > 0)
+        return [true, data.participants, data.workshops, data.settings];
+    }
+    if (localStorage.dataV1) {
+      let data = JSON.parse(localStorage.dataV1);
+      let numberOfWishesPerKid = data.settings.numberOfWishesPerKid;
+      data.settings.numberOfWishesPerParticipant = numberOfWishesPerKid;
+      data.settings.numberOfWishesPerKid = undefined;
+
+      localStorage.removeItem("dataV1");
+      saveData(data.kids, data.workshops, data.settings);
+      if (data.kids.length > 0 || data.workshops.length > 0) {
+        return [true, data.kids, data.workshops, data.settings];
       }
     }
-
+  } catch {
+    localStorage.removeItem("dataV3");
     localStorage.removeItem("dataV2");
-    saveData(data.participants, data.workshops, data.settings);
-    if (data.participants.length > 0 || data.workshops.length > 0)
-      return [true, data.participants, data.workshops, data.settings];
-  }
-  if (localStorage.dataV1) {
-    let data = JSON.parse(localStorage.dataV1);
-    let numberOfWishesPerKid = data.settings.numberOfWishesPerKid;
-    data.settings.numberOfWishesPerParticipant = numberOfWishesPerKid;
-    data.settings.numberOfWishesPerKid = undefined;
-
     localStorage.removeItem("dataV1");
-    saveData(data.kids, data.workshops, data.settings);
-    if (data.kids.length > 0 || data.workshops.length > 0) {
-      return [true, data.kids, data.workshops, data.settings];
-    }
   }
   return [false, [], []];
 }
@@ -237,7 +243,7 @@ function AppContent() {
       return
     }
     
-    saveData(participantsOrig, workshopsOrig);
+    saveData(participantsOrig, workshopsOrig, settingsOrig);
 
     let useV2 = settings.selectedAlgorithm === "scip";
 
