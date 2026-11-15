@@ -186,7 +186,7 @@ export default function AssignmentView(props) {
                 if (assignedWorkshop) {
                     if (assignedWorkshop !== "none") {
                         const wishNr = participant.wishes.findIndex(w => w === assignedWorkshop);
-                        if (wishNr !== -1) {
+                        if (wishNr !== -1 && wishNr < settings.numberOfWishesPerParticipant) {
                             dataset[wishNr].data[workshops.findIndex(w => w.name === assignedWorkshop)]++;
                         }
                     } else {
