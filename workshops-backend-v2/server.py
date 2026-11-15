@@ -76,6 +76,11 @@ def index():
         
         print(f"Solving took {elapsed_time:.2f} seconds.")
     except Exception as e:
+        if str(e) == "Time or memory limit reached.":
+            return {
+                "status": "v2:mem-time-limit",
+                "message": "The time or memory limit was reached before a solution was found."
+            }, 500
         if str(e) == "Problem is infeasible.":
             return {
                 "status": "v2:infeasible",
