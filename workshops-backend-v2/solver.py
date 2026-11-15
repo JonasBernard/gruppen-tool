@@ -118,6 +118,9 @@ def solve_group_assignment(participants, workshops, options={}):
     # Step 3: Find objective
     model.optimize()
     
+    if model.getStatus() in ["timelimit", "memlimit"]:
+        raise ValueError("Time or memory limit reached.")
+
     if model.getStatus() not in ["optimal", "feasible"]:
         print("No solution found at all. Infeasible. This is unexpected. Problem may be infeasible. Memory limit or time limit too low?")
         raise ValueError("Problem is infeasible.")
