@@ -8,6 +8,7 @@ The owner's own wording of these rules is in `humandoc/00_agent_rules.md`, and t
 
 - **Documentation split.** Everything under `/humandoc/` is human-written specification. Never change its content; at most fix links or formatting when a human asks. `/humandoc/` is not the only place humans write: the existing READMEs are human-written too and stay where they are. Documentation written by an agent goes under `/aidoc/`. `CLAUDE.md` stays at the repository root so Claude Code loads it.
 - **Human review for all code.** Every change goes through a GitHub pull request that a human reviews. Never push to `main`.
+- **Short pull request descriptions.** Keep them short and concise, so a human can read them quickly.
 - **Watch your pull requests.** After opening one, keep watching it for reviews and comments and fix what they ask for.
 - **Delete merged branches.** After a pull request is merged, delete its branch.
 - **UI text is for humans to write.** UI text is German with informal "du", and a human should ideally write it. If you have to draft some, point it out clearly in the pull request so a human can approve or rewrite it.
