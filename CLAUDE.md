@@ -90,7 +90,7 @@ Request body (the same shape for both backends):
 ## Solver notes
 
 - v1 weights (`main.go`): wish index `i` costs `i*i` (weighted) or `1` (unweighted). An unwished workshop costs `(n+1)^2` and is only allowed if `allowAssignmentToNonWishedWorkshop` is set. The response always contains exactly one solution.
-- v2 (`solver.py`): maximizes the sum of `weight * x[k,j]`, where weight is `numWishes - wishIndex + 1` (or `1` unweighted, and `1` for unwished workshops when those are allowed). `x[k,m]` is a slack "none" column. After the first optimum it adds `objective >= opt*(1-slack)`, sets the objective to 0, and enumerates further distinct solutions with big-M no-good constraints. Participants and workshops are shuffled with `randomSeed` so the results come out in an unbiased order. Limits: `TIME_LIMIT_SECONDS` (20 s) for the whole request, shared by all solves, and 1024 MB memory per solve.
+- v2 (`solver.py`): maximizes the sum of `weight * x[k,j]`, where weight is `numWishes - wishIndex + 1` (or `1` unweighted, and `1` for unwished workshops when those are allowed). `x[k,m]` is a slack "none" column. After the first optimum it adds `objective >= opt*(1-slack)`, sets the objective to 0, and enumerates further distinct solutions with big-M no-good constraints. Participants and workshops are shuffled with `randomSeed` so the results come out in an unbiased order. Limits per solve: 150 s and 1024 MB. Limit per request: 60 s times `numberOfRequestedAssignments`, shared by all solves. Both time limits are constants at the top of `solver.py`.
 - `allowSecondWorkshopBeforeFirstFilled=false` adds O(n²) pairwise constraints, so watch performance with large inputs.
 
 ## Conventions
