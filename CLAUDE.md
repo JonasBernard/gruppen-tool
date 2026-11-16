@@ -10,7 +10,6 @@ The owner's own wording of these rules is in `humandoc/00_agent_rules.md`, and t
 - **Human review for all code.** Every change goes through a GitHub pull request that a human reviews. Never push to `main`.
 - **Short pull request descriptions.** Keep them short and concise, so a human can read them quickly.
 - **Watch your pull requests.** After opening one, keep watching it for reviews and comments and fix what they ask for.
-- **Delete merged branches.** After a pull request is merged, delete its branch.
 - **UI text is for humans to write.** UI text is German with informal "du", and a human should ideally write it. If you have to draft some, point it out clearly in the pull request so a human can approve or rewrite it.
 - **Few comments.** Comment only what isn't obvious from the code, and be conservative about adding them.
 - **Removing beats patching.** Before patching or fixing something, consider whether code, features or functions could be removed instead, and present that option to the human.
@@ -90,7 +89,7 @@ Request body (the same shape for both backends):
 ## Solver notes
 
 - v1 weights (`main.go`): wish index `i` costs `i*i` (weighted) or `1` (unweighted). An unwished workshop costs `(n+1)^2` and is only allowed if `allowAssignmentToNonWishedWorkshop` is set. The response always contains exactly one solution.
-- v2 (`solver.py`): maximizes the sum of `weight * x[k,j]`, where weight is `numWishes - wishIndex + 1` (or `1` unweighted, and `1` for unwished workshops when those are allowed). `x[k,m]` is a slack "none" column. After the first optimum it adds `objective >= opt*(1-slack)`, sets the objective to 0, and enumerates further distinct solutions with big-M no-good constraints. Participants and workshops are shuffled with `randomSeed` so the results come out in an unbiased order. Limits: 60 s time and 1024 MB memory per solve.
+- v2 (`solver.py`): maximizes the sum of `weight * x[k,j]`, where weight is `numWishes - wishIndex + 1` (or `1` unweighted, and `1` for unwished workshops when those are allowed). `x[k,m]` is a slack "none" column. After the first optimum it adds `objective >= opt*(1-slack)`, sets the objective to 0, and enumerates further distinct solutions with big-M no-good constraints. Participants and workshops are shuffled with `randomSeed` so the results come out in an unbiased order. Limits per solve: 150 s and 1024 MB. Limit per request: 60 s times `numberOfRequestedAssignments`, shared by all solves. Both time limits are constants at the top of `solver.py`.
 - `allowSecondWorkshopBeforeFirstFilled=false` adds O(n²) pairwise constraints, so watch performance with large inputs.
 
 ## Conventions
