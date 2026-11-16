@@ -14,6 +14,16 @@ export default function WelcomePage(props) {
       <hr className="dark:opacity-20 mt-4" />
 
       <div className="container px-6 py-6 mx-auto text-left">
+        <video
+          className="mt-4 w-full max-w-4xl mx-auto rounded-lg shadow-md"
+          controls
+          preload="none"
+          poster="/tutorial-poster.jpg"
+          aria-label="Video-Tutorial zum Gruppen-Tool"
+        >
+          <source src="/tutorial.mp4" type="video/mp4" />
+        </video>
+
         <div className="mt-8 space-y-8 lg:mt-12">
           <div className="p-8 bg-gray-100 rounded-lg dark:bg-gray-900 dark:bg-opacity-40">
             <h1 className="font-semibold text-gray-700 dark:text-white">
