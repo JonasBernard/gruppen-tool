@@ -10,7 +10,6 @@ The owner's own wording of these rules is in `humandoc/00_agent_rules.md`, and t
 - **Human review for all code.** Every change goes through a GitHub pull request that a human reviews. Never push to `main`.
 - **Short pull request descriptions.** Keep them short and concise, so a human can read them quickly.
 - **Watch your pull requests.** After opening one, keep watching it for reviews and comments and fix what they ask for.
-- **Delete merged branches.** After a pull request is merged, delete its branch.
 - **UI text is for humans to write.** UI text is German with informal "du", and a human should ideally write it. If you have to draft some, point it out clearly in the pull request so a human can approve or rewrite it.
 - **Few comments.** Comment only what isn't obvious from the code, and be conservative about adding them.
 - **Removing beats patching.** Before patching or fixing something, consider whether code, features or functions could be removed instead, and present that option to the human.
