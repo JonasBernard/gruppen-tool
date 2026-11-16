@@ -1,6 +1,8 @@
 from pyscipopt import Model, quicksum
 import random
+import time
 
+TIME_LIMIT_SECONDS = 20
 MAX_COMPUTED_ASSIGNMENTS = 20
 
 DEBUG = False
@@ -113,7 +115,8 @@ def solve_group_assignment(participants, workshops, options={}):
 
     print(f"Solving for {n} participants and {m} workshops...")
     
-    model.setRealParam("limits/time", 60)
+    start_time = time.time()
+    model.setRealParam("limits/time", TIME_LIMIT_SECONDS)
     model.setRealParam("limits/memory", 1024)
     
     # Step 3: Find objective
@@ -173,6 +176,11 @@ def solve_group_assignment(participants, workshops, options={}):
     while l < num_requested_assignments:
         l += 1
         
+        remaining_time = TIME_LIMIT_SECONDS - (time.time() - start_time)
+        if remaining_time <= 0:
+            print("Time limit reached. Stopping enumeration.")
+            break
+        model.setRealParam("limits/time", remaining_time)
         model.optimize()
         
         if model.getStatus() not in ["optimal", "feasible"]:
