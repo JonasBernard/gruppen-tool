@@ -4,8 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/JonasBernard/min-cost-max-flow/matching"
 )
@@ -223,5 +225,12 @@ func main() {
 	http.HandleFunc("/weighted", Weighted())
 	http.HandleFunc("/unweighted", Unweighted())
 
-	http.ListenAndServe(":5000", nil)
+	server := &http.Server{
+		Addr:              ":5000",
+		ReadHeaderTimeout: 5 * time.Second,
+		ReadTimeout:       15 * time.Second,
+		WriteTimeout:      30 * time.Second,
+		IdleTimeout:       60 * time.Second,
+	}
+	log.Fatal(server.ListenAndServe())
 }
