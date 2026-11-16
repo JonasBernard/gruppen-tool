@@ -167,6 +167,7 @@ export default function ParticipantsList(props) {
                     trigger="hover">
                         <div>
                             <Button
+                            aria-label="Bearbeiten"
                             className="bg-indigo-500 focus:ring-indigo-300 dark:bg-indigo-600 hover:bg-indigo-400 hover:dark:bg-indigo-500 dark:text-stone-100 px-0 rounded-r-none"
                             onClick={() => setEditable(participant.id, true)}>
                             <HiOutlinePencil className="h-5 w-5" />
@@ -180,6 +181,7 @@ export default function ParticipantsList(props) {
                     trigger="hover">
                         <div>
                             <Button
+                            aria-label="Löschen"
                                 className="bg-red-500 focus:ring-red-300 dark:bg-rose-600 hover:bg-red-400 hover:dark:bg-rose-500 dark:text-stone-100 px-0 rounded-l-none"
                                 onClick={() => removeParticipant(participant.id)}>
                                 <HiOutlineTrash className="h-5 w-5" />
@@ -191,7 +193,7 @@ export default function ParticipantsList(props) {
     }
 
     const renderEditableParticipantRow = (participant) => {
-        return (<tr>
+        return (<tr key={participant.id}>
             <td className="p-1">
                 <TextInputWithAutocomplete extraStyle="rounded-none" placeholder="Name des Teilnehmers" value={participant.editsMade?.name !== undefined ? participant.editsMade?.name : participant.name} onChange={e => editParticipantName(participant.id, e.target.value)}/>
             </td>
@@ -214,7 +216,7 @@ export default function ParticipantsList(props) {
                         <TextInputWithAutocomplete
                             key={i}
                             extraStyle="rounded-none" placeholder={i+1 + ". Wunsch"}
-                            value={participant.editsMade?.wishes?.[i] || participant.wishes[i]}
+                            value={participant.editsMade?.wishes?.[i] !== undefined ? participant.editsMade.wishes[i] : participant.wishes[i]}
                             onChange={e => editWishOfParticipant(participant.id, i, e.target.value)}
                             onKeyDown={(e, trAuoCom) => (i === wishCount-1 && (e.key === 'Enter') && !trAuoCom) && (e.preventDefault() || setEditable(participant.id, false))}
                         autocomplete={workshopNames}
@@ -230,6 +232,7 @@ export default function ParticipantsList(props) {
                     trigger="hover">
                         <div>
                             <Button
+                            aria-label="Fertig"
                             className="bg-indigo-500 focus:ring-indigo-300 dark:bg-indigo-600 hover:bg-indigo-400 hover:dark:bg-indigo-500 dark:text-stone-100 px-0 rounded-r-none"
                             onClick={() => {confirmEdit(); setEditable(participant.id, false)}}>
                             <HiOutlineCheck className="h-5 w-5" />
@@ -243,6 +246,7 @@ export default function ParticipantsList(props) {
                     trigger="hover">
                         <div>
                             <Button
+                            aria-label="Abbrechen"
                                 className="bg-red-500 focus:ring-red-300 dark:bg-rose-600 hover:bg-red-400 hover:dark:bg-rose-500 dark:text-stone-100 px-0 rounded-l-none"
                                 onClick={() => setEditable(participant.id, false)}>
                                 <HiOutlineX className="h-5 w-5" />
@@ -336,6 +340,7 @@ export default function ParticipantsList(props) {
                     trigger="click"
                 >
                         <button
+                            aria-label="Eingabe der Wünsche"
                             className="bg-gray-200 focus:ring-gray-300 dark:bg-gray-700 text-gray-800 dark:text-stone-100 rounded-l-none rounded-r-lg p-2"
                         >
                             <HiOutlineDotsVertical className="h-5 w-5" />

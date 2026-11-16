@@ -51,12 +51,13 @@ def solve_group_assignment(participants, workshops, options={}):
     allow_same_workshop_twice = options['allow_same_workshop_twice']
     allow_non_wished = options['allow_non_wished']
     use_weighted = options['use_weighted']
+    integer_assignment = num_workshops_per_participant > 1 and allow_same_workshop_twice
 
     # 2. Create Variables
     # TODO only create the variables that are needed in the end (allow_non_wished)
     x = {}
     for k in range(n):
-        if num_workshops_per_participant > 1 and allow_same_workshop_twice:
+        if integer_assignment:
             for j in range(m):
                 x[k, j] = model.addVar(vtype="I", lb=0, ub=num_workshops_per_participant, name=f"assign_{k}_{j}")
         else:
@@ -65,15 +66,12 @@ def solve_group_assignment(participants, workshops, options={}):
         x[k, m] = model.addVar(vtype="I", lb=0, ub=num_workshops_per_participant, name=f"assign_{k}_none")
 
     obj_terms = []
-    
+    wished = set()
     
     for k, participant in enumerate(participants):
         for j, workshop in enumerate(workshops):
-            if not "name" in workshop:
-                # rasing is saver and easier to debug
-                raise ValueError(f"Workshop {j} is missing a name.")
-            
             if workshop['name'] in participant['wishes']:
+                wished.add((k, j))
                 weight = 1
                 if use_weighted:
                     num_wish = participant['wishes'].index(workshop['name'])
@@ -81,6 +79,7 @@ def solve_group_assignment(participants, workshops, options={}):
                 obj_terms.append(weight * x[k, j])
             else:
                 if allow_non_wished:
+                    wished.add((k, j))
                     obj_terms.append(1 * x[k, j])
                 else:
                     model.addCons(x[k, j] == 0, name=f"no_wish_{k}_{j}")
@@ -99,20 +98,17 @@ def solve_group_assignment(participants, workshops, options={}):
     #         for j in range(m):
     #             model.addCons(x[k, j] <= 1, name=f"no_same_workshop_{k}_{j}")
     
+    # All participants get t or t+1 workshops, so nobody gets a second one while someone else has none.
     if not options['allow_second_workshop_before_first_filled'] and num_workshops_per_participant > 1:
+        t = model.addVar(vtype="I", lb=0, ub=num_workshops_per_participant, name="min_workshops_per_participant")
         for k in range(n):
-            for l in range(n):
-                if k == l:
-                    continue
-                model.addCons(quicksum(x[k, j] for j in range(m)) - quicksum(x[l, j] for j in range(m)) <= 1, name=f"fill_first_before_second_{k}_{l}")
+            num_assigned = quicksum(x[k, j] for j in range(m))
+            model.addCons(num_assigned >= t, name=f"fill_first_before_second_lb_{k}")
+            model.addCons(num_assigned <= t + 1, name=f"fill_first_before_second_ub_{k}")
 
     # Capacity constraints per workshop
     for j in range(m):
-        if type(workshops[j]['capacity']) == str:
-            capacity = 0
-        else:
-            capacity = workshops[j]['capacity']
-        model.addCons(quicksum(x[i, j] for i in range(n)) <= capacity, name=f"cap_{j}")
+        model.addCons(quicksum(x[i, j] for i in range(n)) <= workshops[j]['capacity'], name=f"cap_{j}")
 
     print(f"Solving for {n} participants and {m} workshops...")
     
@@ -190,7 +186,7 @@ def solve_group_assignment(participants, workshops, options={}):
             break
         
         if not model.checkSol(model.getBestSol()):
-            print(f"Warning: Solution {selection_order[i]} is not feasible. Skipping.")
+            print(f"Warning: Solution {l} is not feasible. Skipping.")
             continue
 
         vals = [[round(model.getVal(x[i, j])) for j in range(m+1)] for i in range(n)]
@@ -216,34 +212,40 @@ def solve_group_assignment(participants, workshops, options={}):
         # No-good Constraint
         # -------------------------------------------------
 
+        # The "none" column follows from the others, and cells outside `wished` are fixed to 0.
+        if not integer_assignment:
+            model.addCons(
+                quicksum(1 - x[i, j] if vals[i][j] == 1 else x[i, j] for (i, j) in wished) >= 1,
+                name=f"exclude_sol_{l}")
+            continue
+
         diff_vars = []
 
-        for i in range(n):
-            for j in range(m+1):
-                val = vals[i][j]
-                
-                # Binärvariable:
-                # b_i = 1  <=> x_i != val
-                not_eq_bit = model.addVar(vtype="BINARY", name=f"neqbit_{l}_{i}_{j}")
-                strict_gt = model.addVar(vtype="BINARY", name=f"diffsigngt_{l}_{i}_{j}")
-                strict_lt = model.addVar(vtype="BINARY", name=f"diffsignlt_{l}_{i}_{j}")
+        for (i, j) in wished:
+            val = vals[i][j]
+            
+            # Binärvariable:
+            # b_i = 1  <=> x_i != val
+            not_eq_bit = model.addVar(vtype="BINARY", name=f"neqbit_{l}_{i}_{j}")
+            strict_gt = model.addVar(vtype="BINARY", name=f"diffsigngt_{l}_{i}_{j}")
+            strict_lt = model.addVar(vtype="BINARY", name=f"diffsignlt_{l}_{i}_{j}")
 
-                diff_vars.append(not_eq_bit)
-                
-                # Step 1: Trivial: If not_eq_bit == 0, then x must be equal to val
-                model.addCons(x[i, j] - val <= M * not_eq_bit, name=f"exclude_sol_{l}_{i}_{j}_1")
-                model.addCons(val - x[i, j] <= M * not_eq_bit, name=f"exclude_sol_{l}_{i}_{j}_2")
-                
-                # Step 2: If not_eq_bit == 1, then x must be different from val
-                # Step 2.2 If x < val <==> strict_lt = 1
-                model.addCons(x[i, j] <= val - 1 + M * (1 - strict_lt), name=f"exclude_sol_{l}_{i}_{j}_3")
-                model.addCons(x[i, j] >= val - M * strict_lt, name=f"exclude_sol_{l}_{i}_{j}_4")
-                
-                # Step 2.2 If val < x <==> strict_gt = 1
-                model.addCons(val <= x[i, j] - 1 + M * (1 - strict_gt), name=f"exclude_sol_{l}_{i}_{j}_5")
-                model.addCons(val >= x[i, j] - M * strict_gt, name=f"exclude_sol_{l}_{i}_{j}_6")
-                
-                _add_disjunction_of_indicators(model, strict_gt, strict_lt, not_eq_bit)
+            diff_vars.append(not_eq_bit)
+            
+            # Step 1: Trivial: If not_eq_bit == 0, then x must be equal to val
+            model.addCons(x[i, j] - val <= M * not_eq_bit, name=f"exclude_sol_{l}_{i}_{j}_1")
+            model.addCons(val - x[i, j] <= M * not_eq_bit, name=f"exclude_sol_{l}_{i}_{j}_2")
+            
+            # Step 2: If not_eq_bit == 1, then x must be different from val
+            # Step 2.2 If x < val <==> strict_lt = 1
+            model.addCons(x[i, j] <= val - 1 + M * (1 - strict_lt), name=f"exclude_sol_{l}_{i}_{j}_3")
+            model.addCons(x[i, j] >= val - M * strict_lt, name=f"exclude_sol_{l}_{i}_{j}_4")
+            
+            # Step 2.2 If val < x <==> strict_gt = 1
+            model.addCons(val <= x[i, j] - 1 + M * (1 - strict_gt), name=f"exclude_sol_{l}_{i}_{j}_5")
+            model.addCons(val >= x[i, j] - M * strict_gt, name=f"exclude_sol_{l}_{i}_{j}_6")
+            
+            _add_disjunction_of_indicators(model, strict_gt, strict_lt, not_eq_bit)
  
         model.addCons(quicksum(diff_vars) >= 1)
     
@@ -279,10 +281,6 @@ def solve_group_assignment(participants, workshops, options={}):
             assignment = []
             
             for k in range(n):
-                if not "name" in participants[k]:
-                    # TODO why are we only realizing this here? This is quite late
-                    raise ValueError(f"Participant {k} is missing a name.")
-                
                 participant_assignment = [participants[k]['name']]
                 
                 for j in range(m):

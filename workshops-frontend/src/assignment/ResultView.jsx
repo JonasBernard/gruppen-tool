@@ -12,7 +12,8 @@ function interpretStatus(status) {
         case "v2:ok-single-unique": return "Es wurde eine Einteilung gefunden. Diese ist die einzige optimale Einteilung."
         case "v2:ok-single-requested": return "Es wurde eine Einteilung gefunden."
         case "v2:no-solution": return "Es ist keine Einteilung möglich. Es wurden keine Teilnehmer zugeteilt."
-        case "v2:scip-exception": return "Es ist ein Fehler bei der Berechnung der Einteilung aufgetreten. Fehlermeldung: " + (status.message || "Keine Fehlermeldung vorhanden.")
+        case "v2:scip-exception": return "Es ist ein Fehler bei der Berechnung der Einteilung aufgetreten."
+        case "v2:input-error": return "Die Eingabedaten wurden vom Server abgelehnt."
         case "v2:infeasible": return "Es ist keine Einteilung möglich. Das ist unerwartet. Sollte der Fehler bestehen bleiben, nimm Kontakt per E-Mail auf. Die Adresse findest du unten auf der Seite."
         case "v2:mem-time-limit": return "Die Einteilung konnte nicht berechnet werden (Speicher-/Zeitlimit überschritten). Sollte der Fehler bestehen bleiben, nimm Kontakt per E-Mail auf. Die Adresse findest du unten auf der Seite."
         default: return "(Keine Nachricht zum Anzeigen verfügbar.)"
@@ -45,7 +46,7 @@ export default function ResultView(props) {
                     {result.solutions.map((solution, i) => {
                         const problemSolution = result.solutions[i];
                         return (
-                            <Accordion.Panel isOpen={false}>
+                            <Accordion.Panel key={i} isOpen={false}>
                                 <Accordion.Title>
                                  <span>
                                     Einteilung {i+1}

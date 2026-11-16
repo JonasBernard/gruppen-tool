@@ -1,5 +1,4 @@
 import { Progress, Table } from "flowbite-react";
-import { useState } from "react";
 import Button from "../components/Button";
 import { exportExcel } from "../exportExcel";
 import DoughnutChart from "../components/DoughnutChart";
@@ -25,14 +24,6 @@ export default function AssignmentView(props) {
     const settings = props.settings || {};
 
     const numberOfWorkshopsPerParticipant = Math.max(...problemSolution.map(ass => ass.length - 1));
-
-    const [isExportLoading, setExportLoading] = useState(false);
-
-    const exportExcelSync = () => {
-        setExportLoading(true);
-        exportExcel(getAssignmentTableRows(), numberOfWorkshopsPerParticipant, workshops);
-        setExportLoading(false);
-    };
 
     const getAssignmentTableRows = () => {
         let rows = problemSolution;
@@ -250,8 +241,7 @@ export default function AssignmentView(props) {
             <div className="flex items-center justify-end">
                 <span>
                     <Button
-                        disable={isExportLoading} disabledWithloading={isExportLoading}
-                        onClick={() => exportExcelSync()}
+                        onClick={() => exportExcel(getAssignmentTableRows(), numberOfWorkshopsPerParticipant, workshops)}
                         bgColor="bg-green-800 focus:ring-green-200">Als Excel-Datei herunterladen</Button>
                 </span>
             </div>
@@ -262,7 +252,7 @@ export default function AssignmentView(props) {
                             <tr>
                                 <td className="py-3.5 px-4 text-sm font-normal text-center text-gray-500 dark:text-gray-400">Teilnehmer nach Alphabet sortiert</td>
                                 {Array.from({ length: numberOfWorkshopsPerParticipant }, (_, i) => (
-                                    <td className="py-3.5 px-4 text-sm font-normal text-center text-gray-500 dark:text-gray-400">{numberOfWorkshopsPerParticipant > 1 ? "Phase " + (i + 1) : "Workshop"}</td>
+                                    <td key={i} className="py-3.5 px-4 text-sm font-normal text-center text-gray-500 dark:text-gray-400">{numberOfWorkshopsPerParticipant > 1 ? "Phase " + (i + 1) : "Workshop"}</td>
                                 ))}
                                 {/* <td className="py-3.5 px-4 text-sm font-normal text-center text-gray-500 dark:text-gray-400">entspricht Wunsch</td> */}
                             </tr>

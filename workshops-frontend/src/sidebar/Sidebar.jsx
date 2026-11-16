@@ -47,7 +47,7 @@ export default function AppSidebar(props) {
 
     return (
         <>
-            <div className={"shadow-lg fixed right-0 top-0 h-screen flex items-start transition-transform duration-300 ease-in-out " + (open ? "" : "translate-x-full")}>
+            <div id="app-sidebar" inert={open ? undefined : ""} className={"shadow-lg fixed right-0 top-0 h-screen flex items-start transition-transform duration-300 ease-in-out " + (open ? "" : "translate-x-full")}>
                 <Sidebar aria-label="Sidebar" style={{width:"min(30rem, 100vw - 2rem)"}}>
                     <SidebarLogo img="/undraw_people_re_8spw.png" imgAlt="Gruppen-Tool Logo">
                         Gruppen-Tool
@@ -93,7 +93,7 @@ export default function AppSidebar(props) {
                     <Footer className="absolute bottom-1 left-0 right-0" />
                 </Sidebar>
             </div>
-            <button onClick={() => setOpen(!open)} className={
+            <button onClick={() => setOpen(!open)} aria-expanded={open} aria-controls="app-sidebar" aria-label="Menü" className={
                 (open ? "" : "lg:translate-y-20 translate-y-0") + 
                 "transition-all duration-300 ease-in-out lg:top-2 lg:bottom-auto bottom-2 -right-1 fixed p-3 rounded-l-full bg-white shadow-md " + 
                 "dark:bg-gray-800 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600 focus:ring-2 focus:ring-gray-400"}>

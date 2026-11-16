@@ -28,20 +28,25 @@ function saveData(participants, workshops, settings) {
   })
 }
 
+function parseStringCapacities(workshops) {
+  for (const workshop of workshops) {
+    if (typeof workshop.capacity === "string") {
+      workshop.capacity = parseInt(workshop.capacity) || 0;
+    }
+  }
+}
+
 function loadData() {
   try {
     if (localStorage.dataV3) {
       let data = JSON.parse(localStorage.dataV3);
+      parseStringCapacities(data.workshops);
       if (data.participants.length > 0 || data.workshops.length > 0)
         return [true, data.participants, data.workshops, data.settings];
     }
     if (localStorage.dataV2) {
       let data = JSON.parse(localStorage.dataV2);
-      for (const workshop of data.workshops) {
-        if (workshop.capacity instanceof String) {
-          workshop.capacity = parseInt(workshop.capacity);
-        }
-      }
+      parseStringCapacities(data.workshops);
 
       localStorage.removeItem("dataV2");
       saveData(data.participants, data.workshops, data.settings);
@@ -68,6 +73,22 @@ function loadData() {
   return [false, [], []];
 }
 
+function TabButton({ tab, currentTab, navigateToTab, children }) {
+  const isCurrent = tab === currentTab;
+  return (
+    <button onClick={() => navigateToTab(tab)}
+      aria-current={isCurrent ? "page" : undefined}
+      className={
+        "inline-flex items-center h-10 px-4 -mb-px text-sm text-center bg-transparent border-b-2 sm:text-base "
+        + "whitespace-nowrap focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-indigo-400 "
+        + (isCurrent
+          ? "text-indigo-600 border-indigo-500 dark:border-indigo-400 dark:text-indigo-300"
+          : "text-gray-700 border-transparent dark:text-white hover:border-gray-400")}>
+      {children}
+    </button>
+  );
+}
+
 function AppContent() {
   const [participants, setParticipants] = useState([]);
   const [workshops, setWorkshops] = useState([]);
@@ -77,13 +98,11 @@ function AppContent() {
   const [infoMessage, setInfoMessage] = useState("");
 
   const [showInfoMessage, setShowInfoMessage] = useState(false);
-  const setInfoMessageWithTimeout = (message, timeout = 5000) => {
-    setInfoMessage(message);
-    setShowInfoMessage(true);
-    setTimeout(() => {
-      setShowInfoMessage(false);
-    }, timeout);
-  };
+  useEffect(() => {
+    if (!showInfoMessage) return;
+    const timer = setTimeout(() => setShowInfoMessage(false), 5000);
+    return () => clearTimeout(timer);
+  }, [showInfoMessage]);
 
   const [settings, setSettings] = useState({});
   const [result, setRequestResult] = useState(null);
@@ -124,7 +143,8 @@ function AppContent() {
       setParticipants(k); setWorkshops(w);
       s && setSettings(s);
       
-      setInfoMessageWithTimeout("Es wurden Daten aus deiner letzten Sitzung wiederhergestellt.");
+      setInfoMessage("Es wurden Daten aus deiner letzten Sitzung wiederhergestellt.");
+      setShowInfoMessage(true);
     }
   }, []);
 
@@ -191,8 +211,9 @@ function AppContent() {
       return;
     }
 
-    if (workshopsOrig.filter(w => w.capacity === 0).length > 0) {
-      setErrorMessage("Es gibt minestens einen Workshop mit Kapazität null. Diese/r müssen/muss gelöscht werden bevor eine Einteilung gefunden werden kann: " + workshopsOrig.filter(w => w.capacity === 0).map(w => w.name).join(", ") + ".");
+    const workshopsWithoutCapacity = workshopsOrig.filter(w => !(Number.isInteger(w.capacity) && w.capacity > 0));
+    if (workshopsWithoutCapacity.length > 0) {
+      setErrorMessage("Es gibt mindestens einen Workshop mit Kapazität null, einer negativen oder keiner Kapazität. Diese/r müssen/muss korrigiert oder gelöscht werden bevor eine Einteilung gefunden werden kann: " + workshopsWithoutCapacity.map(w => w.name).join(", ") + ".");
       return;
     }
 
@@ -266,9 +287,15 @@ function AppContent() {
     })
     .then((response) => {
       if (!response.ok) {
-        return response.json().then((data) => {
-          setRequestResult({status: data.status});
-          throw new Error(data.message);
+        return response.text().then((text) => {
+          let data = {};
+          try {
+            data = JSON.parse(text);
+          } catch {}
+          if (data.status) {
+            setRequestResult({status: data.status});
+          }
+          throw new Error(data.message || "Der Server hat mit Status " + response.status + " geantwortet.");
         });
       }
       return response.json();
@@ -338,7 +365,7 @@ function AppContent() {
 
         <div className="flex flex-col items-center">
 
-          <div className={"mb-6 fixed z-10 bottom-2 left-0 transition-all duration-800 ease-in-out " + (showInfoMessage ? "translate-x-5" : "-translate-x-full")}>
+          <div role="status" inert={showInfoMessage ? undefined : ""} className={"mb-6 fixed z-10 bottom-2 left-0 transition-all duration-800 ease-in-out " + (showInfoMessage ? "translate-x-5" : "-translate-x-full")}>
               <Alert color="indigo" icon={HiOutlineInformationCircle} 
                 className="text-indigo-900" 
                 onDismiss={() => setShowInfoMessage(false)}>
@@ -348,61 +375,30 @@ function AppContent() {
           </div>
 
           <Card className="container">
-            <div className="flex justify-between overflow-x-auto overflow-y-hidden border-b border-gray-200 whitespace-nowrap dark:border-gray-700">
+            <nav className="flex justify-between overflow-x-auto overflow-y-hidden border-b border-gray-200 whitespace-nowrap dark:border-gray-700">
                 <div className="flex">
-                  <button onClick={() => navigateToTab(0)}
-                    className={
-                      "inline-flex items-center h-10 px-4 -mb-px text-sm text-center bg-transparent border-b-2 sm:text-base "
-                      + (
-                        currentTab === 0
-                        ? "text-indigo-600 border-indigo-500 dark:border-indigo-400 dark:text-indigo-300 "
-                        : "text-gray-700 border-transparent dark:text-white focus:outline-none hover:border-gray-400 ")
-                      + "whitespace-nowrap focus:outline-none"}>
+                  <TabButton tab={0} currentTab={currentTab} navigateToTab={navigateToTab}>
                       <HiOutlineCollection className="mr-2" /> Workshops
-                  </button>
-                  <button onClick={() => navigateToTab(1)} className={
-                      "inline-flex items-center h-10 px-4 -mb-px text-sm text-center bg-transparent border-b-2 sm:text-base "
-                      + (
-                        currentTab === 1
-                        ? "text-indigo-600 border-indigo-500 dark:border-indigo-400 dark:text-indigo-300 "
-                        : "text-gray-700 border-transparent dark:text-white focus:outline-none hover:border-gray-400 ")
-                      + "whitespace-nowrap focus:outline-none"}>
+                  </TabButton>
+                  <TabButton tab={1} currentTab={currentTab} navigateToTab={navigateToTab}>
                       <HiOutlineUser className="mr-2"/>Teilnehmer
-                  </button>
-                  <button onClick={() => navigateToTab(2)} className={
-                      "inline-flex items-center h-10 px-4 -mb-px text-sm text-center bg-transparent border-b-2 sm:text-base "
-                      + (
-                        currentTab === 2
-                        ? "text-indigo-600 border-indigo-500 dark:border-indigo-400 dark:text-indigo-300 "
-                        : "text-gray-700 border-transparent dark:text-white focus:outline-none hover:border-gray-400 ")
-                      + "whitespace-nowrap focus:outline-none"}>
+                  </TabButton>
+                  <TabButton tab={2} currentTab={currentTab} navigateToTab={navigateToTab}>
                       <HiOutlineLightningBolt className="mr-2"/>Einteilen
-                  </button>
+                  </TabButton>
                 </div>
 
                 <div className="flex">
-                  <button onClick={() => navigateToTab(3)} className={
-                      "inline-flex items-center h-10 px-4 -mb-px text-sm text-center bg-transparent border-b-2 sm:text-base "
-                      + (
-                        currentTab === 3
-                        ? "text-indigo-600 border-indigo-500 dark:border-indigo-400 dark:text-indigo-300 "
-                        : "text-gray-700 border-transparent dark:text-white focus:outline-none hover:border-gray-400 ")
-                      + "whitespace-nowrap focus:outline-none"}>
+                  <TabButton tab={3} currentTab={currentTab} navigateToTab={navigateToTab}>
                       <HiOutlineLightBulb className="mr-2"/>So funktioniert's
-                  </button>
+                  </TabButton>
                   {getProfileOption("adminTab.enable") && (
-                    <button onClick={() => navigateToTab(4)} className={
-                        "inline-flex items-center h-10 px-4 -mb-px text-sm text-center bg-transparent border-b-2 sm:text-base "
-                        + (
-                          currentTab === 4
-                          ? "text-indigo-600 border-indigo-500 dark:border-indigo-400 dark:text-indigo-300 "
-                        : "text-gray-700 border-transparent dark:text-white focus:outline-none hover:border-gray-400 ")
-                      + "whitespace-nowrap focus:outline-none"}>
+                    <TabButton tab={4} currentTab={currentTab} navigateToTab={navigateToTab}>
                       <HiOutlineKey className="mr-2"/>Admin
-                  </button>
+                    </TabButton>
                   )}
                 </div>  
-            </div>
+            </nav>
 
 
             <Routes>
@@ -431,7 +427,7 @@ function AppContent() {
                   <SummaryView participants={participants} workshops={workshops} settings={settings} />
                   <SettingsView initialSettings={settings} setSettings={setSettings} sendData={sendData} isLoading={isLoading}></SettingsView>              
                   {warningMessages && warningMessages.map((msg) => (
-                      <Alert color="warning" icon={HiOutlineExclamation} className="text-yellow-900 dark:bg-gray-700 dark:text-yellow-300" dismissable={false}>{msg}</Alert>
+                      <Alert key={msg} color="warning" icon={HiOutlineExclamation} className="text-yellow-900 dark:bg-gray-700 dark:text-yellow-300" dismissable={false}>{msg}</Alert>
                   ))}
                   {errorMessage && (
                       <Alert color="failure" icon={HiOutlineExclamationCircle} className="text-red-900 dark:bg-red-900 dark:text-red-100" dismissable={false}>{errorMessage}</Alert>

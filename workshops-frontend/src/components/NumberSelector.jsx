@@ -1,4 +1,8 @@
+import { useId } from "react";
+
 export default function NumberSelector(props) {
+    const textId = useId();
+
     const increment = () => {
         props.setValue(oldValue => oldValue + 1);
     }
@@ -14,7 +18,7 @@ export default function NumberSelector(props) {
     // From https://flowbite.com/docs/forms/number-input/#min-and-max-values
     return <form className={"max-w-xs flex items-center flex-col " + props.className} onSubmit={preventDefault}>
         <div className="relative flex items-center max-w-[12rem]">
-            <button type="button" id="decrement-button" 
+            <button type="button" aria-label="Verringern" 
                 disabled={props.disabled}
                 onClick={decrement} className={
                     "bg-gray-100 dark:bg-gray-800 dark:border-gray-600 border"
@@ -26,7 +30,7 @@ export default function NumberSelector(props) {
                     <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M1 1h16"/>
                 </svg>
             </button>
-            <input type="text" placeholder={props.placeholder} value={props.value} onChange={e => props.setValue((_) => e.target.value)} required aria-describedby="helper-text-explanation" 
+            <input type="text" placeholder={props.placeholder} value={props.value} onChange={e => props.setValue((_) => e.target.value)} required aria-labelledby={textId} 
                 disabled={props.disabled}
                 className={
                     "bg-gray-50 border-x-0 border-gray-300 h-9 text-center text-gray-900 text-sm"
@@ -34,7 +38,7 @@ export default function NumberSelector(props) {
                     + " dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-indigo-500"
                     + " dark:focus:border-indigo-300 focus:ring-opacity-40"
                     + (props.disabled ? " cursor-not-allowed opacity-50" : "")} />
-            <button type="button" id="increment-button" 
+            <button type="button" aria-label="Erhöhen" 
                 disabled={props.disabled}
                 onClick={increment} 
                 className={
@@ -48,7 +52,7 @@ export default function NumberSelector(props) {
                 </svg>
             </button>
         </div>
-        <p id="helper-text-explanation" className={
+        <p id={textId} className={
             "mt-2 text-sm text-center text-gray-500 dark:text-gray-200"
             + (props.disabled ? " select-none" : "")}>{ props.text }</p>
         <p className={"ms-2 mt-1 text-xs text-center font-normal text-gray-500 dark:text-gray-300" 

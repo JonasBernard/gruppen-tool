@@ -134,6 +134,7 @@ export default function Workshoplist(props) {
                     trigger="hover">
                         <div>
                             <Button
+                            aria-label="Bearbeiten"
                             className="bg-indigo-500 focus:ring-indigo-300 dark:bg-indigo-600 hover:bg-indigo-400 hover:dark:bg-indigo-500 dark:text-stone-100 px-0 rounded-r-none"
                             onClick={() => setEditable(workshop.id, true)}>
                             <HiOutlinePencil className="h-5 w-5" />
@@ -147,6 +148,7 @@ export default function Workshoplist(props) {
                     trigger="hover">
                         <div>
                             <Button
+                            aria-label="Löschen"
                                 className="bg-red-500 focus:ring-red-300 dark:bg-rose-600 hover:bg-red-400 hover:dark:bg-rose-500 dark:text-stone-100 px-0 rounded-l-none"
                                 onClick={() => removeWorkshop(workshop.id)}>
                                 <HiOutlineTrash className="h-5 w-5" />
@@ -177,6 +179,7 @@ export default function Workshoplist(props) {
                     trigger="hover">
                         <div>
                             <Button
+                            aria-label="Fertig"
                             className="bg-indigo-500 focus:ring-indigo-300 dark:bg-indigo-600 hover:bg-indigo-400 hover:dark:bg-indigo-500 dark:text-stone-100 px-0 rounded-r-none"
                             onClick={() => {confirmEdit(); setEditable(workshop.id, false)}}>
                             <HiOutlineCheck className="h-5 w-5" />
@@ -190,6 +193,7 @@ export default function Workshoplist(props) {
                     trigger="hover">
                         <div>
                             <Button
+                            aria-label="Abbrechen"
                                 className="bg-red-500 focus:ring-red-300 dark:bg-rose-600 hover:bg-red-400 hover:dark:bg-rose-500 dark:text-stone-100 px-0 rounded-l-none"
                                 onClick={() => setEditable(workshop.id, false)}>
                                 <HiOutlineX className="h-5 w-5" />

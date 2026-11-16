@@ -19,7 +19,7 @@ export const importExcel = async (file, wishCount) => {
         w = w.map((wish) => wish.replaceAll(/“/g, "")); // TODO this catches only the first occurence for some reason
         w = w.map((wish) => wish.replaceAll(/”/g, "")); // TODO this catches only the first occurence for some reason
         w = w.map((wish) => (wish === null || wish === undefined) ? "" : wish); // should actually not happen because of defval: "" above
-        while (w.length < wishCount+1) {
+        while (w.length < wishCount) {
             w.push("");
         }
         return [{"id": uuidv4(), "name": lineInSheet[0].toString().trim(), "wishes": w}];

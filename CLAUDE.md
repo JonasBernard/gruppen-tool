@@ -67,8 +67,8 @@ Request body (the same shape for both backends):
                     "randomSeed": "", "objectiveSlack": 0.0 }
 }
 ```
-- v1: `POST /weighted` or `POST /unweighted`. Only the first two settings are used. `wishes` is a fixed `[6]string` in Go, so **at most 6 wishes**. Wish matching is trimmed and case-insensitive.
-- v2: `POST /`. All settings are used, and `server.py` enforces the limits (wishes 1–6, requested assignments ≤ 15, workshops per participant ≤ 5, slack 0–1). Wish matching is **exact**.
+- v1: `POST /weighted` or `POST /unweighted`. Only the first two settings are used. `wishes` is a fixed `[6]string` in Go, so **at most 6 wishes**. Wish matching is **exact**.
+- v2: `POST /`. All settings are used, and `server.py` checks types and enforces the limits (wishes 1–6, requested assignments ≤ 15, workshops per participant ≤ 5, slack 0–1, at most 150 workshops, 1 MB body). Wish matching is **exact**.
 - Both backends reject more than 150 participants.
 - Response: `{ "status": "...", "solutions": [{ "assignment": [["Alice", "Schach"], ["Bob", "none"]], ...}] }`. Each row is the participant name followed by their workshop(s). `"none"` means unassigned, which is why the frontend forbids a workshop called `none`. v2 solutions also carry `objective`, `score` and `num_assigned_participants`, plus a top-level `computation_time`.
 - Status strings: v1 sends `ok`, `no-perfect-solution` or `error-unknown`. v2 sends `v2:ok`, `v2:ok-single-unique`, `v2:ok-single-requested`, `v2:no-solution`, `v2:infeasible`, `v2:input-error` or `v2:scip-exception`. If you add a status, add a German message for it in `interpretStatus` in `src/assignment/ResultView.jsx`.
@@ -89,8 +89,8 @@ Request body (the same shape for both backends):
 ## Solver notes
 
 - v1 weights (`main.go`): wish index `i` costs `i*i` (weighted) or `1` (unweighted). An unwished workshop costs `(n+1)^2` and is only allowed if `allowAssignmentToNonWishedWorkshop` is set. The response always contains exactly one solution.
-- v2 (`solver.py`): maximizes the sum of `weight * x[k,j]`, where weight is `numWishes - wishIndex + 1` (or `1` unweighted, and `1` for unwished workshops when those are allowed). `x[k,m]` is a slack "none" column. After the first optimum it adds `objective >= opt*(1-slack)`, sets the objective to 0, and enumerates further distinct solutions with big-M no-good constraints. Participants and workshops are shuffled with `randomSeed` so the results come out in an unbiased order. Limits per solve: 150 s and 1024 MB. Limit per request: 60 s times `numberOfRequestedAssignments`, shared by all solves. Both time limits are constants at the top of `solver.py`.
-- `allowSecondWorkshopBeforeFirstFilled=false` adds O(n²) pairwise constraints, so watch performance with large inputs.
+- v2 (`solver.py`): maximizes the sum of `weight * x[k,j]`, where weight is `numWishes - wishIndex + 1` (or `1` unweighted, and `1` for unwished workshops when those are allowed). `x[k,m]` is a slack "none" column. After the first optimum it adds `objective >= opt*(1-slack)`, sets the objective to 0, and enumerates further distinct solutions with no-good constraints (one linear constraint for binary variables, big-M only when `allowSameWorkshopTwice` makes them integer). Participants and workshops are shuffled with `randomSeed` so the results come out in an unbiased order. Limits per solve: 150 s and 1024 MB. Limit per request: 60 s times `numberOfRequestedAssignments`, shared by all solves. Both time limits are constants at the top of `solver.py`.
+- `allowSecondWorkshopBeforeFirstFilled=false` keeps every participant's workshop count between `t` and `t+1` for one integer variable `t`.
 
 ## Conventions
 

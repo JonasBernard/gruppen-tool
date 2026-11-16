@@ -1,4 +1,4 @@
-import { forwardRef, useImperativeHandle, useRef } from "react";
+import { forwardRef, useImperativeHandle, useRef, useState } from "react";
 
 const getAutocomplete = (input, stringlist) => {
     if (stringlist === null || stringlist === undefined) return "";
@@ -24,6 +24,8 @@ const TextInputWithAutocomplete = forwardRef((props, forwardedRef) => {
 
     useImperativeHandle(forwardedRef, () => ref.current);
 
+    const [isFocused, setIsFocused] = useState(false);
+
     const autocomplete = getAutocomplete(props.value, props.autocomplete);
 
     return <div className="relative">
@@ -33,6 +35,8 @@ const TextInputWithAutocomplete = forwardRef((props, forwardedRef) => {
             value={props.value}
             onChange={props.onChange}
             placeholder={props.placeholder}
+            onFocus={() => setIsFocused(true)}
+            onBlur={() => setIsFocused(false)}
             onKeyDown={(e) => {
                 let triggeredAutocompletion = false;
                 if ((props.autocomplete && props.autocompleteSetValue) && ((e.key === 'Tab' && !e.shiftKey) || e.key === 'Enter')) {
@@ -50,9 +54,9 @@ const TextInputWithAutocomplete = forwardRef((props, forwardedRef) => {
             + "rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-indigo-400 "
             + "focus:ring-indigo-300 focus:ring-opacity-40 dark:focus:border-indigo-300 focus:outline-none focus:ring"}
         />
-        {ref.current && ref.current.id === document.activeElement.id 
+        {isFocused
             && autocomplete !== "" 
-            && <span className="absolute top-2 right-2 text-gray-500">
+            && <span aria-hidden="true" className="absolute top-2 right-2 text-gray-500">
                 <kbd className="invisible md:visible inline mr-2 px-3 py-1 text-sm font-normal text-gray-600 bg-gray-300 rounded-full dark:text-gray-400 gap-x-2 dark:bg-gray-900">
                     Tab
                 </kbd>

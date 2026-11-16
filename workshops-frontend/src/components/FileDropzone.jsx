@@ -1,6 +1,8 @@
 import { FileInput, Label } from "flowbite-react";
+import { useId } from "react";
 
 export default function FileDropzone(props) {
+  const inputId = useId();
 
   const onDragover = (event) => {
     event.preventDefault();
@@ -9,10 +11,10 @@ export default function FileDropzone(props) {
   return (
     <div className="flex w-full items-center justify-center">
       <Label
-        htmlFor="dropzone-file"
+        htmlFor={inputId}
         onDrop={props.onDrop}
         onDragOver={onDragover}
-        className="flex h-64 w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 hover:bg-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:hover:border-gray-500 dark:hover:bg-gray-600"
+        className="flex h-64 w-full cursor-pointer focus-within:ring-2 focus-within:ring-indigo-400 flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 hover:bg-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:hover:border-gray-500 dark:hover:bg-gray-600"
       >
         <div className="flex flex-col items-center justify-center pb-6 pt-5">
           <svg
@@ -37,7 +39,7 @@ export default function FileDropzone(props) {
             {props.fileTypes}
           </p>
         </div>
-        <FileInput id="dropzone-file" className="hidden" accept={props.fileFilter} 
+        <FileInput id={inputId} className="sr-only" accept={props.fileFilter} 
             onChange={(e) => {props.onChange(e);}}
         />
       </Label>
