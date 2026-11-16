@@ -3,7 +3,7 @@ import random
 import time
 
 TIME_LIMIT_PER_ASSIGNMENT_SECONDS = 150
-TIME_LIMIT_PER_REQUEST_SECONDS = 60
+TIME_LIMIT_PER_REQUEST_SECONDS_FACTOR = 60
 MAX_COMPUTED_ASSIGNMENTS = 20
 
 DEBUG = False
@@ -117,7 +117,7 @@ def solve_group_assignment(participants, workshops, options={}):
     print(f"Solving for {n} participants and {m} workshops...")
     
     start_time = time.time()
-    total_time_limit = TIME_LIMIT_PER_REQUEST_SECONDS * options['num_requested_assignments']
+    total_time_limit = TIME_LIMIT_PER_REQUEST_SECONDS_FACTOR * options['num_requested_assignments']
     model.setRealParam("limits/time", min(TIME_LIMIT_PER_ASSIGNMENT_SECONDS, total_time_limit))
     model.setRealParam("limits/memory", 1024)
     
