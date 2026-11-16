@@ -1,0 +1,325 @@
+/* Styles for the overlay the recorder injects into the app page (see stage.js).
+   All sizes are CSS px of the 1280x720 layout viewport. */
+
+:host {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483647;
+  pointer-events: none;
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  color: #1f2937;
+  --cam: 1;
+  --indigo: #4f46e5;
+  --cyan: #06b6d4;
+  --emerald: #10b981;
+}
+
+* { box-sizing: border-box; }
+
+/* ---------- pointer ---------- */
+
+.cursor {
+  position: fixed;
+  left: 0;
+  top: 0;
+  opacity: 0;
+  transition: opacity 0.25s;
+}
+.cursor.on { opacity: 1; }
+.cursor .size { transform: scale(calc(1 / var(--cam))); transform-origin: 0 0; }
+.cursor .halo {
+  position: absolute;
+  left: -24px;
+  top: -24px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(79, 70, 229, 0.17);
+  transition: transform 0.1s, background 0.1s;
+}
+.cursor svg {
+  position: absolute;
+  left: -6px;
+  top: -4px;
+  width: 34px;
+  height: 34px;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.4));
+  transform-origin: 6px 4px;
+  transition: transform 0.08s;
+}
+.cursor.down svg { transform: scale(0.85); }
+.cursor.down .halo { transform: scale(0.75); background: rgba(79, 70, 229, 0.32); }
+
+.ripple {
+  position: fixed;
+  width: 24px;
+  height: 24px;
+  margin: -12px 0 0 -12px;
+  border-radius: 50%;
+  border: 3px solid rgba(79, 70, 229, 0.9);
+  animation: ripple 0.55s ease-out forwards;
+}
+@keyframes ripple {
+  from { transform: scale(calc(0.5 / var(--cam))); opacity: 1; }
+  to { transform: scale(calc(3.4 / var(--cam))); opacity: 0; }
+}
+
+/* ---------- highlight box ---------- */
+
+.hl {
+  position: fixed;
+  border-radius: 10px;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.95), 0 0 0 9px rgba(79, 70, 229, 0.2);
+  opacity: 0;
+  transition: opacity 0.25s, left 0.35s, top 0.35s, width 0.35s, height 0.35s;
+}
+.hl.on { opacity: 1; }
+
+/* ---------- dragged file ---------- */
+
+.file {
+  position: fixed;
+  left: 0;
+  top: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px 10px 12px;
+  background: #fff;
+  border: 1px solid #d1d5db;
+  border-radius: 12px;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.22);
+  font-size: 16px;
+  font-weight: 600;
+  opacity: 0;
+  transition: opacity 0.25s;
+}
+.file.on { opacity: 1; }
+.file .xl {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 36px;
+  border-radius: 5px;
+  background: #15803d;
+  color: #fff;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+/* ---------- explainer cards ---------- */
+
+.card {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0 60px;
+  background: linear-gradient(160deg, #eef2ff 0%, #f8fafc 55%, #f1f5f9 100%);
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+.card.on { opacity: 1; }
+.card h1 { margin: 0; font-size: 34px; font-weight: 800; letter-spacing: -0.01em; color: #1f2937; text-align: center; }
+.card h3 { margin: 0 0 14px; font-size: 17px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #6b7280; }
+
+/* staged reveal: an element with data-from="n" shows once the card's phase is >= n */
+.card [data-from] { opacity: 0; transform: translateY(10px); transition: opacity 0.45s, transform 0.45s; }
+.card[data-phase="1"] [data-from="1"],
+.card[data-phase="2"] [data-from="1"], .card[data-phase="2"] [data-from="2"],
+.card[data-phase="3"] [data-from="1"], .card[data-phase="3"] [data-from="2"], .card[data-phase="3"] [data-from="3"],
+.card[data-phase="4"] [data-from="1"], .card[data-phase="4"] [data-from="2"], .card[data-phase="4"] [data-from="3"], .card[data-phase="4"] [data-from="4"] {
+  opacity: 1;
+  transform: none;
+}
+
+/* title + outro */
+.title img { width: 230px; margin-bottom: 26px; animation: rise 0.7s both; }
+.title h1 { font-size: 76px; animation: rise 0.7s 0.15s both; }
+.title p { margin: 14px 0 0; font-size: 28px; color: #6b7280; animation: rise 0.7s 0.3s both; }
+.outro h1 { font-size: 60px; animation: rise 0.7s both; }
+.outro .url {
+  margin-top: 30px;
+  padding: 12px 30px;
+  border-radius: 999px;
+  background: var(--indigo);
+  color: #fff;
+  font-size: 30px;
+  font-weight: 700;
+  animation: rise 0.7s 0.2s both;
+}
+@keyframes rise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+
+/* idea: wishes -> workshops with limited seats -> assignment */
+.idea .cols { display: flex; align-items: flex-start; gap: 56px; }
+.idea .col { display: flex; flex-direction: column; }
+.idea .person, .idea .shop {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 84px;
+  margin-bottom: 18px;
+  padding: 0 20px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06);
+}
+.idea .person b { width: 74px; font-size: 24px; }
+.idea .shop { width: 410px; justify-content: space-between; }
+.idea .shop b { font-size: 24px; }
+.idea .shop small { display: block; margin-top: 2px; font-size: 16px; font-weight: 500; color: #6b7280; }
+.av {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  color: #fff;
+  font-size: 20px;
+  font-weight: 700;
+}
+.av.c0 { background: #4f46e5; }
+.av.c1 { background: #db2777; }
+.av.c2 { background: #d97706; }
+.pill {
+  padding: 7px 14px;
+  border-radius: 999px;
+  background: #eef2ff;
+  color: #3730a3;
+  font-size: 19px;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: background 0.4s, color 0.4s, opacity 0.4s;
+}
+.pill i { font-style: normal; opacity: 0.6; margin-right: 5px; }
+.idea[data-phase="2"] .pill { opacity: 0.4; }
+.idea[data-phase="2"] .pill.got { opacity: 1; background: var(--indigo); color: #fff; }
+.idea .seat {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+}
+.idea .seat .empty {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 2.5px dashed #a5b4fc;
+  transition: opacity 0.3s;
+}
+.idea .seat .av { position: absolute; right: 0; transform: scale(0); transition: transform 0.45s cubic-bezier(0.3, 1.5, 0.5, 1); }
+.idea .seat .rank { font-size: 17px; font-weight: 700; color: #4338ca; margin-right: 54px; opacity: 0; transition: opacity 0.4s 0.2s; }
+.idea[data-phase="2"] .seat .av { transform: scale(1); }
+.idea[data-phase="2"] .seat .rank { opacity: 1; }
+.idea[data-phase="2"] .seat .empty { opacity: 0; }
+
+/* what it does / does not do */
+.scope h1 { margin-bottom: 40px; }
+.scope h1 span { color: var(--indigo); }
+.scope .cols { display: flex; gap: 36px; align-items: stretch; }
+.scope .panel {
+  width: 520px;
+  padding: 26px 30px 30px;
+  background: #fff;
+  border-radius: 20px;
+  border: 2.5px solid;
+  box-shadow: 0 6px 20px rgba(15, 23, 42, 0.07);
+}
+.scope .yes { border-color: #16a34a; }
+.scope .no { border-color: #dc2626; }
+.scope .label { display: flex; align-items: center; gap: 12px; margin-bottom: 22px; font-size: 24px; font-weight: 800; }
+.scope .yes .label { color: #15803d; }
+.scope .no .label { color: #b91c1c; }
+.scope .mark {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  color: #fff;
+  font-size: 22px;
+}
+.scope .yes .mark { background: #16a34a; }
+.scope .no .mark { background: #dc2626; }
+.scope .who { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; font-size: 20px; font-weight: 700; }
+.scope .pills { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
+.scope .pill { font-size: 20px; padding: 9px 18px; }
+.scope .bubble {
+  position: relative;
+  margin-bottom: 14px;
+  padding: 14px 20px;
+  border-radius: 16px;
+  background: #fef2f2;
+  color: #7f1d1d;
+  font-size: 22px;
+  font-weight: 600;
+}
+.scope .bubble::after {
+  content: "";
+  position: absolute;
+  left: 20px;
+  right: 20px;
+  top: 50%;
+  height: 3px;
+  border-radius: 2px;
+  background: #dc2626;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.5s 0.5s;
+}
+.scope[data-phase="1"] .bubble::after { transform: scaleX(1); }
+
+/* spreadsheet mock for the import format */
+.sheet .fit { display: flex; flex-direction: column; align-items: center; transform: scale(1.25); }
+.sheet .win {
+  position: relative;
+  width: 880px;
+  background: #fff;
+  border: 1px solid #d1d5db;
+  border-radius: 14px;
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.14);
+  overflow: hidden;
+}
+.sheet .bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  background: #15803d;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+}
+.sheet .bar .xl { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 4px; background: #fff; color: #15803d; font-weight: 800; }
+.sheet table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 18px; }
+.sheet th, .sheet td { height: 38px; padding: 0 14px; border: 1px solid #e5e7eb; text-align: left; transition: background 0.35s; }
+.sheet th { background: #f3f4f6; color: #6b7280; font-size: 14px; font-weight: 600; text-align: center; }
+.sheet th.n, .sheet td.n { width: 46px; padding: 0; background: #f3f4f6; color: #6b7280; font-size: 14px; text-align: center; }
+.sheet .tabs { display: flex; gap: 4px; padding: 8px 12px 0; background: #f3f4f6; border-top: 1px solid #e5e7eb; }
+.sheet .tabs span { padding: 7px 18px; border-radius: 8px 8px 0 0; font-size: 14px; color: #9ca3af; transition: background 0.35s, color 0.35s; }
+.sheet .tabs span.active { background: #fff; color: #374151; font-weight: 700; }
+.sheet .notes { position: relative; width: 880px; height: 48px; margin-bottom: 6px; }
+.sheet .note {
+  position: absolute;
+  bottom: 0;
+  padding: 7px 14px;
+  border-radius: 10px;
+  background: var(--indigo);
+  color: #fff;
+  font-size: 17px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.sheet .foot { position: relative; width: 880px; height: 48px; margin-top: 12px; }
+.sheet .foot .note { top: 0; bottom: auto; }
+.sheet[data-phase="1"] .cA, .sheet[data-phase="2"] .cW { background: #e0e7ff; }
+.sheet[data-phase="3"] .r1 { background: #e0e7ff; }
+.sheet[data-phase="4"] .tabs span.active { background: var(--indigo); color: #fff; }
+/* each note belongs to exactly one phase */
+.sheet .note { opacity: 0; transform: translateY(8px); transition: opacity 0.35s, transform 0.35s; }
+.sheet[data-phase="1"] .note.p1, .sheet[data-phase="2"] .note.p2,
+.sheet[data-phase="3"] .note.p3, .sheet[data-phase="4"] .note.p4 { opacity: 1; transform: none; }

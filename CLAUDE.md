@@ -25,7 +25,8 @@ The owner's own wording of these rules is in `humandoc/00_agent_rules.md`, and t
 | `workshops-backend-v2/` | v2 solver in Python 3.11 with Flask, gunicorn and SCIP (`pyscipopt`). `server.py` handles HTTP and validation, `solver.py` builds the MILP. Port 5010. |
 | `keycloak-theme/` | Keycloakify + Tailwind/shadcn login theme, taken from a community starter. It is **not wired into the app or CI yet**, so leave it alone unless asked. |
 | `humandoc/` | Human-written specification. Agents never change its content. |
-| `aidoc/` | Documentation written by agents (create it when needed). |
+| `aidoc/` | Documentation written by agents. |
+| `tutorial-video/` | Playwright + ffmpeg scripts that record the tutorial video on the welcome page (`public/tutorial.mp4`) from the running app. See `aidoc/tutorial-video.md`. |
 | `testdata/` | Excel/ODS files for testing the import by hand. |
 | `.gitea/workflows/docker-build.yml` | CI. It builds and pushes all three images to `git.jonasbernard.de` when a `v*.*.*[-alpha\|-beta]` tag is pushed. |
 | `docker-build-push.sh` | Manual alternative to CI: `./docker-build-push.sh <TAG_PREFIX> <VERSION>`. |
