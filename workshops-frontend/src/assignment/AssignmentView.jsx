@@ -1,9 +1,11 @@
 import { Progress, Table } from "flowbite-react";
+import { useState } from "react";
 import Button from "../components/Button";
 import { exportExcel } from "../exportExcel";
 import DoughnutChart from "../components/DoughnutChart";
 import { useTheme } from "../ThemeContext";
 import BarChart from "../components/BarChart";
+import { sameName } from "../normalizeName";
 
 // Orientation: https://coolors.co/48b420-36a776-278cb8-174de2-893f94-cd3e64-911d3c
 const WishesColorShades = [
@@ -34,10 +36,10 @@ export default function AssignmentView(props) {
         rows = rows.sort((ass1, ass2) => ass1[0].localeCompare(ass2[0]));
         rows = rows.map((assignment, index) => {
             const participantName = assignment[0] || "";
-            const participant = participants.find(p => p.name === participantName);
+            const participant = participants.find(p => sameName(p.name, participantName));
 
             const columns = Array.from({ length: numberOfWorkshopsPerParticipant }, (_, i) => {
-                let wishNr = participant?.wishes.findIndex(w => w === assignment[i + 1]) + 1 || -1;
+                let wishNr = participant?.wishes.findIndex(w => sameName(w, assignment[i + 1])) + 1 || -1;
 
                 // if wished for with preference e.g. 4 but currently only 3 are used accoring to numWishesPerParticipant
                 if (wishNr > settings.numberOfWishesPerParticipant) {
@@ -64,6 +66,20 @@ export default function AssignmentView(props) {
             };
         });
         return rows;
+    };
+
+    const [isExportLoading, setExportLoading] = useState(false);
+
+    // Deferred so that the spinner renders before the export blocks the page.
+    const exportExcelWithSpinner = () => {
+        setExportLoading(true);
+        setTimeout(() => {
+            try {
+                exportExcel(getAssignmentTableRows(), numberOfWorkshopsPerParticipant, workshops);
+            } finally {
+                setExportLoading(false);
+            }
+        }, 50);
     };
 
     const { isDarkMode } = useTheme();
@@ -101,14 +117,14 @@ export default function AssignmentView(props) {
         for (let i = 0; i < problemSolution.length; i++) {
             const assignment = problemSolution[i];
             const participantName = assignment[0] || "";
-            const participant = participants.find(p => p.name === participantName);
+            const participant = participants.find(p => sameName(p.name, participantName));
             if (!participant) continue;
 
             for (let j = 0; j < numberOfWorkshopsPerParticipant; j++) {
                 const assignedWorkshop = assignment[j + 1];
                 if (assignedWorkshop) {
                     if (assignedWorkshop !== "none") {
-                        const wishNr = participant.wishes.findIndex(w => w === assignedWorkshop);
+                        const wishNr = participant.wishes.findIndex(w => sameName(w, assignedWorkshop));
                         if (wishNr !== -1 && wishNr < settings.numberOfWishesPerParticipant) {
                             dataset[j].data[wishNr]++;
                         }
@@ -169,14 +185,14 @@ export default function AssignmentView(props) {
         for (let i = 0; i < problemSolution.length; i++) {
             const assignment = problemSolution[i];
             const participantName = assignment[0] || "";
-            const participant = participants.find(p => p.name === participantName);
+            const participant = participants.find(p => sameName(p.name, participantName));
             if (!participant) continue;
 
             for (let j = 0; j < numberOfWorkshopsPerParticipant; j++) {
                 const assignedWorkshop = assignment[j + 1];
                 if (assignedWorkshop) {
                     if (assignedWorkshop !== "none") {
-                        const wishNr = participant.wishes.findIndex(w => w === assignedWorkshop);
+                        const wishNr = participant.wishes.findIndex(w => sameName(w, assignedWorkshop));
                         if (wishNr !== -1 && wishNr < settings.numberOfWishesPerParticipant) {
                             dataset[wishNr].data[workshops.findIndex(w => w.name === assignedWorkshop)]++;
                         }
@@ -241,7 +257,8 @@ export default function AssignmentView(props) {
             <div className="flex items-center justify-end">
                 <span>
                     <Button
-                        onClick={() => exportExcel(getAssignmentTableRows(), numberOfWorkshopsPerParticipant, workshops)}
+                        disabled={isExportLoading} disabledWithloading={isExportLoading}
+                        onClick={exportExcelWithSpinner}
                         bgColor="bg-green-800 focus:ring-green-200">Als Excel-Datei herunterladen</Button>
                 </span>
             </div>

@@ -22,6 +22,9 @@ def DefaultOptions():
         "random_seed": ""
     }
 
+def normalize_name(name):
+    return name.strip().lower()
+
 def solve_group_assignment(participants, workshops, options={}):
     options = {**DefaultOptions(), **options}
     
@@ -46,7 +49,7 @@ def solve_group_assignment(participants, workshops, options={}):
     
     num_wishes_per_participant = options['num_wishes_per_participant']
     for participant in participants:
-        participant['wishes'] = participant['wishes'][:num_wishes_per_participant]
+        participant['wishes'] = [normalize_name(w) for w in participant['wishes'][:num_wishes_per_participant]]
     num_workshops_per_participant = options['num_workshops_per_participant']
     allow_same_workshop_twice = options['allow_same_workshop_twice']
     allow_non_wished = options['allow_non_wished']
@@ -70,11 +73,11 @@ def solve_group_assignment(participants, workshops, options={}):
     
     for k, participant in enumerate(participants):
         for j, workshop in enumerate(workshops):
-            if workshop['name'] in participant['wishes']:
+            if normalize_name(workshop['name']) in participant['wishes']:
                 wished.add((k, j))
                 weight = 1
                 if use_weighted:
-                    num_wish = participant['wishes'].index(workshop['name'])
+                    num_wish = participant['wishes'].index(normalize_name(workshop['name']))
                     weight = num_wishes_per_participant - num_wish + 1
                 obj_terms.append(weight * x[k, j])
             else:
@@ -100,7 +103,7 @@ def solve_group_assignment(participants, workshops, options={}):
     
     # All participants get t or t+1 workshops, so nobody gets a second one while someone else has none.
     if not options['allow_second_workshop_before_first_filled'] and num_workshops_per_participant > 1:
-        t = model.addVar(vtype="I", lb=0, ub=num_workshops_per_participant, name="min_workshops_per_participant")
+        t = model.addVar(vtype="I", lb=0, ub=num_workshops_per_participant - 1, name="min_workshops_per_participant")
         for k in range(n):
             num_assigned = quicksum(x[k, j] for j in range(m))
             model.addCons(num_assigned >= t, name=f"fill_first_before_second_lb_{k}")
@@ -124,7 +127,7 @@ def solve_group_assignment(participants, workshops, options={}):
         raise ValueError("Time or memory limit reached.")
 
     if model.getStatus() not in ["optimal", "feasible"]:
-        print("No solution found at all. Infeasible. This is unexpected. Problem may be infeasible. Memory limit or time limit too low?")
+        print("No solution found at all. Infeasible. This is unexpected. Problem may be infeasible.")
         raise ValueError("Problem is infeasible.")
     
     objective_value = model.getObjVal()
@@ -320,10 +323,10 @@ def _retrieve_objective_value(solution, participants, workshops, num_wishes_per_
     objective_value = 0
     for k, participant in enumerate(participants):
         for j, workshop in enumerate(workshops):
-            if workshop['name'] in participant['wishes']:
+            if normalize_name(workshop['name']) in participant['wishes']:
                 weight = 1
                 if use_weighted:
-                    num_wish = participant['wishes'].index(workshop['name'])
+                    num_wish = participant['wishes'].index(normalize_name(workshop['name']))
                     weight = num_wishes_per_participant - num_wish + 1
                 objective_value += weight * solution[k][j]
             else:

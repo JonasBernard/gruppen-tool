@@ -12,6 +12,7 @@ import { LuTextCursorInput } from "react-icons/lu";
 import { Dropdown, Popover } from "flowbite-react";
 import { useTheme } from "../ThemeContext";
 import ButtonGroupSelector from "../components/ButtonGroupSelector";
+import { sameName } from "../normalizeName";
 
 export default function ParticipantsList(props) {
     const participants = props.participants;
@@ -153,7 +154,7 @@ export default function ParticipantsList(props) {
             </td>
             {[...Array(wishCount)].map((x, i) => {
                 return <td key={i} className={"px-2 py-2 text-sm text-center whitespace-nowrap"}>
-                    <span className={((workshopNames.includes(participant.wishes[i]) || participant.wishes[i] === "" || participant.wishes[i] === null || participant.wishes[i] === undefined) ? "" : "px-4 py-1 rounded-xl bg-yellow-500 text-black")}>
+                    <span className={((workshopNames.some(name => sameName(name, participant.wishes[i])) || participant.wishes[i] === "" || participant.wishes[i] === null || participant.wishes[i] === undefined) ? "" : "px-4 py-1 rounded-xl bg-yellow-500 text-black")}>
                         {participant.wishes[i]}
                     </span>
                 </td>
@@ -167,7 +168,7 @@ export default function ParticipantsList(props) {
                     trigger="hover">
                         <div>
                             <Button
-                            aria-label="Bearbeiten"
+                            aria-label="Teilnehmer bearbeiten"
                             className="bg-indigo-500 focus:ring-indigo-300 dark:bg-indigo-600 hover:bg-indigo-400 hover:dark:bg-indigo-500 dark:text-stone-100 px-0 rounded-r-none"
                             onClick={() => setEditable(participant.id, true)}>
                             <HiOutlinePencil className="h-5 w-5" />
@@ -181,7 +182,7 @@ export default function ParticipantsList(props) {
                     trigger="hover">
                         <div>
                             <Button
-                            aria-label="Löschen"
+                            aria-label="Teilnehmer löschen"
                                 className="bg-red-500 focus:ring-red-300 dark:bg-rose-600 hover:bg-red-400 hover:dark:bg-rose-500 dark:text-stone-100 px-0 rounded-l-none"
                                 onClick={() => removeParticipant(participant.id)}>
                                 <HiOutlineTrash className="h-5 w-5" />
@@ -232,7 +233,7 @@ export default function ParticipantsList(props) {
                     trigger="hover">
                         <div>
                             <Button
-                            aria-label="Fertig"
+                            aria-label="Bearbeitung fertig"
                             className="bg-indigo-500 focus:ring-indigo-300 dark:bg-indigo-600 hover:bg-indigo-400 hover:dark:bg-indigo-500 dark:text-stone-100 px-0 rounded-r-none"
                             onClick={() => {confirmEdit(); setEditable(participant.id, false)}}>
                             <HiOutlineCheck className="h-5 w-5" />
@@ -246,7 +247,7 @@ export default function ParticipantsList(props) {
                     trigger="hover">
                         <div>
                             <Button
-                            aria-label="Abbrechen"
+                            aria-label="Bearbeitung abbrechen"
                                 className="bg-red-500 focus:ring-red-300 dark:bg-rose-600 hover:bg-red-400 hover:dark:bg-rose-500 dark:text-stone-100 px-0 rounded-l-none"
                                 onClick={() => setEditable(participant.id, false)}>
                                 <HiOutlineX className="h-5 w-5" />

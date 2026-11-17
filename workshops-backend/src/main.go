@@ -80,6 +80,10 @@ func AddDefaultHeader(w *http.ResponseWriter) {
 	headers.Add("Access-Control-Allow-Methods", "POST, OPTIONS")
 }
 
+func NormalizeString(s string) string {
+	return strings.TrimSpace(strings.ToLower(s))
+}
+
 func Weighted() func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		SolveGroupProblem(w, r, func(i int) float64 {
@@ -179,7 +183,7 @@ func SolveGroupProblem(w http.ResponseWriter, req *http.Request, getEdgeWeight f
 			}
 			wi := c.Wishes[j]
 
-			if wi == w.Name {
+			if NormalizeString(wi) == NormalizeString(w.Name) {
 				return true, getEdgeWeight(j)
 			}
 		}

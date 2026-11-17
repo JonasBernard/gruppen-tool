@@ -67,9 +67,10 @@ Request body (the same shape for both backends):
                     "randomSeed": "", "objectiveSlack": 0.0 }
 }
 ```
-- v1: `POST /weighted` or `POST /unweighted`. Only the first two settings are used. `wishes` is a fixed `[6]string` in Go, so **at most 6 wishes**. Wish matching is **exact**.
-- v2: `POST /`. All settings are used, and `server.py` checks types and enforces the limits (wishes 1–6, requested assignments ≤ 15, workshops per participant ≤ 5, slack 0–1, at most 150 workshops, 1 MB body). Wish matching is **exact**.
+- v1: `POST /weighted` or `POST /unweighted`. Only the first two settings are used. `wishes` is a fixed `[6]string` in Go, so **at most 6 wishes**.
+- v2: `POST /`. All settings are used, and `server.py` checks types and enforces the limits (wishes 1–6, requested assignments ≤ 15, workshops per participant ≤ 5, slack 0–1, at most 150 workshops, 1 MB body); `settings` is required.
 - Both backends reject more than 150 participants.
+- Names are matched trimmed and case-insensitively everywhere (`src/normalizeName.js` in the frontend, `NormalizeString` in v1, `normalize_name` in v2), including the duplicate-name checks.
 - Response: `{ "status": "...", "solutions": [{ "assignment": [["Alice", "Schach"], ["Bob", "none"]], ...}] }`. Each row is the participant name followed by their workshop(s). `"none"` means unassigned, which is why the frontend forbids a workshop called `none`. v2 solutions also carry `objective`, `score` and `num_assigned_participants`, plus a top-level `computation_time`.
 - Status strings: v1 sends `ok`, `no-perfect-solution` or `error-unknown`. v2 sends `v2:ok`, `v2:ok-single-unique`, `v2:ok-single-requested`, `v2:no-solution`, `v2:infeasible`, `v2:input-error` or `v2:scip-exception`. If you add a status, add a German message for it in `interpretStatus` in `src/assignment/ResultView.jsx`.
 - Participants are matched by **name**, not id. The frontend blocks duplicate participant or workshop names before sending.

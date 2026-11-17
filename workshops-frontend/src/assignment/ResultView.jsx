@@ -2,7 +2,7 @@ import AssignmentView from "./AssignmentView";
 import { Accordion, Alert } from "flowbite-react";
 import { HiOutlineClock, HiOutlineInformationCircle } from "react-icons/hi";
 
-function interpretStatus(status) {
+function interpretStatus(status, message) {
     switch (status) {
         case "no-perfect-solution": return "Es ist keine vollständige Einteilung möglich. Die Gesamtkapazität der Workshops reicht nicht aus oder es gibt andere Konflikte. Es wurden so viele Teilnehmer wie möglich zugeteilt."
         case "error-unknown": return "Es ist ein unbekannter Fehler aufgetreten. Es wurde eine Teillösung berechnet:"
@@ -12,8 +12,8 @@ function interpretStatus(status) {
         case "v2:ok-single-unique": return "Es wurde eine Einteilung gefunden. Diese ist die einzige optimale Einteilung."
         case "v2:ok-single-requested": return "Es wurde eine Einteilung gefunden."
         case "v2:no-solution": return "Es ist keine Einteilung möglich. Es wurden keine Teilnehmer zugeteilt."
-        case "v2:scip-exception": return "Es ist ein Fehler bei der Berechnung der Einteilung aufgetreten."
-        case "v2:input-error": return "Die Eingabedaten wurden vom Server abgelehnt."
+        case "v2:scip-exception": return "Es ist ein Fehler bei der Berechnung der Einteilung aufgetreten." + (message ? " Fehlermeldung: " + message : "")
+        case "v2:input-error": return "Die eingegebenen Daten wurden unerwartet vom Server abgelehnt."
         case "v2:infeasible": return "Es ist keine Einteilung möglich. Das ist unerwartet. Sollte der Fehler bestehen bleiben, nimm Kontakt per E-Mail auf. Die Adresse findest du unten auf der Seite."
         case "v2:mem-time-limit": return "Die Einteilung konnte nicht berechnet werden (Speicher-/Zeitlimit überschritten). Sollte der Fehler bestehen bleiben, nimm Kontakt per E-Mail auf. Die Adresse findest du unten auf der Seite."
         default: return "(Keine Nachricht zum Anzeigen verfügbar.)"
@@ -32,14 +32,14 @@ export default function ResultView(props) {
     if (!result.solutions || result.solutions.length === 0) {
         return (
             <div>
-                <Alert color="indigo" icon={HiOutlineInformationCircle} className="text-indigo-900 dark:bg-indigo-800 dark:text-indigo-100" dismissable={false}>{interpretStatus(status)}</Alert>
+                <Alert color="indigo" icon={HiOutlineInformationCircle} className="text-indigo-900 dark:bg-indigo-800 dark:text-indigo-100" dismissable={false}>{interpretStatus(status, result.message)}</Alert>
             </div>
         );
     }
 
     return (
         <div className="flex flex-col items-stretch gap-3">
-            <Alert color="indigo" icon={HiOutlineInformationCircle} className="text-indigo-900 dark:bg-indigo-800 dark:text-indigo-100" dismissable={false}>{interpretStatus(status)}</Alert>
+            <Alert color="indigo" icon={HiOutlineInformationCircle} className="text-indigo-900 dark:bg-indigo-800 dark:text-indigo-100" dismissable={false}>{interpretStatus(status, result.message)}</Alert>
 
             {result.solutions.length > 1 && (
                 <Accordion>

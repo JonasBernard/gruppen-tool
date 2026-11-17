@@ -4,6 +4,7 @@ import Button from "../components/Button";
 import FileDropzone from "../components/FileDropzone";
 import Badge from "../components/Badge";
 import { importExcel } from "./importExcel";
+import { sameName } from "../normalizeName";
 
 export default function ImportExcelModal(props) {
   const [openModal, setOpenModal] = useState(false);
@@ -234,7 +235,7 @@ export default function ImportExcelModal(props) {
                           <td className={"px-2 py-2 text-sm whitespace-nowrap dark:text-stone-100 text-center"}>
                             <span
                               className={
-                                props.workshopNames.includes(k.wishes[i]) ||
+                                props.workshopNames.some(name => sameName(name, k.wishes[i])) ||
                                 k.wishes[i] === "" || k.wishes[i] === null || k.wishes[i] === undefined
                                   ? ""
                                   : "px-4 py-1 rounded-xl bg-yellow-500 text-black"

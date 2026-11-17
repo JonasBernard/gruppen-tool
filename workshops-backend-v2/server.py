@@ -55,9 +55,9 @@ def index():
     
     participants = data.get('participants', [])
     workshops = data.get('workshops', [])
-    settings = data.get('settings', {})
+    settings = data.get('settings')
     if not isinstance(settings, dict):
-        return input_exception("settings must be an object.")
+        return input_exception("The property 'settings' is required and needs to be an object.")
     
     type_error = validate_types(participants, workshops, settings)
     if type_error:
