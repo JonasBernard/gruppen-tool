@@ -70,16 +70,13 @@ export default function AssignmentView(props) {
 
     const [isExportLoading, setExportLoading] = useState(false);
 
-    // Deferred so that the spinner renders before the export blocks the page.
     const exportExcelWithSpinner = () => {
         setExportLoading(true);
-        setTimeout(() => {
-            try {
-                exportExcel(getAssignmentTableRows(), numberOfWorkshopsPerParticipant, workshops);
-            } finally {
-                setExportLoading(false);
-            }
-        }, 50);
+        try {
+            exportExcel(getAssignmentTableRows(), numberOfWorkshopsPerParticipant, workshops);
+        } finally {
+            setExportLoading(false);
+        }
     };
 
     const { isDarkMode } = useTheme();
