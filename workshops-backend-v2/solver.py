@@ -73,19 +73,11 @@ def solve_group_assignment(participants, workshops, options={}):
     
     for k, participant in enumerate(participants):
         for j, workshop in enumerate(workshops):
-            if normalize_name(workshop['name']) in participant['wishes']:
+            if allow_non_wished or normalize_name(workshop['name']) in participant['wishes']:
                 wished.add((k, j))
-                weight = 1
-                if use_weighted:
-                    num_wish = participant['wishes'].index(normalize_name(workshop['name']))
-                    weight = num_wishes_per_participant - num_wish + 1
-                obj_terms.append(weight * x[k, j])
+                obj_terms.append(_weight(participant, workshop, num_wishes_per_participant, use_weighted) * x[k, j])
             else:
-                if allow_non_wished:
-                    wished.add((k, j))
-                    obj_terms.append(1 * x[k, j])
-                else:
-                    model.addCons(x[k, j] == 0, name=f"no_wish_{k}_{j}")
+                model.addCons(x[k, j] == 0, name=f"no_wish_{k}_{j}")
 
     model.setObjective(quicksum(obj_terms), "maximize")
     # TODO remove the following line as soon as the objective can be changed by user
@@ -265,11 +257,8 @@ def solve_group_assignment(participants, workshops, options={}):
         
         assignments = []
         
-        max_possible_objective = 0
-        if use_weighted:
-            max_possible_objective = (num_wishes_per_participant+1) * n * num_workshops_per_participant
-        else:
-            max_possible_objective = n * num_workshops_per_participant
+        max_weight = num_wishes_per_participant + 1 if use_weighted else 2
+        max_possible_objective = max_weight * n * num_workshops_per_participant
         
         i=0
         while len(assignments) < min(num_requested_assignments, num_found):
@@ -319,19 +308,19 @@ def solve_group_assignment(participants, workshops, options={}):
         return []
 
 
+def _weight(participant, workshop, num_wishes_per_participant, use_weighted):
+    # Unwished workshops weigh 1, so any wish (weight >= 2) is preferred over them.
+    name = normalize_name(workshop['name'])
+    if name not in participant['wishes']:
+        return 1
+    if not use_weighted:
+        return 2
+    return num_wishes_per_participant - participant['wishes'].index(name) + 1
+
 def _retrieve_objective_value(solution, participants, workshops, num_wishes_per_participant, use_weighted):
-    objective_value = 0
-    for k, participant in enumerate(participants):
-        for j, workshop in enumerate(workshops):
-            if normalize_name(workshop['name']) in participant['wishes']:
-                weight = 1
-                if use_weighted:
-                    num_wish = participant['wishes'].index(normalize_name(workshop['name']))
-                    weight = num_wishes_per_participant - num_wish + 1
-                objective_value += weight * solution[k][j]
-            else:
-                objective_value += 1 * solution[k][j]
-    return objective_value
+    return sum(_weight(participant, workshop, num_wishes_per_participant, use_weighted) * solution[k][j]
+               for k, participant in enumerate(participants)
+               for j, workshop in enumerate(workshops))
 
 def _add_disjunction_of_indicators(model, binary_var_a, binary_var_b, binary_disj_var):
     model.addCons(binary_disj_var >= binary_var_a)
