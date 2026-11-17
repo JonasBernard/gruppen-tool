@@ -1,4 +1,5 @@
 import { Progress, Table, Accordion } from "flowbite-react";
+import { normalizeName, sameName } from "../utils/normalizeName";
 
 export default function SummaryView(props) {
     if (props.participants.length === 0 || props.workshops.length === 0) {
@@ -6,11 +7,11 @@ export default function SummaryView(props) {
     }
 
     let countWishesPerWorkshop = {};
-    props.workshops.forEach(w => countWishesPerWorkshop[w.name] = 0);
+    props.workshops.forEach(w => countWishesPerWorkshop[normalizeName(w.name)] = 0);
     props.participants.forEach(participant => {
         participant.wishes.forEach(wish => {
-            if (countWishesPerWorkshop[wish] !== undefined) {
-                countWishesPerWorkshop[wish]++;
+            if (countWishesPerWorkshop[normalizeName(wish)] !== undefined) {
+                countWishesPerWorkshop[normalizeName(wish)]++;
             }
         })
     });
@@ -39,14 +40,14 @@ export default function SummaryView(props) {
                                             {workshop.name}
                                         </Table.Cell>
                                         {props.settings.numberOfWishesPerParticipant > 0 && Array.from({ length: props.settings.numberOfWishesPerParticipant }, (_, i) => (
-                                            <Table.Cell className="px-2 py-2 text-center text-sm whitespace-nowrap" key={i}>{props.participants.filter(participant => participant.wishes[i] === workshop.name).length}</Table.Cell>
+                                            <Table.Cell className="px-2 py-2 text-center text-sm whitespace-nowrap" key={i}>{props.participants.filter(participant => sameName(participant.wishes[i], workshop.name)).length}</Table.Cell>
                                         ))}
                                         <Table.Cell className="px-2 py-2 text-center text-sm whitespace-nowrap">
                                             {workshop.capacity}
                                         </Table.Cell>
                                         <Table.Cell className="px-2 py-2 text-center text-sm whitespace-nowrap">
                                             <Progress size="md" color="indigo"
-                                                progress={100 * (countWishesPerWorkshop[workshop.name] || 0) / (workshop.capacity * props.settings.numberOfWishesPerParticipant)} />
+                                                progress={100 * (countWishesPerWorkshop[normalizeName(workshop.name)] || 0) / (workshop.capacity * props.settings.numberOfWishesPerParticipant)} />
                                         </Table.Cell>
                                     </Table.Row>
                                 ))}

@@ -5,6 +5,7 @@ import { exportExcel } from "../exportExcel";
 import DoughnutChart from "../components/DoughnutChart";
 import { useTheme } from "../ThemeContext";
 import BarChart from "../components/BarChart";
+import { sameName } from "../utils/normalizeName";
 
 // Orientation: https://coolors.co/48b420-36a776-278cb8-174de2-893f94-cd3e64-911d3c
 const WishesColorShades = [
@@ -26,14 +27,6 @@ export default function AssignmentView(props) {
 
     const numberOfWorkshopsPerParticipant = Math.max(...problemSolution.map(ass => ass.length - 1));
 
-    const [isExportLoading, setExportLoading] = useState(false);
-
-    const exportExcelSync = () => {
-        setExportLoading(true);
-        exportExcel(getAssignmentTableRows(), numberOfWorkshopsPerParticipant, workshops);
-        setExportLoading(false);
-    };
-
     const getAssignmentTableRows = () => {
         let rows = problemSolution;
         // Parsed names that are just numbers should be converted to strings again
@@ -43,10 +36,10 @@ export default function AssignmentView(props) {
         rows = rows.sort((ass1, ass2) => ass1[0].localeCompare(ass2[0]));
         rows = rows.map((assignment, index) => {
             const participantName = assignment[0] || "";
-            const participant = participants.find(p => p.name === participantName);
+            const participant = participants.find(p => sameName(p.name, participantName));
 
             const columns = Array.from({ length: numberOfWorkshopsPerParticipant }, (_, i) => {
-                let wishNr = participant?.wishes.findIndex(w => w === assignment[i + 1]) + 1 || -1;
+                let wishNr = participant?.wishes.findIndex(w => sameName(w, assignment[i + 1])) + 1 || -1;
 
                 // if wished for with preference e.g. 4 but currently only 3 are used accoring to numWishesPerParticipant
                 if (wishNr > settings.numberOfWishesPerParticipant) {
@@ -73,6 +66,17 @@ export default function AssignmentView(props) {
             };
         });
         return rows;
+    };
+
+    const [isExportLoading, setExportLoading] = useState(false);
+
+    const exportExcelWithSpinner = () => {
+        setExportLoading(true);
+        try {
+            exportExcel(getAssignmentTableRows(), numberOfWorkshopsPerParticipant, workshops);
+        } finally {
+            setExportLoading(false);
+        }
     };
 
     const { isDarkMode } = useTheme();
@@ -110,14 +114,14 @@ export default function AssignmentView(props) {
         for (let i = 0; i < problemSolution.length; i++) {
             const assignment = problemSolution[i];
             const participantName = assignment[0] || "";
-            const participant = participants.find(p => p.name === participantName);
+            const participant = participants.find(p => sameName(p.name, participantName));
             if (!participant) continue;
 
             for (let j = 0; j < numberOfWorkshopsPerParticipant; j++) {
                 const assignedWorkshop = assignment[j + 1];
                 if (assignedWorkshop) {
                     if (assignedWorkshop !== "none") {
-                        const wishNr = participant.wishes.findIndex(w => w === assignedWorkshop);
+                        const wishNr = participant.wishes.findIndex(w => sameName(w, assignedWorkshop));
                         if (wishNr !== -1 && wishNr < settings.numberOfWishesPerParticipant) {
                             dataset[j].data[wishNr]++;
                         }
@@ -178,14 +182,14 @@ export default function AssignmentView(props) {
         for (let i = 0; i < problemSolution.length; i++) {
             const assignment = problemSolution[i];
             const participantName = assignment[0] || "";
-            const participant = participants.find(p => p.name === participantName);
+            const participant = participants.find(p => sameName(p.name, participantName));
             if (!participant) continue;
 
             for (let j = 0; j < numberOfWorkshopsPerParticipant; j++) {
                 const assignedWorkshop = assignment[j + 1];
                 if (assignedWorkshop) {
                     if (assignedWorkshop !== "none") {
-                        const wishNr = participant.wishes.findIndex(w => w === assignedWorkshop);
+                        const wishNr = participant.wishes.findIndex(w => sameName(w, assignedWorkshop));
                         if (wishNr !== -1 && wishNr < settings.numberOfWishesPerParticipant) {
                             dataset[wishNr].data[workshops.findIndex(w => w.name === assignedWorkshop)]++;
                         }
@@ -250,8 +254,8 @@ export default function AssignmentView(props) {
             <div className="flex items-center justify-end">
                 <span>
                     <Button
-                        disable={isExportLoading} disabledWithloading={isExportLoading}
-                        onClick={() => exportExcelSync()}
+                        disabled={isExportLoading} disabledWithloading={isExportLoading}
+                        onClick={exportExcelWithSpinner}
                         bgColor="bg-green-800 focus:ring-green-200">Als Excel-Datei herunterladen</Button>
                 </span>
             </div>
@@ -262,7 +266,7 @@ export default function AssignmentView(props) {
                             <tr>
                                 <td className="py-3.5 px-4 text-sm font-normal text-center text-gray-500 dark:text-gray-400">Teilnehmer nach Alphabet sortiert</td>
                                 {Array.from({ length: numberOfWorkshopsPerParticipant }, (_, i) => (
-                                    <td className="py-3.5 px-4 text-sm font-normal text-center text-gray-500 dark:text-gray-400">{numberOfWorkshopsPerParticipant > 1 ? "Phase " + (i + 1) : "Workshop"}</td>
+                                    <td key={i} className="py-3.5 px-4 text-sm font-normal text-center text-gray-500 dark:text-gray-400">{numberOfWorkshopsPerParticipant > 1 ? "Phase " + (i + 1) : "Workshop"}</td>
                                 ))}
                                 {/* <td className="py-3.5 px-4 text-sm font-normal text-center text-gray-500 dark:text-gray-400">entspricht Wunsch</td> */}
                             </tr>

@@ -5,7 +5,7 @@ export const exportExcel = (result, wLength, workshops) => {
     
     let workshopsStrippedNames = workshops.map(workshop => { return {
         ...workshop,
-        workbookName: workshop.name.replace(/[/\\?%*:|"<>]/g, '-').substring(0, 31)
+        workbookName: workshop.name.replace(/[/\\?%*:|"<>[\]]/g, '-').substring(0, 31)
     }});
 
     for (let workshop of workshopsStrippedNames) {
