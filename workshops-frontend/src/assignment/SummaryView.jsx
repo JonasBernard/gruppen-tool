@@ -1,5 +1,5 @@
 import { Progress, Table, Accordion } from "flowbite-react";
-import { normalizeName, sameName } from "../normalizeName";
+import { normalizeName, sameName } from "../utils/normalizeName";
 
 export default function SummaryView(props) {
     if (props.participants.length === 0 || props.workshops.length === 0) {

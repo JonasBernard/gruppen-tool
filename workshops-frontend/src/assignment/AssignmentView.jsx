@@ -5,7 +5,7 @@ import { exportExcel } from "../exportExcel";
 import DoughnutChart from "../components/DoughnutChart";
 import { useTheme } from "../ThemeContext";
 import BarChart from "../components/BarChart";
-import { sameName } from "../normalizeName";
+import { sameName } from "../utils/normalizeName";
 
 // Orientation: https://coolors.co/48b420-36a776-278cb8-174de2-893f94-cd3e64-911d3c
 const WishesColorShades = [

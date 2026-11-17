@@ -16,7 +16,7 @@ import AppSidebar from "./sidebar/Sidebar";
 import { isExampleData } from "./sidebar/exampleData";
 import AdminTab from "./AdminTab";
 import useProfile from "./profile/useProfile";
-import { normalizeName } from "./normalizeName";
+import { normalizeName } from "./utils/normalizeName";
 
 const APIBASE = process.env.REACT_APP_API_BASEURL || "http://localhost:5000";
 const APIBASE_V2 = process.env.REACT_APP_API_BASEURL_V2 || "http://localhost:5010";

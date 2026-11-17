@@ -3,7 +3,7 @@ import { useState } from "react";
 import Button from "../components/Button";
 import FileDropzone from "../components/FileDropzone";
 import Badge from "../components/Badge";
-import { sameName } from "../normalizeName";
+import { sameName } from "../utils/normalizeName";
 
 export default function ImportJSONModal(props) {
   const [openModal, setOpenModal] = useState(false);

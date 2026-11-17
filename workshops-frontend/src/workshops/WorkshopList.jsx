@@ -6,7 +6,7 @@ import NumberInput from "../components/NumberInput";
 import { HiOutlineCheck, HiOutlinePencil, HiOutlinePlus, HiOutlineTrash, HiOutlineX } from "react-icons/hi";
 import { Popover } from "flowbite-react";
 import { useConfirm } from "../components/useConfirm";
-import { sameName } from "../normalizeName";
+import { sameName } from "../utils/normalizeName";
 
 export default function Workshoplist(props) {
     const participants = props.participants;

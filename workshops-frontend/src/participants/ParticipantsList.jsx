@@ -12,7 +12,7 @@ import { LuTextCursorInput } from "react-icons/lu";
 import { Dropdown, Popover } from "flowbite-react";
 import { useTheme } from "../ThemeContext";
 import ButtonGroupSelector from "../components/ButtonGroupSelector";
-import { sameName } from "../normalizeName";
+import { sameName } from "../utils/normalizeName";
 
 export default function ParticipantsList(props) {
     const participants = props.participants;
